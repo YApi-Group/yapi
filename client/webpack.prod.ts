@@ -45,7 +45,6 @@ const prodFile: Configuration = {
     rules: [
       {
         test: /\.css$/,
-        include: /node_modules/,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
@@ -54,26 +53,12 @@ const prodFile: Configuration = {
             },
           },
           { loader: 'css-loader' },
-        ],
-      },
-
-      {
-        test: /\.css$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: '../', // 设定 css 内部引用的路径
-            },
-          },
-          { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
         ],
       },
 
       {
         test: /\.less$/,
-        exclude: /node_modules/,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
@@ -82,13 +67,13 @@ const prodFile: Configuration = {
             },
           },
           { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
           { loader: 'less-loader' },
         ],
       },
 
       {
         test: /\.scss$/,
-        exclude: /node_modules/,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
@@ -97,6 +82,7 @@ const prodFile: Configuration = {
             },
           },
           { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
           { loader: 'sass-loader' },
         ],
       },

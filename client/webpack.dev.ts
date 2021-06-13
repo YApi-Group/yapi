@@ -10,7 +10,7 @@ import 'webpack-dev-server'
 const localHost = ip.address()
 
 const devsFile: Configuration = {
-  entry: path.resolve(__dirname, './src/index.js'),
+  entry: path.resolve(__dirname, './index.js'),
 
   output: {
     library: 'MyYapi', // Only for umd/amd
@@ -51,38 +51,29 @@ const devsFile: Configuration = {
     rules: [
       {
         test: /\.css$/,
-        include: /node_modules/,
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader' },
-        ],
-      },
-
-      {
-        test: /\.css$/,
-        exclude: /node_modules/,
-        use: [
-          { loader: 'style-loader' },
-          { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
         ],
       },
 
       {
         test: /\.less$/,
-        exclude: /node_modules/,
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
           { loader: 'less-loader' },
         ],
       },
 
       {
         test: /\.scss$/,
-        exclude: /node_modules/,
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
           { loader: 'sass-loader' },
         ],
       },
@@ -134,7 +125,7 @@ const devsFile: Configuration = {
 
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: path.resolve(__dirname, './static/index.template.html'),
+      template: path.resolve(__dirname, './static/index.dev.html'),
       hash: true,
     }),
 

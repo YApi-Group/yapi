@@ -3,13 +3,13 @@
 // 3. 多个Preset，按照声明次序 *逆序执行* 。
 
 module.exports = {
-    "presets": [
-        /* 这里的 target 设置已经移动到 package.json browserslist 字段中了 */
-        '@babel/preset-env',
-        "@babel/preset-react"
-    ],
+  presets: [
+    /* 这里的 target 设置已经移动到 package.json browserslist 字段中了 */
+    '@babel/preset-env',
+    '@babel/preset-react',
+  ],
 
-    "plugins": [
-        '@babel/plugin-transform-runtime',
-    ]
+  plugins: [
+    '@babel/plugin-transform-runtime',
+  ],
 }
