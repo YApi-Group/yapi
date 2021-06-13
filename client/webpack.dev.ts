@@ -64,7 +64,15 @@ const devsFile: Configuration = {
           { loader: 'style-loader' },
           { loader: 'css-loader' },
           { loader: 'postcss-loader' },
-          { loader: 'less-loader' },
+          /* antd 需要打开 javascriptEnabled */
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                javascriptEnabled: true,
+              },
+            },
+          },
         ],
       },
 
@@ -125,7 +133,7 @@ const devsFile: Configuration = {
 
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: path.resolve(__dirname, './static/index.dev.html'),
+      template: path.resolve(__dirname, './static/index.dev.ejs'),
       hash: true,
     }),
 

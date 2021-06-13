@@ -1,5 +1,11 @@
 {
-  "cSpell.words": ["Sele", "cascader", "stylelint", "yapi"],
+  "cSpell.words": [
+    "Sele",
+    "antd",
+    "cascader",
+    "stylelint",
+    "yapi"
+  ],
   "prettier.tabWidth": 2,
   "i18n-ally.indent": 2,
   "editor.tabSize": 2

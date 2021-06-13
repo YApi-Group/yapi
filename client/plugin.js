@@ -1,19 +1,16 @@
-let hooks, pluginModule;
-
 /**
  * type component  组件
  *      listener   监听函数
  * mulit 是否绑定多个监听函数
  */
-
-hooks = {
+export const hooks = {
   /**
    * 第三方登录 //可参考 yapi-plugin-qsso 插件
    */
   third_login: {
     type: 'component',
     mulit: false,
-    listener: null
+    listener: null,
   },
   /**
    * 导入数据
@@ -26,7 +23,7 @@ hooks = {
   import_data: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
   /**
    * 导出数据
@@ -43,7 +40,7 @@ hooks = {
   export_data: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
   /**
    * 接口页面 tab 钩子
@@ -69,7 +66,7 @@ hooks = {
   interface_tab: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
   /**
    * 在运行页面或单个测试也里每次发送请求前调用
@@ -78,7 +75,7 @@ hooks = {
   before_request: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
   /**
    * 在运行页面或单个测试也里每次发送完成后调用
@@ -92,7 +89,7 @@ hooks = {
   after_request: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
   /**
    * 在测试集里运行每次发送请求前调用
@@ -100,7 +97,7 @@ hooks = {
   before_col_request: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
   /**
    * 在测试集里运行每次发送请求后调用
@@ -115,7 +112,7 @@ hooks = {
   after_col_request: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
   /**
    * header下拉菜单 menu 钩子
@@ -155,7 +152,7 @@ hooks = {
   header_menu: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
   /**
    * Route路由列表钩子
@@ -199,7 +196,7 @@ hooks = {
   app_route: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
   /*
    * 添加 reducer
@@ -212,7 +209,7 @@ hooks = {
   add_reducer: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
 
   /*
@@ -230,7 +227,7 @@ hooks = {
   sub_nav: {
     type: 'listener',
     mulit: true,
-    listener: []
+    listener: [],
   },
   /*
    * 添加项目设置 nav
@@ -240,68 +237,70 @@ hooks = {
       interface: { name: 'xxx', component: Xxx },
     }
    */
-  sub_setting_nav:{
+  sub_setting_nav: {
     type: 'listener',
     mulit: true,
-    listener: []
-  }
-};
+    listener: [],
+  },
+}
 
-function bindHook(name, listener) {
+const pluginModule = {
+  hooks: hooks,
+  bindHook: bindHook,
+  emitHook: emitHook,
+}
+
+export function bindHook(name, listener) {
   if (!name) {
-    throw new Error('缺少hookname');
+    throw new Error('缺少 hook name')
   }
   if (name in hooks === false) {
-    throw new Error('不存在的hookname');
+    throw new Error('不存在的 hook name')
   }
   if (hooks[name].mulit === true) {
-    hooks[name].listener.push(listener);
+    hooks[name].listener.push(listener)
   } else {
-    hooks[name].listener = listener;
+    hooks[name].listener = listener
   }
 }
 
-function emitHook(name, ...args) {
+export function emitHook(name, ...args) {
   if (!hooks[name]) {
-    throw new Error('不存在的hook name');
+    throw new Error('不存在的hook name')
   }
-  let hook = hooks[name];
+  const hook = hooks[name]
   if (hook.mulit === true && hook.type === 'listener') {
     if (Array.isArray(hook.listener)) {
-      let promiseAll = [];
+      const promiseAll = []
       hook.listener.forEach(item => {
         if (typeof item === 'function') {
-          promiseAll.push(Promise.resolve(item.call(pluginModule, ...args)));
+          promiseAll.push(Promise.resolve(item.call(pluginModule, ...args)))
         }
-      });
-      return Promise.all(promiseAll);
+      })
+      return Promise.all(promiseAll)
     }
   } else if (hook.mulit === false && hook.type === 'listener') {
     if (typeof hook.listener === 'function') {
-      return Promise.resolve(hook.listener.call(pluginModule, ...args));
+      return Promise.resolve(hook.listener.call(pluginModule, ...args))
     }
   } else if (hook.type === 'component') {
-    return hook.listener;
+    return hook.listener
   }
 }
 
-pluginModule = {
-  hooks: hooks,
-  bindHook: bindHook,
-  emitHook: emitHook
-};
-let pluginModuleList;
-try {
-  pluginModuleList = require('./plugin-module.js');
-} catch (err) {
-  pluginModuleList = {};
-}
+const pluginModuleList = {}
+// TODO 优化
+// try {
+//   pluginModuleList = require('./plugin-module.js')
+// } catch (err) {
+//   pluginModuleList = {}
+// }
 
 Object.keys(pluginModuleList).forEach(plugin => {
-  if (!pluginModuleList[plugin]) return null;
+  if (!pluginModuleList[plugin]) { return null }
   if (pluginModuleList[plugin] && typeof pluginModuleList[plugin].module === 'function') {
-    pluginModuleList[plugin].module.call(pluginModule, pluginModuleList[plugin].options);
+    pluginModuleList[plugin].module.call(pluginModule, pluginModuleList[plugin].options)
   }
-});
+})
 
-module.exports = pluginModule;
+export default pluginModule
