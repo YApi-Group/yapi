@@ -1,0 +1,167 @@
+import * as path from 'path'
+
+import moment from 'moment-timezone'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import { Configuration, DefinePlugin } from 'webpack'
+import TerserWebpackPlugin from 'terser-webpack-plugin'
+import CssMinimizerWebpackPlugin from 'css-minimizer-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
+
+const prodFile: Configuration = {
+  entry: path.resolve(__dirname, './src/index.js'),
+
+  output: {
+    path: path.resolve(__dirname, './dist-prod'),
+    library: 'MyYapi', // Only for umd/amd
+    libraryTarget: 'var', // {'var', 'umd', 'comments', 'this' ...}
+    filename: 'js/[name].[contenthash:8].js',
+  },
+
+  stats: { children: false },
+
+  mode: 'production',
+  optimization: {
+    minimize: true,
+    minimizer: [
+      // sourceMap: true // set to true if you want JS source maps
+      new TerserWebpackPlugin({
+        extractComments: false,
+      }),
+      new CssMinimizerWebpackPlugin({}),
+    ],
+
+    splitChunks: {
+      chunks: 'all',
+      minSize: 80000,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 5,
+      automaticNameDelimiter: '-',
+    },
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        include: /node_modules/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: '../', // 设定 css 内部引用的路径
+            },
+          },
+          { loader: 'css-loader' },
+        ],
+      },
+
+      {
+        test: /\.css$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: '../', // 设定 css 内部引用的路径
+            },
+          },
+          { loader: 'css-loader' },
+        ],
+      },
+
+      {
+        test: /\.less$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: '../', // 设定 css 内部引用的路径
+            },
+          },
+          { loader: 'css-loader' },
+          { loader: 'less-loader' },
+        ],
+      },
+
+      {
+        test: /\.scss$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: '../', // 设定 css 内部引用的路径
+            },
+          },
+          { loader: 'css-loader' },
+          { loader: 'sass-loader' },
+        ],
+      },
+
+      {
+        test: /\.[jt]sx?$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+      },
+
+      {
+        test: /\.(eot|ttf|woff|woff2)(\?\S*)?$/,
+        loader: 'file-loader',
+      },
+
+      {
+        test: /\.(png|jpe?g|gif|svg)(\?\S*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 4096,
+          emitFile: true,
+          outputPath: './img/',
+          useRelativePath: false,
+          name: '[contenthash:8].[ext]',
+        },
+      },
+
+      {
+        test: /\.json5?$/,
+        loader: 'json5-loader',
+        type: 'javascript/auto',
+      },
+    ],
+  },
+
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    alias: {
+    },
+  },
+
+  externals: {
+  },
+
+  plugins: [
+    new DefinePlugin({
+      VERSION_INFO: JSON.stringify('version: ' + moment.tz('Asia/Shanghai').format()), /* 编译时添加版本信息 */
+    }),
+
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash:8].css',
+    }),
+
+    new HtmlWebpackPlugin({
+      filename: 'index.html', // 生产模式下重命名为 index.html
+      template: path.resolve(__dirname, './static/index.prod.ejs'),
+      hash: true,
+    }),
+
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: './static/', to: './', globOptions: { ignore: ['**/*.ejs'] } },
+      ],
+    }),
+  ],
+}
+
+export default prodFile

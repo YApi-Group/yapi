@@ -1,7 +1,6 @@
 {
-    "cSpell.words": [
-        "Sele",
-        "antd",
-        "cascader"
-    ]
+  "cSpell.words": ["Sele", "antd", "cascader"],
+  "prettier.tabWidth": 2,
+  "i18n-ally.indent": 2,
+  "editor.tabSize": 2
 }
