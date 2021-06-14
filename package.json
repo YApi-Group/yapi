@@ -68,7 +68,7 @@
     "yapi-plugin-qsso": "^1.1.0"
   },
   "devDependencies": {
-    "antd": "3.26.20",
+    "antd": "4.16.2",
     "anujs": "^1.2.6",
     "ava": "^0.22.0",
     "brace": "^0.10.0",
