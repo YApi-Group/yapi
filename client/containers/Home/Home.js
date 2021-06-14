@@ -1,15 +1,17 @@
-import './Home.scss';
-import React, { PureComponent as Component } from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { Row, Col, Button, Icon, Card } from 'antd';
-import PropTypes from 'prop-types';
-import { withRouter } from 'react-router';
-import LogoSVG from '../../components/LogoSVG/index.js';
-import { changeMenuItem } from '../../reducer/modules/menu';
-const plugin = require('client/plugin.js');
+import './Home.scss'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { Row, Col, Button, Icon, Card } from 'antd'
+import PropTypes from 'prop-types'
+import { withRouter } from 'react-router'
 
-const ThirdLogin = plugin.emitHook('third_login');
+import LogoSVG from '../../components/LogoSVG/index.js'
+import { changeMenuItem } from '../../reducer/modules/menu'
+
+const plugin = require('@/plugin.js')
+
+const ThirdLogin = plugin.emitHook('third_login')
 const HomeGuest = () => (
   <div className="g-body">
     <div className="m-bg">
@@ -318,28 +320,28 @@ const HomeGuest = () => (
       </div>
     </div>
   </div>
-);
+)
 HomeGuest.propTypes = {
-  introList: PropTypes.array
-};
+  introList: PropTypes.array,
+}
 
 @connect(
   state => ({
-    login: state.user.isLogin
+    login: state.user.isLogin,
   }),
   {
-    changeMenuItem
-  }
+    changeMenuItem,
+  },
 )
 @withRouter
 class Home extends Component {
   constructor(props) {
-    super(props);
+    super(props)
   }
 
   componentWillMount() {
     if (this.props.login) {
-      this.props.history.push('/group/261');
+      this.props.history.push('/group/261')
     }
   }
 
@@ -348,10 +350,10 @@ class Home extends Component {
     introList: PropTypes.array,
     login: PropTypes.bool,
     history: PropTypes.object,
-    changeMenuItem: PropTypes.func
+    changeMenuItem: PropTypes.func,
   };
   toStart = () => {
-    this.props.changeMenuItem('/group');
+    this.props.changeMenuItem('/group')
   };
   render() {
     return (
@@ -380,7 +382,7 @@ class Home extends Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
@@ -406,4 +408,4 @@ class Home extends Component {
 //   ]
 // };
 
-export default Home;
+export default Home

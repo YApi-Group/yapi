@@ -93,6 +93,12 @@ const devsFile: Configuration = {
       },
 
       {
+        test: /\.[jt]sx?$/,
+        include: /(json-schema-editor-visual)/,
+        loader: 'babel-loader',
+      },
+
+      {
         test: /\.(eot|ttf|woff|woff2)(\?\S*)?$/,
         loader: 'file-loader',
       },
@@ -120,6 +126,8 @@ const devsFile: Configuration = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
+      '@': path.resolve(__dirname, './'),
+      '@common': path.resolve(__dirname, '../common'),
     },
   },
 

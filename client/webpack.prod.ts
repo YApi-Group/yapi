@@ -68,7 +68,15 @@ const prodFile: Configuration = {
           },
           { loader: 'css-loader' },
           { loader: 'postcss-loader' },
-          { loader: 'less-loader' },
+          /* antd 需要打开 javascriptEnabled */
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                javascriptEnabled: true,
+              },
+            },
+          },
         ],
       },
 
@@ -90,6 +98,12 @@ const prodFile: Configuration = {
       {
         test: /\.[jt]sx?$/,
         exclude: /node_modules/,
+        loader: 'babel-loader',
+      },
+
+      {
+        test: /\.[jt]sx?$/,
+        include: /(json-schema-editor-visual)/,
         loader: 'babel-loader',
       },
 
@@ -121,6 +135,8 @@ const prodFile: Configuration = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
+      '@': path.resolve(__dirname, './'),
+      '@common': path.resolve(__dirname, '../common'),
     },
   },
 

@@ -8,7 +8,7 @@ const axios = require('axios');
 const qs = require('qs');
 const CryptoJS = require('crypto-js');
 const jsrsasign = require('jsrsasign');
-const https = require('https');
+// const https = require('https');
 
 const isNode = typeof global == 'object' && global.global === global;
 const ContentTypeMap = {
@@ -51,78 +51,78 @@ const getStorage = async (id)=>{
   }
 }
 
-async function httpRequestByNode(options) {
-  function handleRes(response) {
-    if (!response || typeof response !== 'object') {
-      return {
-        res: {
-          status: 500,
-          body: isNode
-            ? '请求出错, 内网服务器自动化测试无法访问到，请检查是否为内网服务器！'
-            : '请求出错'
-        }
-      };
-    }
-    return {
-      res: {
-        header: response.headers,
-        status: response.status,
-        body: response.data
-      }
-    };
-  }
+// async function httpRequestByNode(options) {
+//   function handleRes(response) {
+//     if (!response || typeof response !== 'object') {
+//       return {
+//         res: {
+//           status: 500,
+//           body: isNode
+//             ? '请求出错, 内网服务器自动化测试无法访问到，请检查是否为内网服务器！'
+//             : '请求出错'
+//         }
+//       };
+//     }
+//     return {
+//       res: {
+//         header: response.headers,
+//         status: response.status,
+//         body: response.data
+//       }
+//     };
+//   }
 
-  function handleData() {
-    let contentTypeItem;
-    if (!options) return;
-    if (typeof options.headers === 'object' && options.headers) {
-      Object.keys(options.headers).forEach(key => {
-        if (/content-type/i.test(key)) {
-          if (options.headers[key]) {
-            contentTypeItem = options.headers[key]
-              .split(';')[0]
-              .trim()
-              .toLowerCase();
-          }
-        }
-        if (!options.headers[key]) delete options.headers[key];
-      });
+//   function handleData() {
+//     let contentTypeItem;
+//     if (!options) return;
+//     if (typeof options.headers === 'object' && options.headers) {
+//       Object.keys(options.headers).forEach(key => {
+//         if (/content-type/i.test(key)) {
+//           if (options.headers[key]) {
+//             contentTypeItem = options.headers[key]
+//               .split(';')[0]
+//               .trim()
+//               .toLowerCase();
+//           }
+//         }
+//         if (!options.headers[key]) delete options.headers[key];
+//       });
 
-      if (
-        contentTypeItem === 'application/x-www-form-urlencoded' &&
-        typeof options.data === 'object' &&
-        options.data
-      ) {
-        options.data = qs.stringify(options.data);
-      }
-    }
-  }
+//       if (
+//         contentTypeItem === 'application/x-www-form-urlencoded' &&
+//         typeof options.data === 'object' &&
+//         options.data
+//       ) {
+//         options.data = qs.stringify(options.data);
+//       }
+//     }
+//   }
 
-  try {
-    handleData(options);
-    let response = await axios({
-      method: options.method,
-      url: options.url,
-      headers: options.headers,
-      timeout: 10000,
-      maxRedirects: 0,
-      httpsAgent: new https.Agent({
-        rejectUnauthorized: false
-      }),
-      data: options.data
-    });
-    return handleRes(response);
-  } catch (err) {
-    if (err.response === undefined) {
-      return handleRes({
-        headers: {},
-        status: null,
-        data: err.message
-      });
-    }
-    return handleRes(err.response);
-  }
-}
+//   try {
+//     handleData(options);
+//     let response = await axios({
+//       method: options.method,
+//       url: options.url,
+//       headers: options.headers,
+//       timeout: 10000,
+//       maxRedirects: 0,
+//       httpsAgent: new https.Agent({
+//         rejectUnauthorized: false
+//       }),
+//       data: options.data
+//     });
+//     return handleRes(response);
+//   } catch (err) {
+//     if (err.response === undefined) {
+//       return handleRes({
+//         headers: {},
+//         status: null,
+//         data: err.message
+//       });
+//     }
+//     return handleRes(err.response);
+//   }
+// }
 
 function handleContentType(headers) {
   if (!headers || typeof headers !== 'object') return ContentTypeMap.other;
@@ -176,7 +176,7 @@ function handleCurrDomain(domains, case_env) {
 }
 
 function sandboxByNode(sandbox = {}, script) {
-  const vm = require('vm');
+  const vm = require('vm-browserify');
   script = new vm.Script(script);
   const context = new vm.createContext(sandbox);
   script.runInContext(context, {
@@ -315,7 +315,8 @@ async function crossRequest(defaultOptions, preScript, afterScript, commonContex
   let data;
 
   if (isNode) {
-    data = await httpRequestByNode(options);
+    // TODO node 和 browser 分离开
+    // data = await httpRequestByNode(options);
     data.req = options;
   } else {
     data = await new Promise((resolve, reject) => {

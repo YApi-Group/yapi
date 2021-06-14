@@ -2,7 +2,8 @@ import moment from 'moment'
 import Mock from 'mockjs'
 import json5 from 'json5'
 
-import MockExtra from './common/mock-extra.js'
+import MockExtra from '../common/mock-extra.js'
+
 import constants from './constants/variable'
 
 const Roles = {
