@@ -1,8 +1,8 @@
-import './View.scss'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { Table, Icon, Row, Col, Tooltip, message } from 'antd'
+import { Table, Row, Col, Tooltip, message } from 'antd'
+import { FileOutlined, CopyOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import AceEditor from '@/components/AceEditor/AceEditor'
 import copy from 'copy-to-clipboard'
@@ -12,6 +12,8 @@ import ErrMsg from '../../../../components/ErrMsg/ErrMsg.js'
 import variable from '../../../../constants/variable'
 import constants from '../../../../constants/variable.js'
 import SchemaTable from '../../../../components/SchemaTable/SchemaTable.js'
+
+import './View.scss'
 
 const HTTP_METHOD = constants.HTTP_METHOD
 
@@ -56,7 +58,7 @@ class View extends Component {
               </span>
             ) : (
               <span>
-                <Icon type="file" className="query-icon" />文件
+                <FileOutlined className="query-icon" />文件
               </span>
             )
           },
@@ -117,14 +119,14 @@ class View extends Component {
     if (res_body_type === 'json') {
       if (res_body_is_json_schema) {
         return <SchemaTable dataSource={res_body} />
-      } 
+      }
       return (
         <div className="colBody">
           {/* <div id="vres_body_json" style={{ minHeight: h * 16 + 100 }}></div> */}
           <AceEditor data={res_body} readOnly={true} style={{ minHeight: 600 }} />
         </div>
       )
-      
+
     } else if (res_body_type === 'raw') {
       return (
         <div className="colBody">
@@ -138,7 +140,7 @@ class View extends Component {
     if (req_body_other) {
       if (req_body_is_json_schema && req_body_type === 'json') {
         return <SchemaTable dataSource={req_body_other} />
-      } 
+      }
       return (
         <div className="colBody">
           <AceEditor
@@ -149,7 +151,7 @@ class View extends Component {
           />
         </div>
       )
-      
+
     }
   }
 
@@ -247,8 +249,8 @@ class View extends Component {
       return <span>( 严格模式 )</span>
     } else if (mock && !strice) {
       return <span>( 全局mock )</span>
-    } 
-    
+    }
+
   };
 
   render() {
@@ -439,8 +441,7 @@ class View extends Component {
                 {this.props.curData.path}
               </span>
               <Tooltip title="复制路径">
-                <Icon
-                  type="copy"
+                <CopyOutlined
                   className="interface-url-icon"
                   onClick={() => this.copyUrl(this.props.currProject.basepath + this.props.curData.path)}
                   style={{ display: this.state.enter ? 'inline-block' : 'none' }}
@@ -458,12 +459,11 @@ class View extends Component {
                 className="href"
                 onClick={() => window.open(
                   location.protocol
-                      + '//'
-                      + location.hostname
-                      + (location.port !== '' ? ':' + location.port : '')
-                      + `/mock/${this.props.currProject._id}${this.props.currProject.basepath}${
-                        this.props.curData.path
-                      }`,
+                  + '//'
+                  + location.hostname
+                  + (location.port !== '' ? ':' + location.port : '')
+                  + `/mock/${this.props.currProject._id}${this.props.currProject.basepath}${this.props.curData.path
+                  }`,
                   '_blank',
                 )
                 }
@@ -472,8 +472,7 @@ class View extends Component {
                   + '//'
                   + location.hostname
                   + (location.port !== '' ? ':' + location.port : '')
-                  + `/mock/${this.props.currProject._id}${this.props.currProject.basepath}${
-                    this.props.curData.path
+                  + `/mock/${this.props.currProject._id}${this.props.currProject.basepath}${this.props.curData.path
                   }`}
               </span>
             </Col>
@@ -542,7 +541,7 @@ class View extends Component {
           style={{
             display:
               this.props.curData.method
-              && HTTP_METHOD[this.props.curData.method.toUpperCase()].request_body
+                && HTTP_METHOD[this.props.curData.method.toUpperCase()].request_body
                 ? ''
                 : 'none',
           }}

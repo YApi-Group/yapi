@@ -1,35 +1,38 @@
-import React, { PureComponent as Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Icon, Input, AutoComplete } from 'antd';
-import './Search.scss';
-import { withRouter } from 'react-router';
-import axios from 'axios';
-import { setCurrGroup, fetchGroupMsg } from '../../../reducer/modules/group';
-import { changeMenuItem } from '../../../reducer/modules/menu';
+import React, { PureComponent as Component } from 'react'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { Input, AutoComplete } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
+import { withRouter } from 'react-router'
+import axios from 'axios'
 
-import { fetchInterfaceListMenu } from '../../../reducer/modules/interface';
-const Option = AutoComplete.Option;
+import { setCurrGroup, fetchGroupMsg } from '../../../reducer/modules/group'
+import { changeMenuItem } from '../../../reducer/modules/menu'
+import { fetchInterfaceListMenu } from '../../../reducer/modules/interface'
+
+import './Search.scss'
+
+const Option = AutoComplete.Option
 
 @connect(
   state => ({
     groupList: state.group.groupList,
-    projectList: state.project.projectList
+    projectList: state.project.projectList,
   }),
   {
     setCurrGroup,
     changeMenuItem,
     fetchGroupMsg,
-    fetchInterfaceListMenu
-  }
+    fetchInterfaceListMenu,
+  },
 )
 @withRouter
 export default class Srch extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
-      dataSource: []
-    };
+      dataSource: [],
+    }
   }
 
   static propTypes = {
@@ -41,22 +44,20 @@ export default class Srch extends Component {
     setCurrGroup: PropTypes.func,
     changeMenuItem: PropTypes.func,
     fetchInterfaceListMenu: PropTypes.func,
-    fetchGroupMsg: PropTypes.func
+    fetchGroupMsg: PropTypes.func,
   };
 
   onSelect = async (value, option) => {
     if (option.props.type === '分组') {
-      this.props.changeMenuItem('/group');
-      this.props.history.push('/group/' + option.props['id']);
-      this.props.setCurrGroup({ group_name: value, _id: option.props['id'] - 0 });
+      this.props.changeMenuItem('/group')
+      this.props.history.push('/group/' + option.props.id)
+      this.props.setCurrGroup({ group_name: value, _id: option.props.id - 0 })
     } else if (option.props.type === '项目') {
-      await this.props.fetchGroupMsg(option.props['groupId']);
-      this.props.history.push('/project/' + option.props['id']);
+      await this.props.fetchGroupMsg(option.props.groupId)
+      this.props.history.push('/project/' + option.props.id)
     } else if (option.props.type === '接口') {
-      await this.props.fetchInterfaceListMenu(option.props['projectId']);
-      this.props.history.push(
-        '/project/' + option.props['projectId'] + '/interface/api/' + option.props['id']
-      );
+      await this.props.fetchInterfaceListMenu(option.props.projectId)
+      this.props.history.push('/project/' + option.props.projectId + '/interface/api/' + option.props.id)
     }
   };
 
@@ -65,61 +66,55 @@ export default class Srch extends Component {
       .get('/api/project/search?q=' + value)
       .then(res => {
         if (res.data && res.data.errcode === 0) {
-          const dataSource = [];
-          for (let title in res.data.data) {
+          const dataSource = []
+          for (const title in res.data.data) {
             res.data.data[title].map(item => {
               switch (title) {
                 case 'group':
-                  dataSource.push(
-                    <Option
-                      key={`分组${item._id}`}
-                      type="分组"
-                      value={`${item.groupName}`}
-                      id={`${item._id}`}
-                    >
-                      {`分组: ${item.groupName}`}
-                    </Option>
-                  );
-                  break;
+                  dataSource.push(<Option
+                    key={`分组${item._id}`}
+                    type="分组"
+                    value={`${item.groupName}`}
+                    id={`${item._id}`}
+                  >
+                    {`分组: ${item.groupName}`}
+                  </Option>)
+                  break
                 case 'project':
-                  dataSource.push(
-                    <Option
-                      key={`项目${item._id}`}
-                      type="项目"
-                      id={`${item._id}`}
-                      groupId={`${item.groupId}`}
-                    >
-                      {`项目: ${item.name}`}
-                    </Option>
-                  );
-                  break;
+                  dataSource.push(<Option
+                    key={`项目${item._id}`}
+                    type="项目"
+                    id={`${item._id}`}
+                    groupId={`${item.groupId}`}
+                  >
+                    {`项目: ${item.name}`}
+                  </Option>)
+                  break
                 case 'interface':
-                  dataSource.push(
-                    <Option
-                      key={`接口${item._id}`}
-                      type="接口"
-                      id={`${item._id}`}
-                      projectId={`${item.projectId}`}
-                    >
-                      {`接口: ${item.title}`}
-                    </Option>
-                  );
-                  break;
+                  dataSource.push(<Option
+                    key={`接口${item._id}`}
+                    type="接口"
+                    id={`${item._id}`}
+                    projectId={`${item.projectId}`}
+                  >
+                    {`接口: ${item.title}`}
+                  </Option>)
+                  break
                 default:
-                  break;
+                  break
               }
-            });
+            })
           }
           this.setState({
-            dataSource: dataSource
-          });
+            dataSource: dataSource,
+          })
         } else {
-          console.log('查询项目或分组失败');
+          console.log('查询项目或分组失败')
         }
       })
       .catch(err => {
-        console.log(err);
-      });
+        console.log(err)
+      })
   };
 
   // getDataSource(groupList){
@@ -131,7 +126,7 @@ export default class Srch extends Component {
   // }
 
   render() {
-    const { dataSource } = this.state;
+    const { dataSource } = this.state
 
     return (
       <div className="search-wrapper">
@@ -147,12 +142,12 @@ export default class Srch extends Component {
           // }
         >
           <Input
-            prefix={<Icon type="search" className="srch-icon" />}
+            prefix={<SearchOutlined className="srch-icon" />}
             placeholder="搜索分组/项目/接口"
             className="search-input"
           />
         </AutoComplete>
       </div>
-    );
+    )
   }
 }
