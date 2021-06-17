@@ -1,7 +1,8 @@
+import URL from 'url'
+
 import React, { PureComponent as Component } from 'react'
 import {
   Upload,
-  Icon,
   message,
   Select,
   Tooltip,
@@ -13,25 +14,26 @@ import {
   Input,
   Checkbox,
 } from 'antd'
+import { QuestionCircleOutlined, InboxOutlined } from '@ant-design/icons'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import './ProjectData.scss'
 import axios from 'axios'
+import HandleImportData from '@common/HandleImportData'
 
-import URL from 'url'
-
-const Dragger = Upload.Dragger
 import { saveImportData } from '../../../../reducer/modules/interface'
 import { fetchUpdateLogData } from '../../../../reducer/modules/news.js'
 import { handleSwaggerUrlData } from '../../../../reducer/modules/project'
 
+import './ProjectData.scss'
+
+const Dragger = Upload.Dragger
 const Option = Select.Option
 const confirm = Modal.confirm
 const plugin = require('@/plugin.js')
 const RadioGroup = Radio.Group
 const importDataModule = {}
 const exportDataModule = {}
-const HandleImportData = require('@common/HandleImportData')
+
 function handleExportRouteParams(url, status, isWiki) {
   if (!url) {
     return
@@ -321,7 +323,7 @@ class ProjectData extends Component {
                     href="https://hellosean1025.github.io/yapi/documents/data.html"
                   >
                     <Tooltip title="点击查看文档">
-                      <Icon type="question-circle-o" />
+                      <QuestionCircleOutlined />
                     </Tooltip>
                   </a>
                 </h3>
@@ -377,7 +379,7 @@ class ProjectData extends Component {
                       </div>
                     }
                   >
-                    <Icon type="question-circle-o" />
+                    <QuestionCircleOutlined />
                   </Tooltip>{' '}
                 </span>
                 <Select value={this.state.dataSync} onChange={this.onChange}>
@@ -393,7 +395,7 @@ class ProjectData extends Component {
                   <span className="label">
                     开启url导入&nbsp;
                     <Tooltip title="swagger url 导入">
-                      <Icon type="question-circle-o" />
+                      <QuestionCircleOutlined />
                     </Tooltip>{' '}
                     &nbsp;&nbsp;
                   </span>
@@ -421,7 +423,7 @@ class ProjectData extends Component {
                   <Spin spinning={this.state.showLoading} tip="上传中...">
                     <Dragger {...uploadMess}>
                       <p className="ant-upload-drag-icon">
-                        <Icon type="inbox" />
+                        <InboxOutlined />
                       </p>
                       <p className="ant-upload-text">点击或者拖拽文件到上传区域</p>
                       <p
@@ -488,7 +490,7 @@ class ProjectData extends Component {
                     >
                       添加wiki&nbsp;
                       <Tooltip title="开启后 html 和 markdown 数据导出会带上wiki数据">
-                        <Icon type="question-circle-o" />
+                        <QuestionCircleOutlined />
                       </Tooltip>{' '}
                     </Checkbox>
                   </div>

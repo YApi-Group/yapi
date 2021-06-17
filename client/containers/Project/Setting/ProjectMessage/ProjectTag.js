@@ -1,75 +1,74 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Icon, Row, Col, Input } from 'antd';
-import './ProjectTag.scss';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Row, Col, Input } from 'antd'
+import { DeleteOutlined } from '@ant-design/icons'
 
+import './ProjectTag.scss'
 
 class ProjectTag extends Component {
   static propTypes = {
     tagMsg: PropTypes.array,
-    tagSubmit: PropTypes.func
+    tagSubmit: PropTypes.func,
   };
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
-      tag: [{ name: '', desc: '' }]
-    };
+      tag: [{ name: '', desc: '' }],
+    }
   }
 
   initState(curdata) {
-    let tag = [
+    const tag = [
       {
         name: '',
-        desc: ''
-      }
-    ];
+        desc: '',
+      },
+    ]
     if (curdata && curdata.length !== 0) {
       curdata.forEach(item => {
-        tag.unshift(item);
-      });
+        tag.unshift(item)
+      })
     }
 
-    return { tag };
+    return { tag }
   }
   componentDidMount() {
-    this.handleInit(this.props.tagMsg);
+    this.handleInit(this.props.tagMsg)
   }
 
   handleInit(data) {
-    let newValue = this.initState(data);
-    this.setState({ ...newValue });
+    const newValue = this.initState(data)
+    this.setState({ ...newValue })
   }
 
   addHeader = (val, index, name, label) => {
-    let newValue = {};
-    newValue[name] = [].concat(this.state[name]);
-    newValue[name][index][label] = val;
-    let nextData = this.state[name][index + 1];
+    const newValue = {}
+    newValue[name] = [].concat(this.state[name])
+    newValue[name][index][label] = val
+    const nextData = this.state[name][index + 1]
     if (!(nextData && typeof nextData === 'object')) {
-      let data = { name: '', desc: '' };
-      newValue[name] = [].concat(this.state[name], data);
+      const data = { name: '', desc: '' }
+      newValue[name] = [].concat(this.state[name], data)
     }
-    this.setState(newValue);
+    this.setState(newValue)
   };
 
   delHeader = (key, name) => {
-    let curValue = this.state[name];
-    let newValue = {};
-    newValue[name] = curValue.filter((val, index) => {
-      return index !== key;
-    });
-    this.setState(newValue);
+    const curValue = this.state[name]
+    const newValue = {}
+    newValue[name] = curValue.filter((val, index) => index !== key)
+    this.setState(newValue)
   };
 
   handleChange = (val, index, name, label) => {
-    let newValue = this.state;
-    newValue[name][index][label] = val;
-    this.setState(newValue);
+    const newValue = this.state
+    newValue[name][index][label] = val
+    this.setState(newValue)
   };
 
   render() {
     const commonTpl = (item, index, name) => {
-      const length = this.state[name].length - 1;
+      const length = this.state[name].length - 1
       return (
         <Row key={index} className="tag-item">
           <Col span={6} className="item-name">
@@ -90,27 +89,24 @@ class ProjectTag extends Component {
           </Col>
           <Col span={2} className={index === length ? ' tag-last-row' : null}>
             {/* 新增的项中，只有最后一项没有有删除按钮 */}
-            <Icon
+            <DeleteOutlined
               className="dynamic-delete-button delete"
-              type="delete"
               onClick={e => {
-                e.stopPropagation();
-                this.delHeader(index, name);
+                e.stopPropagation()
+                this.delHeader(index, name)
               }}
             />
           </Col>
         </Row>
-      );
-    };
+      )
+    }
 
     return (
       <div className="project-tag">
-        {this.state.tag.map((item, index) => {
-          return commonTpl(item, index, 'tag');
-        })}
+        {this.state.tag.map((item, index) => commonTpl(item, index, 'tag'))}
       </div>
-    );
+    )
   }
 }
 
-export default ProjectTag;
+export default ProjectTag
