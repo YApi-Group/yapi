@@ -1,7 +1,6 @@
 import React, { PureComponent as Component } from 'react'
 import PropTypes from 'prop-types'
-import { Icon } from 'antd'
-import { QuestionCircleOutlined } from '@ant-design/icons'
+import { FrownOutlined, MehOutlined } from '@ant-design/icons'
 import { withRouter } from 'react-router'
 
 import './ErrMsg.scss'
@@ -28,10 +27,6 @@ import './ErrMsg.scss'
  */
 @withRouter
 class ErrMsg extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   static propTypes = {
     type: PropTypes.string,
     history: PropTypes.object,
@@ -42,7 +37,7 @@ class ErrMsg extends Component {
 
   render() {
     let { type, title, desc, opration } = this.props
-    let icon = 'frown-o'
+    let icon = FrownOutlined
     if (type) {
       switch (type) {
         case 'noFollow':
@@ -75,15 +70,16 @@ class ErrMsg extends Component {
         case 'noChange':
           title = '没有改动'
           desc = '该操作未改动 Api 数据'
-          icon = 'meh-o'
+          icon = MehOutlined
           break
         default:
           console.log('default')
       }
     }
+
     return (
       <div className="err-msg">
-        <Icon type={icon} className="icon" />
+        <icon className="icon" />
         <p className="title">{title}</p>
         <p className="desc">{desc}</p>
         <p className="opration">{opration}</p>

@@ -587,7 +587,7 @@ export default class InterfaceColMenu extends Component {
                       </Tooltip>
                     </div>
                     {/* <Dropdown overlay={menu(col)} trigger={['click']} onClick={e => e.stopPropagation()}>
-                      <Icon className="opts-icon" type='ellipsis'/>
+                      <EllipsisOutlined className="opts-icon" />
                     </Dropdown>*/}
                   </div>
                 }

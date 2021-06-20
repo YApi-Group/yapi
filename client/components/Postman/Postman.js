@@ -7,7 +7,6 @@ import {
   Modal,
   Select,
   Spin,
-  Icon,
   Collapse,
   Tooltip,
   Tabs,
@@ -16,6 +15,7 @@ import {
   Col,
   Alert,
 } from 'antd'
+import { EditOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import AceEditor from '@/components/AceEditor/AceEditor'
 import _ from 'underscore'
 import axios from 'axios'
@@ -80,12 +80,12 @@ const ParamsNameComponent = props => {
     <div>
       {example && (
         <div>
-            示例： <span className="table-desc">{example}</span>
+          示例： <span className="table-desc">{example}</span>
         </div>
       )}
       {desc && (
         <div>
-            备注： <span className="table-desc">{desc}</span>
+          备注： <span className="table-desc">{desc}</span>
         </div>
       )}
     </div>
@@ -219,8 +219,8 @@ export default class Run extends Component {
           res[key] = (data[key] || []).map(item => {
             if (
               item.type !== 'file' // 不是文件类型
-                && (item.value == null || item.value === '') // 初始值为空
-                && item.example != null // 有示例值
+              && (item.value == null || item.value === '') // 初始值为空
+              && item.example != null // 有示例值
             ) {
               item.value = item.example
             }
@@ -419,7 +419,7 @@ export default class Run extends Component {
   };
 
   changeParam = (name, v, index, key) => {
-    
+
     key = key || 'value'
     const pathParam = deepCopyJson(this.state[name])
 
@@ -644,9 +644,9 @@ export default class Run extends Component {
             title={(() => {
               if (hasPlugin) {
                 return '发送请求'
-              } 
+              }
               return '请安装 cross-request 插件'
-              
+
             })()}
           >
             <Button
@@ -693,10 +693,7 @@ export default class Run extends Component {
                   placeholder="参数值"
                   id={`req_params_${index}`}
                   addonAfter={
-                    <Icon
-                      type="edit"
-                      onClick={() => this.showModal(item.value, index, 'req_params')}
-                    />
+                    <EditOutlined onClick={() => this.showModal(item.value, index, 'req_params')} />
                   }
                 />
               </div>
@@ -724,7 +721,7 @@ export default class Run extends Component {
                     <Input disabled value={item.name} className="key" />
                   </Tooltip> */}
                 <ParamsNameComponent example={item.example} desc={item.desc} name={item.name} />
-                  &nbsp;
+                &nbsp;
                 {item.required == 1 ? (
                   <Checkbox className="params-enable" checked={true} disabled />
                 ) : (
@@ -743,10 +740,7 @@ export default class Run extends Component {
                   placeholder="参数值"
                   id={`req_query_${index}`}
                   addonAfter={
-                    <Icon
-                      type="edit"
-                      onClick={() => this.showModal(item.value, index, 'req_query')}
-                    />
+                    <EditOutlined onClick={() => this.showModal(item.value, index, 'req_query')} />
                   }
                 />
               </div>
@@ -775,10 +769,7 @@ export default class Run extends Component {
                   id={`req_headers_${index}`}
                   addonAfter={
                     !item.abled && (
-                      <Icon
-                        type="edit"
-                        onClick={() => this.showModal(item.value, index, 'req_headers')}
-                      />
+                      <EditOutlined onClick={() => this.showModal(item.value, index, 'req_headers')} />
                     )
                   }
                 />
@@ -797,7 +788,7 @@ export default class Run extends Component {
             key="3"
             className={
               HTTP_METHOD[method].request_body
-              && ((req_body_type === 'form' && req_body_form.length > 0) || req_body_type !== 'form')
+                && ((req_body_type === 'form' && req_body_form.length > 0) || req_body_type !== 'form')
                 ? 'POST'
                 : 'hidden'
             }
@@ -814,7 +805,7 @@ export default class Run extends Component {
                   </Button>
                   <Tooltip title="高级参数设置只在json字段值中生效">
                     {'  '}
-                    <Icon type="question-circle-o" />
+                    <QuestionCircleOutlined />
                   </Tooltip>
                 </div>
               )}
@@ -845,7 +836,7 @@ export default class Run extends Component {
                       desc={item.desc}
                       name={item.name}
                     />
-                        &nbsp;
+                      &nbsp;
                     {item.required == 1 ? (
                       <Checkbox className="params-enable" checked={true} disabled />
                     ) : (
@@ -873,10 +864,7 @@ export default class Run extends Component {
                         placeholder="参数值"
                         id={`req_body_form_${index}`}
                         addonAfter={
-                          <Icon
-                            type="edit"
-                            onClick={() => this.showModal(item.value, index, 'req_body_form')}
-                          />
+                          <EditOutlined onClick={() => this.showModal(item.value, index, 'req_body_form')} />
                         }
                       />
                     )}
@@ -909,8 +897,8 @@ export default class Run extends Component {
                 className={
                   'res-code '
                   + (this.state.resStatusCode >= 200
-                  && this.state.resStatusCode < 400
-                  && !this.state.loading
+                    && this.state.resStatusCode < 400
+                    && !this.state.loading
                     ? 'success'
                     : 'fail')
                 }
@@ -926,7 +914,7 @@ export default class Run extends Component {
                     <span>
                       Warning &nbsp;
                       <Tooltip title="针对定义为 json schema 的返回数据进行格式校验">
-                        <Icon type="question-circle-o" />
+                        <QuestionCircleOutlined />
                       </Tooltip>
                     </span>
                   }

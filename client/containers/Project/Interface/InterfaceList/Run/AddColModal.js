@@ -1,21 +1,23 @@
-import React, { PureComponent as Component } from 'react';
-import { connect } from 'react-redux';
-import { Modal, Collapse, Row, Col, Input, message, Button, Icon } from 'antd';
-import PropTypes from 'prop-types';
-import axios from 'axios';
-import { withRouter } from 'react-router';
-import { fetchInterfaceColList } from '../../../../../reducer/modules/interfaceCol';
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+import { Modal, Collapse, Row, Col, Input, message, Button } from 'antd'
+import { FolderOpenOutlined } from '@ant-design/icons'
+import PropTypes from 'prop-types'
+import axios from 'axios'
+import { withRouter } from 'react-router'
 
-const { TextArea } = Input;
-const Panel = Collapse.Panel;
+import { fetchInterfaceColList } from '../../../../../reducer/modules/interfaceCol'
+
+const { TextArea } = Input
+const Panel = Collapse.Panel
 
 @connect(
   state => ({
-    interfaceColList: state.interfaceCol.interfaceColList
+    interfaceColList: state.interfaceCol.interfaceColList,
   }),
   {
-    fetchInterfaceColList
-  }
+    fetchInterfaceColList,
+  },
 )
 @withRouter
 export default class AddColModal extends Component {
@@ -26,7 +28,7 @@ export default class AddColModal extends Component {
     match: PropTypes.object,
     onOk: PropTypes.func,
     onCancel: PropTypes.func,
-    caseName: PropTypes.string
+    caseName: PropTypes.string,
   };
 
   state = {
@@ -34,44 +36,44 @@ export default class AddColModal extends Component {
     addColName: '',
     addColDesc: '',
     id: 0,
-    caseName: ''
+    caseName: '',
   };
 
   constructor(props) {
-    super(props);
+    super(props)
   }
 
   componentWillMount() {
-    this.props.fetchInterfaceColList(this.props.match.params.id);
-    this.setState({ caseName: this.props.caseName });
+    this.props.fetchInterfaceColList(this.props.match.params.id)
+    this.setState({ caseName: this.props.caseName })
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ id: nextProps.interfaceColList[0]._id });
-    this.setState({ caseName: nextProps.caseName });
+    this.setState({ id: nextProps.interfaceColList[0]._id })
+    this.setState({ caseName: nextProps.caseName })
   }
 
   addCol = async () => {
-    const { addColName: name, addColDesc: desc } = this.state;
-    const project_id = this.props.match.params.id;
-    const res = await axios.post('/api/col/add_col', { name, desc, project_id });
+    const { addColName: name, addColDesc: desc } = this.state
+    const project_id = this.props.match.params.id
+    const res = await axios.post('/api/col/add_col', { name, desc, project_id })
     if (!res.data.errcode) {
-      message.success('添加集合成功');
-      await this.props.fetchInterfaceColList(project_id);
+      message.success('添加集合成功')
+      await this.props.fetchInterfaceColList(project_id)
 
-      this.setState({ id: res.data.data._id });
+      this.setState({ id: res.data.data._id })
     } else {
-      message.error(res.data.errmsg);
+      message.error(res.data.errmsg)
     }
   };
 
   select = id => {
-    this.setState({ id });
+    this.setState({ id })
   };
 
   render() {
-    const { interfaceColList = [] } = this.props;
-    const { id } = this.state;
+    const { interfaceColList = [] } = this.props
+    const { id } = this.state
     return (
       <Modal
         className="add-col-modal"
@@ -101,7 +103,7 @@ export default class AddColModal extends Component {
                 className={`col-item ${col._id === id ? 'selected' : ''}`}
                 onClick={() => this.select(col._id)}
               >
-                <Icon type="folder-open" style={{ marginRight: 6 }} />
+                <FolderOpenOutlined style={{ marginRight: 6 }} />
                 {col.name}
               </li>
             ))
@@ -144,6 +146,6 @@ export default class AddColModal extends Component {
           </Panel>
         </Collapse>
       </Modal>
-    );
+    )
   }
 }

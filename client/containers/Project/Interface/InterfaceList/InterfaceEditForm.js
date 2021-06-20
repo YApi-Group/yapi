@@ -22,10 +22,10 @@ import {
   Row,
   Col,
   Radio,
-  Icon,
   AutoComplete,
   Switch,
 } from 'antd'
+import { QuestionCircleOutlined, DeleteOutlined, BarsOutlined } from '@ant-design/icons'
 
 import constants, { MOCK_SOURCE } from '../../../../constants/variable.js'
 import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
@@ -609,7 +609,7 @@ class InterfaceEditForm extends Component {
           easy_drag_sort_child="true"
           className="interface-edit-item-content-col interface-edit-item-content-col-drag"
         >
-          <Icon type="bars" />
+          <BarsOutlined />
         </Col>
         <Col span="4" draggable="false" className="interface-edit-item-content-col">
           {getFieldDecorator('req_query[' + index + '].name', {
@@ -635,8 +635,7 @@ class InterfaceEditForm extends Component {
           })(<TextArea autosize={true} placeholder="备注" />)}
         </Col>
         <Col span="1" className="interface-edit-item-content-col">
-          <Icon
-            type="delete"
+          <DeleteOutlined
             className="interface-edit-del-icon"
             onClick={() => this.delParams(index, 'req_query')}
           />
@@ -651,7 +650,7 @@ class InterfaceEditForm extends Component {
           easy_drag_sort_child="true"
           className="interface-edit-item-content-col interface-edit-item-content-col-drag"
         >
-          <Icon type="bars" />
+          <BarsOutlined />
         </Col>
         <Col span="4" className="interface-edit-item-content-col">
           {getFieldDecorator('req_headers[' + index + '].name', {
@@ -679,8 +678,7 @@ class InterfaceEditForm extends Component {
           })(<TextArea autosize={true} placeholder="备注" />)}
         </Col>
         <Col span="1" className="interface-edit-item-content-col">
-          <Icon
-            type="delete"
+          <DeleteOutlined
             className="interface-edit-del-icon"
             onClick={() => this.delParams(index, 'req_headers')}
           />
@@ -695,7 +693,7 @@ class InterfaceEditForm extends Component {
           easy_drag_sort_child="true"
           className="interface-edit-item-content-col interface-edit-item-content-col-drag"
         >
-          <Icon type="bars" />
+          <BarsOutlined />
         </Col>
         <Col span="4" className="interface-edit-item-content-col">
           {getFieldDecorator('req_body_form[' + index + '].name', {
@@ -729,8 +727,7 @@ class InterfaceEditForm extends Component {
           })(<TextArea autosize={true} placeholder="备注" />)}
         </Col>
         <Col span="1" className="interface-edit-item-content-col">
-          <Icon
-            type="delete"
+          <DeleteOutlined
             className="interface-edit-del-icon"
             onClick={() => this.delParams(index, 'req_body_form')}
           />
@@ -834,7 +831,7 @@ class InterfaceEditForm extends Component {
                       </div>
                     }
                   >
-                    <Icon type="question-circle-o" style={{ width: '10px' }} />
+                    <QuestionCircleOutlined style={{ width: '10px' }} />
                   </Tooltip>
                 </span>
               }
@@ -1039,7 +1036,7 @@ class InterfaceEditForm extends Component {
                 JSON-SCHEMA:&nbsp;
                 {!projectMsg.is_json5 && (
                   <Tooltip title="项目 -> 设置 开启 json5">
-                    <Icon type="question-circle-o" />{' '}
+                    <QuestionCircleOutlined />{' '}
                   </Tooltip>
                 )}
               </span>
@@ -1057,7 +1054,7 @@ class InterfaceEditForm extends Component {
                   <span>
                     基于 Json5, 参数描述信息用注释的方式实现{' '}
                     <Tooltip title={<pre>{Json5Example}</pre>}>
-                      <Icon type="question-circle-o" style={{ color: '#086dbf' }} />
+                      <QuestionCircleOutlined style={{ color: '#086dbf' }} />
                     </Tooltip>
                     “全局编辑”或 “退出全屏” 请按 F9
                   </span>
@@ -1117,7 +1114,7 @@ class InterfaceEditForm extends Component {
             返回数据设置&nbsp;
             {!projectMsg.is_json5 && (
               <Tooltip title="项目 -> 设置 开启 json5">
-                <Icon type="question-circle-o" className="tooltip" />{' '}
+                <QuestionCircleOutlined className="tooltip" />{' '}
               </Tooltip>
             )}
             {getFieldDecorator('res_body_is_json_schema', {
@@ -1156,7 +1153,7 @@ class InterfaceEditForm extends Component {
                       <span>
                         基于 mockjs 和 json5,使用注释方式写参数说明{' '}
                         <Tooltip title={<pre>{Json5Example}</pre>}>
-                          <Icon type="question-circle-o" style={{ color: '#086dbf' }} />
+                          <QuestionCircleOutlined style={{ color: '#086dbf' }} />
                         </Tooltip>{' '}
                         ,具体使用方法请{' '}
                         <span
@@ -1243,7 +1240,7 @@ class InterfaceEditForm extends Component {
                 <span>
                   消息通知&nbsp;
                   <Tooltip title={'开启消息通知，可在 项目设置 里修改'}>
-                    <Icon type="question-circle-o" style={{ width: '10px' }} />
+                    <QuestionCircleOutlined style={{ width: '10px' }} />
                   </Tooltip>
                 </span>
               }
@@ -1260,7 +1257,7 @@ class InterfaceEditForm extends Component {
                 <span>
                   开放接口&nbsp;
                   <Tooltip title={'用户可以在 数据导出 时选择只导出公开接口'}>
-                    <Icon type="question-circle-o" style={{ width: '10px' }} />
+                    <QuestionCircleOutlined style={{ width: '10px' }} />
                   </Tooltip>
                 </span>
               }

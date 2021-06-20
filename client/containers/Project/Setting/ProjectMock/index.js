@@ -1,38 +1,39 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Form, Switch, Button, Icon, Tooltip, message } from 'antd';
-import AceEditor from '../../../../components/AceEditor/AceEditor';
-const FormItem = Form.Item;
-import { updateProjectMock, getProject } from '../../../../reducer/modules/project';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
+import { Form, Switch, Button, Tooltip, message } from 'antd'
+import { QuestionCircleOutlined } from '@ant-design/icons'
+
+import AceEditor from '../../../../components/AceEditor/AceEditor'
+import { updateProjectMock, getProject } from '../../../../reducer/modules/project'
+
+const FormItem = Form.Item
 
 const formItemLayout = {
   labelCol: {
-    sm: { span: 4 }
+    sm: { span: 4 },
   },
   wrapperCol: {
-    sm: { span: 16 }
-  }
-};
+    sm: { span: 16 },
+  },
+}
 const tailFormItemLayout = {
   wrapperCol: {
     sm: {
       span: 16,
-      offset: 11
-    }
-  }
-};
+      offset: 11,
+    },
+  },
+}
 
 @connect(
-  state => {
-    return {
-      projectMsg: state.project.currProject
-    };
-  },
+  state => ({
+    projectMsg: state.project.currProject,
+  }),
   {
     updateProjectMock,
-    getProject
-  }
+    getProject,
+  },
 )
 @Form.create()
 export default class ProjectMock extends Component {
@@ -42,52 +43,52 @@ export default class ProjectMock extends Component {
     projectId: PropTypes.number,
     updateProjectMock: PropTypes.func,
     projectMsg: PropTypes.object,
-    getProject: PropTypes.func
+    getProject: PropTypes.func,
   };
 
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       is_mock_open: false,
-      project_mock_script: ''
-    };
+      project_mock_script: '',
+    }
   }
 
   handleSubmit = async () => {
-    let params = {
+    const params = {
       id: this.props.projectId,
       project_mock_script: this.state.project_mock_script,
-      is_mock_open: this.state.is_mock_open
-    };
+      is_mock_open: this.state.is_mock_open,
+    }
 
-    let result = await this.props.updateProjectMock(params);
+    const result = await this.props.updateProjectMock(params)
 
     if (result.payload.data.errcode === 0) {
-      message.success('保存成功');
-      await this.props.getProject(this.props.projectId);
+      message.success('保存成功')
+      await this.props.getProject(this.props.projectId)
     } else {
-      message.success('保存失败, ' + result.payload.data.errmsg);
+      message.success('保存失败, ' + result.payload.data.errmsg)
     }
   };
 
   componentWillMount() {
     this.setState({
       is_mock_open: this.props.projectMsg.is_mock_open,
-      project_mock_script: this.props.projectMsg.project_mock_script
-    });
+      project_mock_script: this.props.projectMsg.project_mock_script,
+    })
   }
 
   // 是否开启
   onChange = v => {
     this.setState({
-      is_mock_open: v
-    });
+      is_mock_open: v,
+    })
   };
 
   handleMockJsInput = e => {
     this.setState({
-      project_mock_script: e.text
-    });
+      project_mock_script: e.text,
+    })
   };
 
   render() {
@@ -103,7 +104,7 @@ export default class ProjectMock extends Component {
                   href="https://hellosean1025.github.io/yapi/documents/project.html#%E5%85%A8%E5%B1%80mock"
                 >
                   <Tooltip title="点击查看文档">
-                    <Icon type="question-circle-o" />
+                    <QuestionCircleOutlined />
                   </Tooltip>
                 </a>
               </span>
@@ -131,6 +132,6 @@ export default class ProjectMock extends Component {
           </FormItem>
         </Form>
       </div>
-    );
+    )
   }
 }

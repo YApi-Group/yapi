@@ -1,30 +1,32 @@
-import React, { PureComponent as Component } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Input, Button, message, Icon, Card, Alert, Modal, Switch, Row, Col, Tooltip } from 'antd';
-import { fetchNewsData } from '../../../reducer/modules/news.js';
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
+import { Input, Button, message, Card, Alert, Modal, Switch, Row, Col, Tooltip } from 'antd'
+import { DownOutlined, ExclamationCircleOutlined, QuestionCircleOutlined, UpOutlined } from '@ant-design/icons'
+import _ from 'underscore'
+
+import { fetchNewsData } from '../../../reducer/modules/news.js'
 import {
   changeGroupMsg,
   fetchGroupList,
   setCurrGroup,
   fetchGroupMsg,
   updateGroupList,
-  deleteGroup
-} from '../../../reducer/modules/group.js';
-const { TextArea } = Input;
-import { trim } from '../../../common.js';
-import _ from 'underscore';
-import './GroupSetting.scss';
-const confirm = Modal.confirm;
+  deleteGroup,
+} from '../../../reducer/modules/group.js'
+import { trim } from '../../../common.js'
+
+import './GroupSetting.scss'
+
+const { TextArea } = Input
+const confirm = Modal.confirm
 
 @connect(
-  state => {
-    return {
-      groupList: state.group.groupList,
-      currGroup: state.group.currGroup,
-      curUserRole: state.user.role
-    };
-  },
+  state => ({
+    groupList: state.group.groupList,
+    currGroup: state.group.currGroup,
+    curUserRole: state.user.role,
+  }),
   {
     changeGroupMsg,
     fetchGroupList,
@@ -32,20 +34,20 @@ const confirm = Modal.confirm;
     fetchGroupMsg,
     fetchNewsData,
     updateGroupList,
-    deleteGroup
-  }
+    deleteGroup,
+  },
 )
 class GroupSetting extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       currGroupDesc: '',
       currGroupName: '',
       showDangerOptions: false,
       custom_field1_name: '',
       custom_field1_enable: false,
-      custom_field1_rule: false
-    };
+      custom_field1_rule: false,
+    }
   }
 
   static propTypes = {
@@ -58,7 +60,7 @@ class GroupSetting extends Component {
     fetchNewsData: PropTypes.func,
     updateGroupList: PropTypes.func,
     deleteGroup: PropTypes.func,
-    groupList: PropTypes.array
+    groupList: PropTypes.array,
   };
 
   initState(props) {
@@ -66,101 +68,99 @@ class GroupSetting extends Component {
       currGroupName: props.currGroup.group_name,
       currGroupDesc: props.currGroup.group_desc,
       custom_field1_name: props.currGroup.custom_field1.name,
-      custom_field1_enable: props.currGroup.custom_field1.enable
-    });
+      custom_field1_enable: props.currGroup.custom_field1.enable,
+    })
   }
 
   // 修改分组名称
   changeName = e => {
     this.setState({
-      currGroupName: e.target.value
-    });
+      currGroupName: e.target.value,
+    })
   };
   // 修改分组描述
   changeDesc = e => {
     this.setState({
-      currGroupDesc: e.target.value
-    });
+      currGroupDesc: e.target.value,
+    })
   };
 
   // 修改自定义字段名称
   changeCustomName = e => {
-    let custom_field1_rule = this.state.custom_field1_enable ? !e.target.value : false;
+    const custom_field1_rule = this.state.custom_field1_enable ? !e.target.value : false
     this.setState({
       custom_field1_name: e.target.value,
-      custom_field1_rule
-    });
+      custom_field1_rule,
+    })
   };
 
   // 修改开启状态
   changeCustomEnable = e => {
-    let custom_field1_rule = e ? !this.state.custom_field1_name : false;
+    const custom_field1_rule = e ? !this.state.custom_field1_name : false
     this.setState({
       custom_field1_enable: e,
-      custom_field1_rule
-    });
+      custom_field1_rule,
+    })
   };
 
   componentWillMount() {
     // console.log('custom_field1',this.props.currGroup.custom_field1)
-    this.initState(this.props);
+    this.initState(this.props)
   }
 
   // 点击“查看危险操作”按钮
   toggleDangerOptions = () => {
     // console.log(this.state.showDangerOptions);
     this.setState({
-      showDangerOptions: !this.state.showDangerOptions
-    });
+      showDangerOptions: !this.state.showDangerOptions,
+    })
   };
 
   // 编辑分组信息
   editGroup = async () => {
-    const id = this.props.currGroup._id;
+    const id = this.props.currGroup._id
     if (this.state.custom_field1_rule) {
-      return;
+      return
     }
     const res = await this.props.changeGroupMsg({
       group_name: this.state.currGroupName,
       group_desc: this.state.currGroupDesc,
       custom_field1: {
         name: this.state.custom_field1_name,
-        enable: this.state.custom_field1_enable
+        enable: this.state.custom_field1_enable,
       },
-      id: this.props.currGroup._id
-    });
+      id: this.props.currGroup._id,
+    })
 
     if (!res.payload.data.errcode) {
-      message.success('修改成功！');
-      await this.props.fetchGroupList(this.props.groupList);
-      this.props.updateGroupList(this.props.groupList);
-      const currGroup = _.find(this.props.groupList, group => {
-        return +group._id === +id;
-      });
-      this.props.setCurrGroup(currGroup);
-      this.props.fetchGroupMsg(this.props.currGroup._id);
-      this.props.fetchNewsData(this.props.currGroup._id, 'group', 1, 10);
+      message.success('修改成功！')
+      await this.props.fetchGroupList(this.props.groupList)
+      this.props.updateGroupList(this.props.groupList)
+      const currGroup = _.find(this.props.groupList, group => Number(group._id) === Number(id))
+      this.props.setCurrGroup(currGroup)
+      this.props.fetchGroupMsg(this.props.currGroup._id)
+      this.props.fetchNewsData(this.props.currGroup._id, 'group', 1, 10)
     }
   };
 
   // 删除分组
 
   deleteGroup = async () => {
-    const that = this;
-    const { currGroup } = that.props;
-    const res = await this.props.deleteGroup({ id: currGroup._id });
+    const that = this
+    const { currGroup } = that.props
+    const res = await this.props.deleteGroup({ id: currGroup._id })
     if (!res.payload.data.errcode) {
-      message.success('删除成功');
-      await that.props.fetchGroupList();
-      const currGroup = that.props.groupList[0] || { group_name: '', group_desc: '' };
-      that.setState({ groupList: that.props.groupList });
-      that.props.setCurrGroup(currGroup);
+      message.success('删除成功')
+      await that.props.fetchGroupList()
+      const currGroup = that.props.groupList[0] || { group_name: '', group_desc: '' }
+      that.setState({ groupList: that.props.groupList })
+      that.props.setCurrGroup(currGroup)
     }
   };
 
   // 删除分组的二次确认
   showConfirm = () => {
-    const that = this;
+    const that = this
     confirm({
       title: '确认删除 ' + that.props.currGroup.group_name + ' 分组吗？',
       content: (
@@ -178,28 +178,28 @@ class GroupSetting extends Component {
         </div>
       ),
       onOk() {
-        const groupName = trim(document.getElementById('group_name').value);
+        const groupName = trim(document.getElementById('group_name').value)
         if (that.props.currGroup.group_name !== groupName) {
-          message.error('分组名称有误');
+          message.error('分组名称有误')
           return new Promise((resolve, reject) => {
-            reject('error');
-          });
-        } else {
-          that.deleteGroup();
+            reject('error')
+          })
         }
+        that.deleteGroup()
+
       },
       iconType: 'delete',
-      onCancel() {}
-    });
+      onCancel() { },
+    })
   };
 
   componentWillReceiveProps(nextProps) {
     // 切换分组时，更新分组信息并关闭删除分组操作
     if (this.props.currGroup._id !== nextProps.currGroup._id) {
-      this.initState(nextProps);
+      this.initState(nextProps)
       this.setState({
-        showDangerOptions: false
-      });
+        showDangerOptions: false,
+      })
     }
   }
 
@@ -237,7 +237,7 @@ class GroupSetting extends Component {
           <Col span={4} className="label">
             接口自定义字段&nbsp;
             <Tooltip title={'可以在接口中添加 额外字段 数据'}>
-              <Icon type="question-circle-o" style={{ width: '10px' }} />
+              <QuestionCircleOutlined style={{ width: '10px' }} />
             </Tooltip> ：
           </Col>
           <Col span={12} style={{ position: 'relative' }}>
@@ -278,10 +278,11 @@ class GroupSetting extends Component {
           <Row type="flex" justify="center" className="danger-container">
             <Col span={24} className="title">
               <h2 className="content">
-                <Icon type="exclamation-circle-o" /> 危险操作
+                <ExclamationCircleOutlined /> 危险操作
               </h2>
               <Button onClick={this.toggleDangerOptions}>
-                查 看<Icon type={this.state.showDangerOptions ? 'up' : 'down'} />
+                查 看
+                {this.state.showDangerOptions ? <UpOutlined /> : <DownOutlined />}
               </Button>
             </Col>
             {this.state.showDangerOptions ? (
@@ -299,8 +300,8 @@ class GroupSetting extends Component {
           </Row>
         ) : null}
       </div>
-    );
+    )
   }
 }
 
-export default GroupSetting;
+export default GroupSetting
