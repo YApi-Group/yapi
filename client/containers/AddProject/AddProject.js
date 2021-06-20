@@ -210,4 +210,4 @@ class ProjectList extends Component {
   }
 }
 
-export default Form.create()(ProjectList)
+export default ProjectList

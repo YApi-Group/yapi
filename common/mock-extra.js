@@ -13,7 +13,7 @@ Mock.Random.extend({
   }
 })
 
-function mock(mockJSON, context) {
+export default function mock(mockJSON, context) {
   context = context || {};
   var filtersMap = {
     regexp: handleRegexp
@@ -91,5 +91,3 @@ function mock(mockJSON, context) {
     return str;
   }
 }
-
-module.exports = mock;

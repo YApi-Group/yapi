@@ -1,29 +1,33 @@
-import React, { PureComponent as Component } from 'react';
-import { Timeline, Spin, Row, Col, Tag, Avatar, Button, Modal, AutoComplete } from 'antd';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { formatTime } from '../../common.js';
-import showDiffMsg from '../../../common/diff-view.js';
-import variable from '../../constants/variable';
-import { Link } from 'react-router-dom';
-import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news.js';
-import { fetchInterfaceList } from '../../reducer/modules/interface.js';
-import ErrMsg from '../ErrMsg/ErrMsg.js';
-const jsondiffpatch = require('jsondiffpatch/dist/jsondiffpatch.umd.js');
-const formattersHtml = jsondiffpatch.formatters.html;
-import 'jsondiffpatch/dist/formatters-styles/annotated.css';
-import 'jsondiffpatch/dist/formatters-styles/html.css';
-import './TimeLine.scss';
-import { timeago } from '../../../common/utils.js';
+import React, { PureComponent as Component } from 'react'
+import { Timeline, Spin, Row, Col, Tag, Avatar, Button, Modal, AutoComplete } from 'antd'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+
+import { formatTime } from '../../common.js'
+import showDiffMsg from '../../../common/diff-view.js'
+import variable from '../../constants/variable'
+import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news.js'
+import { fetchInterfaceList } from '../../reducer/modules/interface.js'
+import ErrMsg from '../ErrMsg/ErrMsg.js'
+import { timeago } from '../../../common/utils.js'
+
+import 'jsondiffpatch/dist/formatters-styles/annotated.css'
+import 'jsondiffpatch/dist/formatters-styles/html.css'
+import './TimeLine.scss'
+
+const jsondiffpatch = require('jsondiffpatch/dist/jsondiffpatch.umd.js')
+
+const formattersHtml = jsondiffpatch.formatters.html
 
 // const Option = AutoComplete.Option;
-const { Option, OptGroup } = AutoComplete;
+const { Option, OptGroup } = AutoComplete
 
 const AddDiffView = props => {
-  const { title, content, className } = props;
+  const { title, content, className } = props
 
   if (!content) {
-    return null;
+    return null
   }
 
   return (
@@ -31,30 +35,28 @@ const AddDiffView = props => {
       <h3 className="title">{title}</h3>
       <div dangerouslySetInnerHTML={{ __html: content }} />
     </div>
-  );
-};
+  )
+}
 
 AddDiffView.propTypes = {
   title: PropTypes.string,
   content: PropTypes.string,
-  className: PropTypes.string
-};
+  className: PropTypes.string,
+}
 
 // timeago(new Date().getTime() - 40);
 
 @connect(
-  state => {
-    return {
-      newsData: state.news.newsData,
-      curpage: state.news.curpage,
-      curUid: state.user.uid
-    };
-  },
+  state => ({
+    newsData: state.news.newsData,
+    curpage: state.news.curpage,
+    curUid: state.user.uid,
+  }),
   {
     fetchNewsData,
     fetchMoreNews,
-    fetchInterfaceList
-  }
+    fetchInterfaceList,
+  },
 )
 class TimeTree extends Component {
   static propTypes = {
@@ -67,95 +69,95 @@ class TimeTree extends Component {
     typeid: PropTypes.number,
     curUid: PropTypes.number,
     type: PropTypes.string,
-    fetchInterfaceList: PropTypes.func
+    fetchInterfaceList: PropTypes.func,
   };
 
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       bidden: '',
       loading: false,
       visible: false,
       curDiffData: {},
-      apiList: []
-    };
-    this.curSelectValue = '';
+      apiList: [],
+    }
+    this.curSelectValue = ''
   }
 
   getMore() {
-    const that = this;
+    const that = this
 
     if (this.props.curpage <= this.props.newsData.total) {
-      this.setState({ loading: true });
+      this.setState({ loading: true })
       this.props
         .fetchMoreNews(
           this.props.typeid,
           this.props.type,
           this.props.curpage + 1,
           10,
-          this.curSelectValue
+          this.curSelectValue,
         )
-        .then(function() {
-          that.setState({ loading: false });
+        .then(function () {
+          that.setState({ loading: false })
           if (that.props.newsData.total === that.props.curpage) {
-            that.setState({ bidden: 'logbidden' });
+            that.setState({ bidden: 'logbidden' })
           }
-        });
+        })
     }
   }
 
   handleCancel = () => {
     this.setState({
-      visible: false
-    });
+      visible: false,
+    })
   };
 
   componentWillMount() {
-    this.props.fetchNewsData(this.props.typeid, this.props.type, 1, 10);
+    this.props.fetchNewsData(this.props.typeid, this.props.type, 1, 10)
     if (this.props.type === 'project') {
-      this.getApiList();
+      this.getApiList()
     }
   }
 
   openDiff = data => {
     this.setState({
       curDiffData: data,
-      visible: true
-    });
+      visible: true,
+    })
   };
 
   async getApiList() {
-    let result = await this.props.fetchInterfaceList({
+    const result = await this.props.fetchInterfaceList({
       project_id: this.props.typeid,
-      limit: 'all'
-    });
+      limit: 'all',
+    })
     this.setState({
-      apiList: result.payload.data.data.list
-    });
+      apiList: result.payload.data.data.list,
+    })
   }
 
   handleSelectApi = selectValue => {
-    this.curSelectValue = selectValue;
-    this.props.fetchNewsData(this.props.typeid, this.props.type, 1, 10, selectValue);
+    this.curSelectValue = selectValue
+    this.props.fetchNewsData(this.props.typeid, this.props.type, 1, 10, selectValue)
   };
 
   render() {
-    let data = this.props.newsData ? this.props.newsData.list : [];
+    let data = this.props.newsData ? this.props.newsData.list : []
 
-    const curDiffData = this.state.curDiffData;
-    let logType = {
+    const curDiffData = this.state.curDiffData
+    const logType = {
       project: '项目',
       group: '分组',
       interface: '接口',
       interface_col: '接口集',
       user: '用户',
-      other: '其他'
-    };
+      other: '其他',
+    }
 
     const children = this.state.apiList.map(item => {
-      let methodColor = variable.METHOD_COLOR[item.method ? item.method.toLowerCase() : 'get'];
+      const methodColor = variable.METHOD_COLOR[item.method ? item.method.toLowerCase() : 'get']
       return (
-        <Option title={item.title} value={item._id + ''} path={item.path} key={item._id}>
+        <Option title={item.title} value={String(item._id)} path={item.path} key={item._id}>
           {item.title}{' '}
           <Tag
             style={{ color: methodColor ? methodColor.color : '#cfefdf', backgroundColor: methodColor ? methodColor.bac : '#00a854', border: 'unset' }}
@@ -163,21 +165,19 @@ class TimeTree extends Component {
             {item.method}
           </Tag>
         </Option>
-      );
-    });
+      )
+    })
 
-    children.unshift(
-      <Option value="" key="all">
+    children.unshift(<Option value="" key="all">
         选择全部
-      </Option>
-    );
+    </Option>)
 
     if (data && data.length) {
       data = data.map((item, i) => {
-        let interfaceDiff = false;
+        let interfaceDiff = false
         // 去掉了 && item.data.interface_id
         if (item.data && typeof item.data === 'object') {
-          interfaceDiff = true;
+          interfaceDiff = true
         }
         return (
           <Timeline.Item
@@ -190,7 +190,7 @@ class TimeTree extends Component {
           >
             <div className="logMesHeade">
               <span className="logoTimeago">{timeago(item.add_time)}</span>
-              {/*<span className="logusername"><Link to={`/user/profile/${item.uid}`}><Icon type="user" />{item.username}</Link></span>*/}
+              {/* <span className="logusername"><Link to={`/user/profile/${item.uid}`}><Icon type="user" />{item.username}</Link></span>*/}
               <span className="logtype">{logType[item.type]}动态</span>
               <span className="logtime">{formatTime(item.add_time)}</span>
             </div>
@@ -199,23 +199,23 @@ class TimeTree extends Component {
               {interfaceDiff && <Button onClick={() => this.openDiff(item.data)}>改动详情</Button>}
             </div>
           </Timeline.Item>
-        );
-      });
+        )
+      })
     } else {
-      data = '';
+      data = ''
     }
-    let pending =
-      this.props.newsData.total <= this.props.curpage ? (
+    let pending
+      = this.props.newsData.total <= this.props.curpage ? (
         <a className="logbidden">以上为全部内容</a>
       ) : (
         <a className="loggetMore" onClick={this.getMore.bind(this)}>
           查看更多
         </a>
-      );
+      )
     if (this.state.loading) {
-      pending = <Spin />;
+      pending = <Spin />
     }
-    let diffView = showDiffMsg(jsondiffpatch, formattersHtml, curDiffData);
+    const diffView = showDiffMsg(jsondiffpatch, formattersHtml, curDiffData)
 
     return (
       <section className="news-timeline">
@@ -228,16 +228,14 @@ class TimeTree extends Component {
         >
           <i>注： 绿色代表新增内容，红色代表删除内容</i>
           <div className="project-interface-change-content">
-            {diffView.map((item, index) => {
-              return (
-                <AddDiffView
-                  className="item-content"
-                  title={item.title}
-                  key={index}
-                  content={item.content}
-                />
-              );
-            })}
+            {diffView.map((item, index) => (
+              <AddDiffView
+                className="item-content"
+                title={item.title}
+                key={index}
+                content={item.content}
+              />
+            ))}
             {diffView.length === 0 && <ErrMsg type="noChange" />}
           </div>
         </Modal>
@@ -251,14 +249,14 @@ class TimeTree extends Component {
                 placeholder="Select Api"
                 optionLabelProp="title"
                 filterOption={(inputValue, options) => {
-                  if (options.props.value == '') return true;
+                  if (options.props.value == '') { return true }
                   if (
-                    options.props.path.indexOf(inputValue) !== -1 ||
-                    options.props.title.indexOf(inputValue) !== -1
+                    options.props.path.indexOf(inputValue) !== -1
+                    || options.props.title.indexOf(inputValue) !== -1
                   ) {
-                    return true;
+                    return true
                   }
-                  return false;
+                  return false
                 }}
               >
                 {/* {children} */}
@@ -280,8 +278,8 @@ class TimeTree extends Component {
           <ErrMsg type="noData" />
         )}
       </section>
-    );
+    )
   }
 }
 
-export default TimeTree;
+export default TimeTree

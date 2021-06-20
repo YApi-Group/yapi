@@ -1,38 +1,38 @@
-import React, { PureComponent as Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, Input, Button } from 'antd';
-const FormItem = Form.Item;
+import React, { PureComponent as Component } from 'react'
+import PropTypes from 'prop-types'
+import { Form, Input, Button } from 'antd'
+const FormItem = Form.Item
 function hasErrors(fieldsError) {
-  return Object.keys(fieldsError).some(field => fieldsError[field]);
+  return Object.keys(fieldsError).some(field => fieldsError[field])
 }
 class AddInterfaceForm extends Component {
   static propTypes = {
     form: PropTypes.object,
     onSubmit: PropTypes.func,
     onCancel: PropTypes.func,
-    catdata: PropTypes.object
+    catdata: PropTypes.object,
   };
   handleSubmit = e => {
-    e.preventDefault();
+    e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        this.props.onSubmit(values);
+        this.props.onSubmit(values)
       }
-    });
+    })
   };
 
   render() {
-    const { getFieldDecorator, getFieldsError } = this.props.form;
+    const { getFieldDecorator, getFieldsError } = this.props.form
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 6 }
+        sm: { span: 6 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 14 }
-      }
-    };
+        sm: { span: 14 },
+      },
+    }
 
     return (
       <Form onSubmit={this.handleSubmit}>
@@ -41,15 +41,15 @@ class AddInterfaceForm extends Component {
             rules: [
               {
                 required: true,
-                message: '请输入分类名称!'
-              }
+                message: '请输入分类名称!',
+              },
             ],
-            initialValue: this.props.catdata ? this.props.catdata.name || null : null
+            initialValue: this.props.catdata ? this.props.catdata.name || null : null,
           })(<Input placeholder="分类名称" />)}
         </FormItem>
         <FormItem {...formItemLayout} label="备注">
           {getFieldDecorator('desc', {
-            initialValue: this.props.catdata ? this.props.catdata.desc || null : null
+            initialValue: this.props.catdata ? this.props.catdata.desc || null : null,
           })(<Input placeholder="备注" />)}
         </FormItem>
 
@@ -62,8 +62,8 @@ class AddInterfaceForm extends Component {
           </Button>
         </FormItem>
       </Form>
-    );
+    )
   }
 }
 
-export default Form.create()(AddInterfaceForm);
+export default AddInterfaceForm

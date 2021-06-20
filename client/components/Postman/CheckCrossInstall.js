@@ -1,30 +1,30 @@
-import React from 'react';
-import { Alert } from 'antd';
-import PropTypes from 'prop-types';
+import React from 'react'
+import { Alert } from 'antd'
+import PropTypes from 'prop-types'
 
-exports.initCrossRequest = function (fn) {
-  let startTime = 0;
-  let _crossRequest = setInterval(() => {
-    startTime += 500;
+export function initCrossRequest(fn) {
+  let startTime = 0
+  const _crossRequest = setInterval(() => {
+    startTime += 500
     if (startTime > 5000) {
-      clearInterval(_crossRequest);
+      clearInterval(_crossRequest)
     }
     if (window.crossRequest) {
-      clearInterval(_crossRequest);
-      fn(true);
+      clearInterval(_crossRequest)
+      fn(true)
     } else {
-      fn(false);
+      fn(false)
     }
-  }, 500);
-  return _crossRequest;
-};
+  }, 500)
+  return _crossRequest
+}
 
 CheckCrossInstall.propTypes = {
-  hasPlugin: PropTypes.bool
-};
+  hasPlugin: PropTypes.bool,
+}
 
 function CheckCrossInstall(props) {
-  const hasPlugin = props.hasPlugin;
+  const hasPlugin = props.hasPlugin
   return (
     <div className={hasPlugin ? null : 'has-plugin'}>
       {hasPlugin ? (
@@ -55,7 +55,7 @@ function CheckCrossInstall(props) {
         />
       )}
     </div>
-  );
+  )
 }
 
-export default CheckCrossInstall;
+export default CheckCrossInstall

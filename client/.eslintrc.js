@@ -403,9 +403,6 @@ const jsRules = {
 }
 
 const tsRules = {
-  // 上面写过，但是在ts文件中不知道为什么不生效
-  'no-prototype-builtins': 'off',
-
   // 这两个强制写返回类型的关掉
   '@typescript-eslint/explicit-function-return-type': 'off',
   '@typescript-eslint/explicit-module-boundary-types': 'off',

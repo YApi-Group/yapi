@@ -144,5 +144,5 @@ class Login extends Component {
     )
   }
 }
-const LoginForm = Form.create()(Login)
-export default LoginForm
+
+export default Login

@@ -349,4 +349,4 @@ class ProjectEnvContent extends Component {
     )
   }
 }
-export default Form.create()(ProjectEnvContent)
+export default ProjectEnvContent

@@ -158,5 +158,5 @@ class Reg extends Component {
     )
   }
 }
-const RegForm = Form.create()(Reg)
-export default RegForm
+
+export default Reg

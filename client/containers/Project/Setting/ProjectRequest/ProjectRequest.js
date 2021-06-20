@@ -17,7 +17,6 @@ import { updateProjectScript, getProject } from '../../../../reducer/modules/pro
     getProject,
   },
 )
-@Form.create()
 export default class ProjectRequest extends Component {
   static propTypes = {
     projectMsg: PropTypes.object,

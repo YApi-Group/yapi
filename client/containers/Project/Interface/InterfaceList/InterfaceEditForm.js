@@ -27,7 +27,7 @@ import {
 } from 'antd'
 import { QuestionCircleOutlined, DeleteOutlined, BarsOutlined } from '@ant-design/icons'
 
-import constants, { MOCK_SOURCE } from '../../../../constants/variable.js'
+import constants from '../../../../constants/variable.js'
 import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
 import { changeEditStatus } from '../../../../reducer/modules/interface.js'
 import { handlePath, nameLengthLimit } from '../../../../common.js'
@@ -36,8 +36,8 @@ import '@common/tui-editor/dist/tui-editor.min.css' // editor ui
 import '@common/tui-editor/dist/tui-editor-contents.min.css' // editor content
 import './editor.css'
 
-const ResBodySchema = jSchema({ lang: 'zh_CN', mock: MOCK_SOURCE })
-const ReqBodySchema = jSchema({ lang: 'zh_CN', mock: MOCK_SOURCE })
+const ResBodySchema = jSchema({ lang: 'zh_CN', mock: constants.MOCK_SOURCE })
+const ReqBodySchema = jSchema({ lang: 'zh_CN', mock: constants.MOCK_SOURCE })
 const TabPane = Tabs.TabPane
 
 function checkIsJsonSchema(json) {
@@ -786,7 +786,10 @@ class InterfaceEditForm extends Component {
             />
           </div>
         </Modal>
-        <Form onSubmit={this.handleSubmit}>
+        <Form
+          onSubmit={this.handleSubmit} 
+          onValuesChange={ EditFormContext.props.changeEditStatus(true) }
+        >
           <h2 className="interface-title" style={{ marginTop: 0 }}>
             基本设置
           </h2>
@@ -1291,8 +1294,4 @@ class InterfaceEditForm extends Component {
   }
 }
 
-export default Form.create({
-  onValuesChange() {
-    EditFormContext.props.changeEditStatus(true)
-  },
-})(InterfaceEditForm)
+export default InterfaceEditForm

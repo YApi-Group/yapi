@@ -373,4 +373,4 @@ class UpDateModal extends Component {
   }
 }
 
-export default Form.create()(UpDateModal)
+export default UpDateModal

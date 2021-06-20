@@ -9,7 +9,6 @@ import _ from 'underscore'
 
 import {
   fetchInterfaceColList,
-  fetchInterfaceCaseList,
   setColData,
   fetchCaseList,
   fetchCaseData,
@@ -26,7 +25,7 @@ const headHeight = 240 // menu顶部到网页顶部部分的高度
 
 import './InterfaceColMenu.scss'
 
-const ColModalForm = Form.create()(props => {
+const ColModalForm = props => {
   const { visible, onCancel, onCreate, form, title } = props
   const { getFieldDecorator } = form
   return (
@@ -41,7 +40,7 @@ const ColModalForm = Form.create()(props => {
       </Form>
     </Modal>
   )
-})
+}
 
 @connect(
   state => ({
@@ -56,7 +55,7 @@ const ColModalForm = Form.create()(props => {
   }),
   {
     fetchInterfaceColList,
-    fetchInterfaceCaseList,
+    // fetchInterfaceCaseList,
     fetchCaseData,
     // fetchInterfaceListMenu,
     fetchCaseList,
@@ -70,7 +69,7 @@ export default class InterfaceColMenu extends Component {
     match: PropTypes.object,
     interfaceColList: PropTypes.array,
     fetchInterfaceColList: PropTypes.func,
-    fetchInterfaceCaseList: PropTypes.func,
+    // fetchInterfaceCaseList: PropTypes.func,
     // fetchInterfaceListMenu: PropTypes.func,
     fetchCaseList: PropTypes.func,
     fetchCaseData: PropTypes.func,

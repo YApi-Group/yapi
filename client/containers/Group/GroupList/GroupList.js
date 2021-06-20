@@ -11,7 +11,7 @@ import _ from 'underscore'
 import UsernameAutoComplete from '../../../components/UsernameAutoComplete/UsernameAutoComplete.js'
 import GuideBtns from '../../../components/GuideBtns/GuideBtns.js'
 import { fetchNewsData } from '../../../reducer/modules/news.js'
-import { fetchGroupList, setCurrGroup, setGroupList, fetchGroupMsg } from '../../../reducer/modules/group.js'
+import { fetchGroupList, setCurrGroup, fetchGroupMsg } from '../../../reducer/modules/group.js'
 
 import './GroupList.scss'
 
@@ -40,7 +40,7 @@ const tip = (
   {
     fetchGroupList,
     setCurrGroup,
-    setGroupList,
+    // setGroupList,
     fetchNewsData,
     fetchGroupMsg,
   },
@@ -52,7 +52,7 @@ export default class GroupList extends Component {
     currGroup: PropTypes.object,
     fetchGroupList: PropTypes.func,
     setCurrGroup: PropTypes.func,
-    setGroupList: PropTypes.func,
+    // setGroupList: PropTypes.func,
     match: PropTypes.object,
     history: PropTypes.object,
     curUserRole: PropTypes.string,

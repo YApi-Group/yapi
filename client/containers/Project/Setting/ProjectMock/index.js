@@ -35,7 +35,6 @@ const tailFormItemLayout = {
     getProject,
   },
 )
-@Form.create()
 export default class ProjectMock extends Component {
   static propTypes = {
     form: PropTypes.object,

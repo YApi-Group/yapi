@@ -4,7 +4,7 @@
 
 module.exports = {
   plugins: [
-    '@babel/plugin-transform-modules-umd',
+    // '@babel/plugin-transform-modules-umd',
     '@babel/plugin-transform-runtime',
     ['@babel/plugin-proposal-decorators', { legacy: true }],
   ],

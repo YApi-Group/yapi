@@ -2,14 +2,17 @@ import React, { PureComponent as Component } from 'react'
 import PropTypes from 'prop-types'
 import { Row, Col } from 'antd'
 import { GithubOutlined, TeamOutlined, AliwangwangOutlined } from '@ant-design/icons'
+import data from '@/package.json'
 
 import './Footer.scss'
 
-const version = process.env.version
+// console.log(data.version)
+// const version = process.env.version
 class Footer extends Component {
   static propTypes = {
     footList: PropTypes.array,
-  };
+  }
+
   render() {
     return (
       <div className="footer-wrapper">
@@ -35,7 +38,8 @@ class FootItem extends Component {
     linkList: PropTypes.array,
     title: PropTypes.string,
     iconType: PropTypes.string,
-  };
+  }
+
   render() {
     const { iconType, title, linkList } = this.props
 
@@ -99,7 +103,7 @@ Footer.defaultProps = {
       title: 'Copyright © 2018 YMFE',
       linkList: [
         {
-          itemTitle: `版本: ${version} `,
+          itemTitle: `版本: ${data.version} `,
           itemLink: 'https://github.com/YMFE/yapi/blob/master/CHANGELOG.md',
         },
         {

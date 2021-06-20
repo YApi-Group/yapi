@@ -1,6 +1,6 @@
 import React, { PureComponent as Component } from 'react'
 import { Card, Tooltip, Modal, Alert, Input, message } from 'antd'
-import {  StarOutlined, CopyOutlined, StarFilled, StarOutlined } from '@ant-design/icons'
+import { StarOutlined, CopyOutlined, StarFilled } from '@ant-design/icons'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
@@ -79,7 +79,7 @@ class ProjectCard extends Component {
         <div style={{ marginTop: '10px', fontSize: '13px', lineHeight: '25px' }}>
           <Alert
             message={`该操作将会复制 ${that.props.projectData.name
-              } 下的所有接口集合，但不包括测试集合中的接口`}
+            } 下的所有接口集合，但不包括测试集合中的接口`}
             type="info"
           />
           <div style={{ marginTop: '16px' }}>
@@ -166,9 +166,9 @@ class ProjectCard extends Component {
             title={projectData.follow || inFollowPage ? '取消关注' : '添加关注'}
           >
             {
-              projectData.follow || inFollowPage ?
-                <StarFilled className='icon active' />
-                : <StarOutlined className='icon' />
+              projectData.follow || inFollowPage
+                ? <StarFilled className="icon active" />
+                : <StarOutlined className="icon" />
             }
           </Tooltip>
         </div>

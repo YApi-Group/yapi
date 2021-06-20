@@ -1,7 +1,11 @@
 {
   "cSpell.words": [
     "antd",
+    "catid",
+    "mockjs",
     "stylelint",
+    "timeago",
+    "unbase",
     "yapi"
   ],
   "prettier.tabWidth": 2,

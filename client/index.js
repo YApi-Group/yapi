@@ -1,4 +1,4 @@
-import { LocaleProvider } from 'antd'
+import { ConfigProvider } from 'antd'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
@@ -17,9 +17,9 @@ const store = createStore()
 
 ReactDOM.render(
   <Provider store={store}>
-    <LocaleProvider locale={zhCN}>
+    <ConfigProvider locale={zhCN}>
       <App />
-    </LocaleProvider>
+    </ConfigProvider>
   </Provider>,
   document.getElementById('yapi'),
 )

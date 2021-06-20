@@ -528,4 +528,4 @@ class ProjectMessage extends Component {
   }
 }
 
-export default Form.create()(ProjectMessage)
+export default ProjectMessage
