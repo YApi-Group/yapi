@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { Route, BrowserRouter as Router } from 'react-router-dom'
 import { Alert } from 'antd'
+import plugin from '@/plugin.js'
 
 import { Home, Group, Project, Follows, AddProject, Login } from './containers/index'
 import User from './containers/User/User.js'
@@ -14,8 +15,6 @@ import MyPopConfirm from './components/MyPopConfirm/MyPopConfirm'
 import { checkLoginState } from './reducer/modules/user'
 import { requireAuthentication } from './components/AuthenticatedComponent'
 import Notify from './components/Notify/Notify'
-
-const plugin = require('@/plugin.js')
 
 const LOADING_STATUS = 0
 
@@ -106,7 +105,7 @@ export default class App extends Component {
     let r
     if (status === LOADING_STATUS) {
       return <Loading visible />
-    } 
+    }
     r = (
       <Router getUserConfirmation={this.showConfirm}>
         <div className="g-main">
@@ -145,7 +144,7 @@ export default class App extends Component {
         </div>
       </Router>
     )
-    
+
     return r
   };
 

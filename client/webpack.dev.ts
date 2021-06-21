@@ -40,11 +40,12 @@ const devsFile: Configuration = {
     hot: true,
     open: true,
     host: localHost,
-    clientLogLevel: 'none',
-    contentBase: path.resolve(__dirname, './dist-devs'), // 没有静态文件加载的时候，没什么用
+    // clientLogLevel: 'none',
+    // contentBase: path.resolve(__dirname, './dist-devs'), // 没有静态文件加载的时候，没什么用
     historyApiFallback: true, // 404的页面会自动跳转到/页面
-    publicPath: '/',
-    writeToDisk: true,
+    // public: '/',
+    // writeToDisk: true,
+    // proxy: [],
   },
 
   module: {

@@ -7,7 +7,6 @@ import data from '@/package.json'
 import './Footer.scss'
 
 // console.log(data.version)
-// const version = process.env.version
 class Footer extends Component {
   static propTypes = {
     footList: PropTypes.array,
