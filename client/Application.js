@@ -1,20 +1,21 @@
+import { Alert } from 'antd'
+import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
 import { Route, BrowserRouter as Router } from 'react-router-dom'
-import { Alert } from 'antd'
+
 import plugin from '@/plugin.js'
 
-import { Home, Group, Project, Follows, AddProject, Login } from './containers/index'
-import User from './containers/User/User.js'
-import Header from './components/Header/Header'
+import { requireAuthentication } from './components/AuthenticatedComponent'
 import Footer from './components/Footer/Footer'
+import Header from './components/Header/Header'
 import Loading from './components/Loading/Loading'
 import MyPopConfirm from './components/MyPopConfirm/MyPopConfirm'
-import { checkLoginState } from './reducer/modules/user'
-import { requireAuthentication } from './components/AuthenticatedComponent'
 import Notify from './components/Notify/Notify'
+import User from './containers/User/User.js'
+import { Home, Group, Project, Follows, AddProject, Login } from './containers/index'
+import { checkLoginState } from './reducer/modules/user'
 
 const LOADING_STATUS = 0
 

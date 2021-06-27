@@ -1,16 +1,16 @@
 import koaRouter from 'koa-router'
 
-import yapi from './yapi.js'
-import interfaceController from './controllers/interface.js'
-import groupController from './controllers/group.js'
-import userController from './controllers/user.js'
-import interfaceColController from './controllers/interfaceCol.js'
-import testController from './controllers/test.js'
-import projectController from './controllers/project.js'
-import logController from './controllers/log.js'
 import followController from './controllers/follow.js'
+import groupController from './controllers/group.js'
+import interfaceController from './controllers/interface.js'
+import interfaceColController from './controllers/interfaceCol.js'
+import logController from './controllers/log.js'
 import openController from './controllers/open.js'
+import projectController from './controllers/project.js'
+import testController from './controllers/test.js'
+import userController from './controllers/user.js'
 import { createAction } from './utils/commons.js'
+import yapi from './yapi.js'
 
 const router = koaRouter()
 
@@ -599,7 +599,7 @@ function addPluginRouter(config) {
 
 yapi.emitHookSync('add_router', addPluginRouter)
 
-for (const ctrl in routerConfig) {
+for (const ctrl of Object.keys(routerConfig)) {
   const actions = routerConfig[ctrl]
   actions.forEach(item => {
     const routerController = INTERFACE_CONFIG[ctrl].controller

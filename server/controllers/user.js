@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken'
 
+import avatarModel from '../models/avatar.js'
+import groupModel from '../models/group.js'
+import interfaceModel from '../models/interface.js'
+import projectModel from '../models/project.js'
 import userModel from '../models/user.js'
-import yapi from '../yapi.js'
 import common from '../utils/commons.js'
 import ldap from '../utils/ldap.js'
-import interfaceModel from '../models/interface.js'
-import groupModel from '../models/group.js'
-import projectModel from '../models/project.js'
-import avatarModel from '../models/avatar.js'
+import yapi from '../yapi.js'
 
 import baseController from './base.js'
 

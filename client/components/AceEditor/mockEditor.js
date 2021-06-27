@@ -1,6 +1,7 @@
 import ace from 'brace'
-import Mock from 'mockjs'
 import json5 from 'json5'
+import Mock from 'mockjs'
+
 import MockExtra from '@common/mock-extra.js'
 
 import 'brace/mode/javascript'

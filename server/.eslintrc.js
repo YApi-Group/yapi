@@ -397,7 +397,11 @@ const jsRules = {
     'template-curly-spacing': 'warn',
 
     // 对 import 排序
-    'import/order': ['warn', { 'newlines-between': 'always' }],
+    'import/order': ['warn', {
+      'groups': ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
+      'newlines-between': 'always',
+      'alphabetize': { order: 'asc' },
+    }],
     'import/no-dynamic-require': 'warn',
   },
 }

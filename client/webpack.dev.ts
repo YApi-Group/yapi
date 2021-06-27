@@ -1,10 +1,10 @@
 import * as path from 'path'
 
+import CopyWebpackPlugin from 'copy-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ip from 'ip'
 import moment from 'moment-timezone'
 import { DefinePlugin, Configuration } from 'webpack'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
-import CopyWebpackPlugin from 'copy-webpack-plugin'
 import 'webpack-dev-server'
 
 const localHost = ip.address()

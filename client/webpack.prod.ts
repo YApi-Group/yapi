@@ -1,12 +1,12 @@
 import * as path from 'path'
 
-import moment from 'moment-timezone'
-import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import { Configuration, DefinePlugin } from 'webpack'
-import TerserWebpackPlugin from 'terser-webpack-plugin'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
 import CssMinimizerWebpackPlugin from 'css-minimizer-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
-import CopyWebpackPlugin from 'copy-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import moment from 'moment-timezone'
+import TerserWebpackPlugin from 'terser-webpack-plugin'
+import { Configuration, DefinePlugin } from 'webpack'
 
 const prodFile: Configuration = {
   entry: path.resolve(__dirname, './src/index.js'),

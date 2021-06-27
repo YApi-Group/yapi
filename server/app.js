@@ -3,17 +3,17 @@ process.env.NODE_PATH = __dirname
 // require('module').Module._initPaths()
 
 import Koa from 'koa'
-import websockify from 'koa-websocket'
-import koaStatic from 'koa-static'
 import koaBody from 'koa-body'
+import koaStatic from 'koa-static'
+import websockify from 'koa-websocket'
 
-import yapi from './yapi.js'
+import mockServer from './middleware/mockServer.js'
+import router from './router.js'
 import commons from './utils/commons'
 import dbModule from './utils/db.js'
-import mockServer from './middleware/mockServer.js'
-import websocket from './websocket.js'
 import storageCreator from './utils/storage'
-import router from './router.js'
+import websocket from './websocket.js'
+import yapi from './yapi.js'
 
 // import  bodyParser from 'koa-bodyparser'
 // TODO 重新设计 plugin 机制 ，不使用 dynamic-require
@@ -24,6 +24,7 @@ yapi.commons = commons
 yapi.connect = dbModule.connect()
 
 global.storageCreator = storageCreator
+// TODO remove
 const indexFile = process.argv[2] === 'dev' ? 'dev.html' : 'index.html'
 
 const app = websockify(new Koa())
@@ -64,6 +65,5 @@ const server = app.listen(yapi.WEBCONFIG.port)
 
 server.setTimeout(yapi.WEBCONFIG.timeout)
 
-commons.log(`服务已启动，请打开下面链接访问: \nhttp://127.0.0.1${
-  yapi.WEBCONFIG.port === '80' ? '' : ':' + yapi.WEBCONFIG.port
+commons.log(`服务已启动，请打开下面链接访问: \nhttp://127.0.0.1${yapi.WEBCONFIG.port === '80' ? '' : ':' + yapi.WEBCONFIG.port
 }/`)
