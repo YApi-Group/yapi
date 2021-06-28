@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
 
+import db from '../utils/db'
 import autoIncrement from '../utils/mongoose-auto-increment'
 import yapi from '../yapi.js'
 
 /**
  * 所有的model都需要继承baseModel, 且需要 getSchema和getName方法，不然会报错
  */
-
 class baseModel {
   constructor() {
     this.schema = new mongoose.Schema(this.getSchema())
@@ -21,7 +21,7 @@ class baseModel {
       })
     }
 
-    this.model = yapi.db(this.name, this.schema)
+    this.model = db.model(this.name, this.schema)
   }
 
   isNeedAutoIncrement() {

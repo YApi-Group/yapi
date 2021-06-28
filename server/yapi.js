@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import nodemailer from 'nodemailer'
 
-import config from '../../config.json'
+import config from '../config.json'
 
 const insts = new Map()
 let mail
