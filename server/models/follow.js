@@ -1,8 +1,8 @@
-const baseModel = require('./base.js');
+import baseModel from './base.js'
 
 class followModel extends baseModel {
   getName() {
-    return 'follow';
+    return 'follow'
   }
 
   getSchema() {
@@ -11,8 +11,8 @@ class followModel extends baseModel {
       projectid: { type: Number, required: true },
       projectname: { type: String, required: true },
       icon: String,
-      color: String
-    };
+      color: String,
+    }
   }
 
   /**
@@ -23,56 +23,56 @@ class followModel extends baseModel {
    */
 
   save(data) {
-    //关注
-    let saveData = {
+    // 关注
+    const saveData = {
       uid: data.uid,
       projectid: data.projectid,
       projectname: data.projectname,
       icon: data.icon,
-      color: data.color
-    };
-    let follow = new this.model(saveData);
-    return follow.save();
+      color: data.color,
+    }
+    const follow = new this.model(saveData)
+    return follow.save()
   }
 
   del(projectid, uid) {
     return this.model.remove({
       projectid: projectid,
-      uid: uid
-    });
+      uid: uid,
+    })
   }
 
   list(uid) {
     return this.model
       .find({
-        uid: uid
+        uid: uid,
       })
-      .exec();
+      .exec()
   }
 
   listByProjectId(projectid) {
     return this.model.find({
-      projectid: projectid
-    });
+      projectid: projectid,
+    })
   }
 
   checkProjectRepeat(uid, projectid) {
     return this.model.countDocuments({
       uid: uid,
-      projectid: projectid
-    });
+      projectid: projectid,
+    })
   }
 
   updateById(id, typeid, data) {
     return this.model.update(
       {
         uid: id,
-        projectid: typeid
+        projectid: typeid,
       },
       data,
-      { runValidators: true }
-    );
+      { runValidators: true },
+    )
   }
 }
 
-module.exports = followModel;
+export default followModel

@@ -127,9 +127,6 @@ export function joinPath(domain, joinPath) {
   return domain + joinPath
 }
 
-// export const safeArray = arr => {
-//   return Array.isArray(arr) ? arr : [];
-// };
 export function safeArray(arr) {
   return Array.isArray(arr) ? arr : []
 }
