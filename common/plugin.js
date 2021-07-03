@@ -1,54 +1,50 @@
-const _ = require('underscore');
+import _ from 'underscore'
 
 function getPluginConfig(name, type) {
-  let pluginConfig;
+  let pluginConfig
   if (type === 'ext') {
-    pluginConfig = require('../exts/yapi-plugin-' + name);
+    pluginConfig = require('../exts/yapi-plugin-' + name)
   } else {
-    pluginConfig = require('yapi-plugin-' + name);
+    pluginConfig = require('yapi-plugin-' + name)
   }
 
   if (!pluginConfig || typeof pluginConfig !== 'object') {
-    throw new Error(`Plugin ${name} Config 配置错误，请检查 yapi-plugin-${name}/index.js`);
+    throw new Error(`Plugin ${name} Config 配置错误，请检查 yapi-plugin-${name}/index.js`)
   }
 
   return {
     server: pluginConfig.server,
-    client: pluginConfig.client
+    client: pluginConfig.client,
   }
 }
-
 
 /**
    * type @string enum[plugin, ext] plugin是外部插件，ext是内部插件
    */
-exports.initPlugins = function (plugins, type) {
+export function initPlugins(plugins, type) {
   if (!plugins) {
-    return [];
+    return []
   }
   if (typeof plugins !== 'object' || !Array.isArray(plugins)) {
-    throw new Error('插件配置有误，请检查', plugins);
+    throw new Error('插件配置有误，请检查', plugins)
   }
 
   plugins = plugins.map(item => {
-    let pluginConfig;
+    let pluginConfig
     if (item && typeof item === 'string') {
-      pluginConfig = getPluginConfig(item, type);
-      return Object.assign({}, pluginConfig, { name: item, enable: true })
+      pluginConfig = getPluginConfig(item, type)
+      return { ...pluginConfig, name: item, enable: true }
     } else if (item && typeof item === 'object') {
-      pluginConfig = getPluginConfig(item.name, type);
-      return Object.assign({},
-        pluginConfig,
-        {
-          name: item.name,
-          options: item.options,
-          enable: item.enable === false ? false : true
-        })
+      pluginConfig = getPluginConfig(item.name, type)
+      return {
+        ...pluginConfig,
+        name: item.name,
+        options: item.options,
+        enable: item.enable !== false,
+      }
     }
   })
-  plugins = plugins.filter(item => {
-    return item.enable === true && (item.server || item.client)
-  })
+  plugins = plugins.filter(item => item.enable === true && (item.server || item.client))
 
   return _.uniq(plugins, item => item.name)
 }

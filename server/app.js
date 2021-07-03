@@ -1,6 +1,4 @@
-process.env.NODE_PATH = __dirname
-// TODO 这写的啥...
-// require('module').Module._initPaths()
+import path from 'path'
 
 import Koa from 'koa'
 import koaBody from 'koa-body'
@@ -23,6 +21,7 @@ import yapi from './yapi.js'
 yapi.commons = commons
 yapi.connect = dbModule.connect()
 
+// TODO 优化及 remove?
 global.storageCreator = storageCreator
 // TODO remove
 const indexFile = process.argv[2] === 'dev' ? 'dev.html' : 'index.html'
@@ -51,7 +50,7 @@ app.use(async (ctx, next) => {
 app.use(async (ctx, next) => {
   if (ctx.path.indexOf('/prd') === 0) {
     ctx.set('Cache-Control', 'max-age=8640000000')
-    if (yapi.commons.fileExist(yapi.path.join(yapi.WEBROOT, 'static', ctx.path + '.gz'))) {
+    if (yapi.commons.fileExist(path.join(yapi.WEBROOT, 'static', ctx.path + '.gz'))) {
       ctx.set('Content-Encoding', 'gzip')
       ctx.path = ctx.path + '.gz'
     }
@@ -59,7 +58,7 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-app.use(koaStatic(yapi.path.join(yapi.WEBROOT, 'static'), { index: indexFile, gzip: true }))
+app.use(koaStatic(path.join(yapi.WEBROOT, 'static'), { index: indexFile, gzip: true }))
 
 const server = app.listen(yapi.WEBCONFIG.port)
 

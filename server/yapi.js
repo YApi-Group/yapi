@@ -8,9 +8,9 @@ import config from '../config.json'
 const insts = new Map()
 let mail
 
-const WEBROOT = path.resolve(__dirname, '..') // 路径
+const WEBROOT = path.resolve(__dirname, '../') // 路径
 const WEBROOT_SERVER = __dirname
-const WEBROOT_RUNTIME = path.resolve(__dirname, '../..')
+const WEBROOT_RUNTIME = path.resolve(__dirname, '../')
 const WEBROOT_LOG = path.join(WEBROOT_RUNTIME, 'log')
 const WEBCONFIG = config
 
@@ -42,8 +42,6 @@ function delInst(m) {
 }
 
 const r = {
-  fs: fs,
-  path: path,
   WEBROOT: WEBROOT,
   WEBROOT_SERVER: WEBROOT_SERVER,
   WEBROOT_RUNTIME: WEBROOT_RUNTIME,

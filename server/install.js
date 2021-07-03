@@ -1,3 +1,5 @@
+import path from 'path'
+
 import fs from 'fs-extra'
 import mongoose from 'mongoose'
 
@@ -10,7 +12,7 @@ yapi.commons = commons
 yapi.connect = dbModule.connect()
 
 function install() {
-  const exist = yapi.commons.fileExist(yapi.path.join(yapi.WEBROOT_RUNTIME, 'init.lock'))
+  const exist = yapi.commons.fileExist(path.join(yapi.WEBROOT_RUNTIME, 'init.lock'))
 
   if (exist) {
     throw new Error('init.lock文件已存在，请确认您是否已安装。如果需要重新安装，请删掉init.lock文件')
@@ -135,7 +137,7 @@ function setupSql() {
 
       result.then(
         function () {
-          fs.ensureFileSync(yapi.path.join(yapi.WEBROOT_RUNTIME, 'init.lock'))
+          fs.ensureFileSync(path.join(yapi.WEBROOT_RUNTIME, 'init.lock'))
           console.log(`初始化管理员账号成功,账号名："${yapi.WEBCONFIG.adminAccount}"，密码："ymfe.org"`,
           ); // eslint-disable-line
           process.exit(0)

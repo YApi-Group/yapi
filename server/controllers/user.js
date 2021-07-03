@@ -1,3 +1,6 @@
+import path from 'path'
+
+import fs from 'fs-extra'
 import jwt from 'jsonwebtoken'
 
 import avatarModel from '../models/avatar.js'
@@ -600,7 +603,7 @@ class userController extends baseController {
       const data = await avatarInst.get(uid)
       let dataBuffer, type
       if (!data || !data.basecode) {
-        dataBuffer = yapi.fs.readFileSync(yapi.path.join(yapi.WEBROOT, 'static/image/avatar.png'))
+        dataBuffer = fs.readFileSync(path.join(yapi.WEBROOT, 'static/image/avatar.png'))
         type = 'image/png'
       } else {
         type = data.type

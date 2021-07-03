@@ -5,10 +5,12 @@
     "WEBROOT",
     "abled",
     "antd",
+    "basepath",
     "casename",
     "errcode",
     "insts",
     "stylelint",
+    "userinfo",
     "yapi"
   ],
   "prettier.tabWidth": 2,
