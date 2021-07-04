@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 import yapi from '../yapi.js'
 
-import autoIncrement from './mongoose-auto-increment'
+import autoIncrement from './mongoose-auto-increment.js'
 
 function model(model, schema) {
   if (!(schema instanceof mongoose.Schema)) {

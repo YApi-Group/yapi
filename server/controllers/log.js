@@ -1,29 +1,30 @@
-const logModel = require('../models/log.js');
-const yapi = require('../yapi.js');
-const baseController = require('./base.js');
-const groupModel = require('../models/group');
-const projectModel = require('../models/project');
-const interfaceModel = require('../models/interface');
+import groupModel from '../models/group'
+import interfaceModel from '../models/interface'
+import logModel from '../models/log.js'
+import projectModel from '../models/project'
+import yapi from '../yapi.js'
+
+import baseController from './base.js'
 
 class logController extends baseController {
   constructor(ctx) {
-    super(ctx);
-    this.Model = yapi.getInst(logModel);
-    this.groupModel = yapi.getInst(groupModel);
-    this.projectModel = yapi.getInst(projectModel);
-    this.interfaceModel = yapi.getInst(interfaceModel);
+    super(ctx)
+    this.Model = yapi.getInst(logModel)
+    this.groupModel = yapi.getInst(groupModel)
+    this.projectModel = yapi.getInst(projectModel)
+    this.interfaceModel = yapi.getInst(interfaceModel)
     this.schemaMap = {
       listByUpdate: {
         '*type': 'string',
         '*typeid': 'number',
-        apis: [
+        'apis': [
           {
             method: 'string',
-            path: 'string'
-          }
-        ]
-      }
-    };
+            path: 'string',
+          },
+        ],
+      },
+    }
   }
 
   /**
@@ -40,57 +41,57 @@ class logController extends baseController {
    */
 
   async list(ctx) {
-    let typeid = ctx.request.query.typeid,
+    const typeid = ctx.request.query.typeid,
       page = ctx.request.query.page || 1,
       limit = ctx.request.query.limit || 10,
       type = ctx.request.query.type,
-      selectValue = ctx.request.query.selectValue;
+      selectValue = ctx.request.query.selectValue
     if (!typeid) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, 'typeid不能为空'));
+      return (ctx.body = yapi.commons.resReturn(null, 400, 'typeid不能为空'))
     }
     if (!type) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, 'type不能为空'));
+      return (ctx.body = yapi.commons.resReturn(null, 400, 'type不能为空'))
     }
     try {
       if (type === 'group') {
-        let projectList = await this.projectModel.list(typeid);
-        let projectIds = [],
-          projectDatas = {};
-        for (let i in projectList) {
-          projectDatas[projectList[i]._id] = projectList[i];
-          projectIds[i] = projectList[i]._id;
+        const projectList = await this.projectModel.list(typeid)
+        const projectIds = [],
+          projectDatas = {}
+        for (const i in projectList) {
+          projectDatas[projectList[i]._id] = projectList[i]
+          projectIds[i] = projectList[i]._id
         }
-        let projectLogList = await this.Model.listWithPagingByGroup(
+        const projectLogList = await this.Model.listWithPagingByGroup(
           typeid,
           projectIds,
           page,
-          limit
-        );
+          limit,
+        )
         projectLogList.forEach((item, index) => {
-          item = item.toObject();
+          item = item.toObject()
           if (item.type === 'project') {
-            item.content =
-              `在 <a href="/project/${item.typeid}">${projectDatas[item.typeid].name}</a> 项目: ` +
-              item.content;
+            item.content
+              = `在 <a href="/project/${item.typeid}">${projectDatas[item.typeid].name}</a> 项目: `
+              + item.content
           }
-          projectLogList[index] = item;
-        });
-        let total = await this.Model.listCountByGroup(typeid, projectIds);
+          projectLogList[index] = item
+        })
+        const total = await this.Model.listCountByGroup(typeid, projectIds)
         ctx.body = yapi.commons.resReturn({
           list: projectLogList,
-          total: Math.ceil(total / limit)
-        });
-      } else if (type === "project") {
-        let result = await this.Model.listWithPaging(typeid, type, page, limit, selectValue);
-        let count = await this.Model.listCount(typeid, type, selectValue);
+          total: Math.ceil(total / limit),
+        })
+      } else if (type === 'project') {
+        const result = await this.Model.listWithPaging(typeid, type, page, limit, selectValue)
+        const count = await this.Model.listCount(typeid, type, selectValue)
 
         ctx.body = yapi.commons.resReturn({
           total: Math.ceil(count / limit),
-          list: result
-        });
+          list: result,
+        })
       }
     } catch (err) {
-      ctx.body = yapi.commons.resReturn(null, 402, err.message);
+      ctx.body = yapi.commons.resReturn(null, 402, err.message)
     }
   }
   /**
@@ -105,41 +106,41 @@ class logController extends baseController {
    */
 
   async listByUpdate(ctx) {
-    let params = ctx.params;
+    const params = ctx.params
 
     try {
-      let { typeid, type, apis } = params;
-      let list = [];
-      let projectDatas = await this.projectModel.getBaseInfo(typeid, 'basepath');
-      let basePath = projectDatas.toObject().basepath;
+      const { typeid, type, apis } = params
+      let list = []
+      const projectDatas = await this.projectModel.getBaseInfo(typeid, 'basepath')
+      const basePath = projectDatas.toObject().basepath
 
       for (let i = 0; i < apis.length; i++) {
-        let api = apis[i];
+        const api = apis[i]
         if (basePath) {
-          api.path = api.path.indexOf(basePath) === 0 ? api.path.substr(basePath.length) : api.path;
+          api.path = api.path.indexOf(basePath) === 0 ? api.path.substr(basePath.length) : api.path
         }
-        let interfaceIdList = await this.interfaceModel.getByPath(
+        const interfaceIdList = await this.interfaceModel.getByPath(
           typeid,
           api.path,
           api.method,
-          '_id'
-        );
+          '_id',
+        )
 
         for (let j = 0; j < interfaceIdList.length; j++) {
-          let interfaceId = interfaceIdList[j];
-          let id = interfaceId.id;
-          let result = await this.Model.listWithCatid(typeid, type, id);
+          const interfaceId = interfaceIdList[j]
+          const id = interfaceId.id
+          const result = await this.Model.listWithCatid(typeid, type, id)
 
-          list = list.concat(result);
+          list = list.concat(result)
         }
       }
 
       // let result = await this.Model.listWithCatid(typeid, type, catId);
-      ctx.body = yapi.commons.resReturn(list);
+      ctx.body = yapi.commons.resReturn(list)
     } catch (err) {
-      ctx.body = yapi.commons.resReturn(null, 402, err.message);
+      ctx.body = yapi.commons.resReturn(null, 402, err.message)
     }
   }
 }
 
-module.exports = logController;
+export default logController

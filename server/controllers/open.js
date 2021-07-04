@@ -1,3 +1,4 @@
+import request from 'request'
 import _ from 'underscore'
 
 import handleImportData from '../../common/HandleImportData'
@@ -95,7 +96,6 @@ class openController extends baseController {
       return (ctx.body = yapi.commons.resReturn(null, 40022, 'json 或者 url 参数，不能都为空'))
     }
     try {
-      const request = require('request')// let Promise = require('Promise');
       const syncGet = function (url) {
         return new Promise(function (resolve, reject) {
           request.get({ url: url }, function (error, response, body) {

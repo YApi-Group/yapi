@@ -2,7 +2,7 @@ import path from 'path'
 import url from 'url'
 
 import fs from 'fs-extra'
-import jsondiffpatch from 'jsondiffpatch'
+import { formatters } from 'jsondiffpatch'
 import _ from 'underscore'
 
 import showDiffMsg from '../../common/diff-view.js'
@@ -18,10 +18,10 @@ import yapi from '../yapi.js'
 
 import baseController from './base.js'
 
-const formattersHtml = jsondiffpatch.formatters.html
+const formattersHtml = formatters.html
 
-// const annotatedCss = require("jsondiffpatch/public/formatters-styles/annotated.css");
-// const htmlCss = require("jsondiffpatch/public/formatters-styles/html.css");
+// import annotatedCss from "jsondiffpatch/public/formatters-styles/annotated.css"
+// import htmlCss from "jsondiffpatch/public/formatters-styles/html.css"
 
 function handleHeaders(values) {
   let isfile = false,

@@ -1,45 +1,45 @@
-const defaultTheme = require('./defaultTheme.js');
+import defaultTheme from './defaultTheme.js'
 
 function json_format(json) {
   if (json && typeof json === 'object') {
-    return JSON.stringify(json, null, '   ');
+    return JSON.stringify(json, null, '   ')
   }
-  return json;
+  return json
 }
 
-module.exports = function renderToHtml(reports) {
-  let tp = createHtml(reports);
-  return tp;
-};
+export default function renderToHtml(reports) {
+  const tp = createHtml(reports)
+  return tp
+}
 
 function createHtml(reports) {
-  let mdTemplate = ``;
-  let left = ``;
+  let mdTemplate = ''
+  let left = ''
   reports.list.map((item, index) => {
-    mdTemplate += baseHtml(index, item.name, item.path, item.status);
-    mdTemplate += validHtml(item.validRes);
-    mdTemplate += requestHtml(item.url, item.headers, item.data);
-    mdTemplate += reponseHtml(item.res_header, item.res_body);
-    left += leftHtml(index, item.name, item.code);
+    mdTemplate += baseHtml(index, item.name, item.path, item.status)
+    mdTemplate += validHtml(item.validRes)
+    mdTemplate += requestHtml(item.url, item.headers, item.data)
+    mdTemplate += reponseHtml(item.res_header, item.res_body)
+    left += leftHtml(index, item.name, item.code)
     // left += codeHtml(item.code);
-  });
-  return createHtml5(left, mdTemplate, reports.message, reports.runTime);
+  })
+  return createHtml5(left, mdTemplate, reports.message, reports.runTime)
 }
 
 function createHtml5(left, tp, msg, runTime) {
-  let message = ``;
+  let message = ''
   if (msg.failedNum === 0) {
     message += `<div>一共 <span class="success">${
       msg.successNum
-    }</span> 测试用例， 全部验证通过(${runTime})</div>`;
+    }</span> 测试用例， 全部验证通过(${runTime})</div>`
   } else {
     message += `<div>一共 ${msg.len} 测试用例，<span class="success"> ${
       msg.successNum
-    }</span> 个验证通过， ${msg.failedNum} 个未通过(${runTime})</div>`;
+    }</span> 个验证通过， ${msg.failedNum} 个未通过(${runTime})</div>`
   }
 
-  //html5模板
-  let html = `<!DOCTYPE html>
+  // html5模板
+  const html = `<!DOCTYPE html>
   <html>
   <head>
   <title>测试报告</title>
@@ -69,21 +69,21 @@ function createHtml5(left, tp, msg, runTime) {
     </div>
   </body>
   </html>
-  `;
-  return html;
+  `
+  return html
 }
 
 function requestHtml(url, headers, params) {
-  headers = json_format(headers, null, '   ');
-  params = json_format(params);
-  let html = ``;
+  headers = json_format(headers, null, '   ')
+  params = json_format(params)
+  let html = ''
   html += `
   <div>
     <h3>Request</h3>
     <div class="row case-report">
      <div class="col-3 case-report-title">Url</div>
      <div class="col-21">${url}</div>
-    </div>`;
+    </div>`
   html += headers
     ? `<div class="row case-report">
     <div class="col-3 case-report-title">Headers</div>
@@ -91,7 +91,7 @@ function requestHtml(url, headers, params) {
      <pre>${headers}</pre>
     </div>
    </div>`
-    : ``;
+    : ''
 
   html += params
     ? ` <div class="row case-report">
@@ -100,17 +100,17 @@ function requestHtml(url, headers, params) {
     <pre>${params}</pre>
    </div>
    </div>`
-    : ``;
-  html += `</div>`;
+    : ''
+  html += '</div>'
 
-  return html;
+  return html
 }
 
 function reponseHtml(res_header, res_body) {
-  res_header = json_format(res_header, null, '   ');
-  res_body = json_format(res_body, null, '   ');
-  let html = ``;
-  html += `<div><h3>Reponse</h3>`;
+  res_header = json_format(res_header, null, '   ')
+  res_body = json_format(res_body, null, '   ')
+  let html = ''
+  html += '<div><h3>Reponse</h3>'
 
   html += res_header
     ? `
@@ -120,7 +120,7 @@ function reponseHtml(res_header, res_body) {
     <pre>${res_header}</pre>
    </div>
   </div>`
-    : ``;
+    : ''
 
   html += res_body
     ? ` <div class="row case-report">
@@ -129,20 +129,18 @@ function reponseHtml(res_header, res_body) {
    <pre>${res_body}</pre>
   </div>
  </div>`
-    : ``;
+    : ''
 
-  html += `</div>`;
+  html += '</div>'
 
-  return html;
+  return html
 }
 
 function validHtml(validRes) {
   if (validRes && Array.isArray(validRes)) {
-    validRes = validRes.map((item, index) => {
-      return `<div key=${index}>${item.message}</div>`;
-    });
+    validRes = validRes.map((item, index) => `<div key=${index}>${item.message}</div>`)
   }
-  let html = `
+  const html = `
   <div>
     <div class="row case-report">
      <div class="col-3 case-report-title">验证结果</div>
@@ -152,13 +150,13 @@ function validHtml(validRes) {
     </div>
   </div>
   
-  `;
+  `
 
-  return html;
+  return html
 }
 
 function baseHtml(index, name, path, status) {
-  let html = `
+  const html = `
   <div>
     <h2 id=${index}>${name}</h2>
     <h3>基本信息</h3>
@@ -171,37 +169,37 @@ function baseHtml(index, name, path, status) {
     <div class="col-21">${status}</div>
    </div>
   </div>
-  `;
+  `
 
-  return html;
+  return html
 }
 
 function leftHtml(index, name, code) {
-  let html = `
+  const html = `
   <div class="list-content">
     <a class="list" href="#${index}">${name}</a>
     ${codeHtml(code)}
   </div>
-  `;
+  `
 
-  return html;
+  return html
 }
 
 function codeHtml(code) {
-  let codeHtml = ``;
+  let codeHtml = ''
   switch (code) {
     case 0:
-      codeHtml += `<div title="验证通过" class="status status-ok"><i class="icon icon-check-circle"></i></div>`;
-      break;
+      codeHtml += '<div title="验证通过" class="status status-ok"><i class="icon icon-check-circle"></i></div>'
+      break
     case 400:
-      codeHtml += `<div title="请求异常" class="status status-ko"><i class="icon icon-close-circle"></i></div>`;
-      break;
+      codeHtml += '<div title="请求异常" class="status status-ko"><i class="icon icon-close-circle"></i></div>'
+      break
     case 1:
-      codeHtml += `<div title="验证失败" class="status status-warning"><i class="icon icon-warning-circle"></i></div>`;
-      break;
+      codeHtml += '<div title="验证失败" class="status status-warning"><i class="icon icon-warning-circle"></i></div>'
+      break
     default:
-      codeHtml += `<div title="验证通过" class="status status-warning"><i class="icon icon-warning-circle"></i></div>`;
-      break;
+      codeHtml += '<div title="验证通过" class="status status-warning"><i class="icon icon-warning-circle"></i></div>'
+      break
   }
-  return codeHtml;
+  return codeHtml
 }

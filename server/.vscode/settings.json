@@ -9,6 +9,7 @@
     "casename",
     "errcode",
     "insts",
+    "jsondiffpatch",
     "stylelint",
     "userinfo",
     "yapi"

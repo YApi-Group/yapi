@@ -115,10 +115,6 @@
       "helpMessage": "Commit message 格式错误， http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html"
     }
   },
-  "engines": {
-    "node": ">= 7.6.0",
-    "npm": ">= 4.1.2"
-  },
   "ava": {
     "files": [
       "test/**/*.js"

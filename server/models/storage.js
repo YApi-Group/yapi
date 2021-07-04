@@ -1,22 +1,23 @@
-const baseModel = require('./base.js');
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 
-class stroageModel extends baseModel {
+import BaseModel from './base.js'
+
+class stroageModel extends BaseModel {
   constructor() {
     super()
-    let storageCol = mongoose.connection.db.collection('storage');
+    const storageCol = mongoose.connection.db.collection('storage')
     storageCol.createIndex(
       {
-        key: 1
+        key: 1,
       },
       {
-        unique: true
-      }
-    );
+        unique: true,
+      },
+    )
   }
 
   getName() {
-    return 'storage';
+    return 'storage'
   }
 
   getSchema() {
@@ -24,47 +25,47 @@ class stroageModel extends baseModel {
       key: { type: Number, required: true },
       data: {
         type: String,
-        default: ''
-      } //用于原始数据存储
-    };
+        default: '',
+      }, // 用于原始数据存储
+    }
   }
   save(key, data = {}, isInsert = false) {
 
-    let saveData = {
+    const saveData = {
       key,
-      data: JSON.stringify(data, null, 2)
-    };
-    if(isInsert){
-      let r = new this.model(saveData);
-      return r.save();
+      data: JSON.stringify(data, null, 2),
+    }
+    if (isInsert) {
+      const r = new this.model(saveData)
+      return r.save()
     }
     return this.model.updateOne({
-      key
+      key,
     }, saveData)
   }
 
   del(key) {
     return this.model.remove({
-      key
-    });
+      key,
+    })
   }
 
   get(key) {
     return this.model
       .findOne({
-        key
+        key,
       })
       .exec().then(data => {
         this.save(key, {})
-        if (!data) return null;
-        data = data.toObject().data;
+        if (!data) { return null }
+        data = data.toObject().data
         try {
           return JSON.parse(data)
         } catch (e) {
           return {}
         }
-      });
+      })
   }
 }
 
-module.exports = stroageModel;
+export default stroageModel

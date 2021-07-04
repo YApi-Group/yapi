@@ -10,7 +10,7 @@ import Mock from 'mockjs'
 import sha1 from 'sha1'
 import _ from 'underscore'
 
-import { schemaValidator } from '../../common/utils'
+import { schemaValidator } from '../../common/utils.js'
 import interfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceColModel from '../models/interfaceCol.js'

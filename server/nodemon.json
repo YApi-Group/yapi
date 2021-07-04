@@ -2,12 +2,12 @@
   "restartable": "rs",
   "ignore": ["node_modules/"],
 
-  "delay": "3000",
+  "delay": "1000",
   "watch": ["./"],
   "ext": "ts,js,json",
 
   "execMap": {
-    "js": "node -r @babel/register",
+    "js": "node -r ts-node/register",
     "ts": "node -r ts-node/register"
   },
   "env": {

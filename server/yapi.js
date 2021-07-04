@@ -5,6 +5,8 @@ import nodemailer from 'nodemailer'
 
 import config from '../config.json'
 
+import { bindHook, emitHook } from './hook.js'
+
 const insts = new Map()
 let mail
 
@@ -50,6 +52,9 @@ const r = {
   getInst: getInst,
   delInst: delInst,
   getInsts: insts,
+
+  bindHook,
+  emitHook,
 }
 if (mail) { r.mail = mail }
 

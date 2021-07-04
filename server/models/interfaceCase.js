@@ -1,11 +1,14 @@
-const yapi = require('../yapi.js');
-const baseModel = require('./base.js');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+import mongoose from 'mongoose'
 
-class interfaceCase extends baseModel {
+import yapi from '../yapi.js'
+
+import BaseModel from './base.js'
+
+const Schema = mongoose.Schema
+
+class interfaceCase extends BaseModel {
   getName() {
-    return 'interface_case';
+    return 'interface_case'
   }
 
   getSchema() {
@@ -22,29 +25,29 @@ class interfaceCase extends baseModel {
       req_params: [
         {
           name: String,
-          value: String
-        }
+          value: String,
+        },
       ],
       req_headers: [
         {
           name: String,
-          value: String
-        }
+          value: String,
+        },
       ],
       req_query: [
         {
           name: String,
           value: String,
-          enable: { type: Boolean, default: true }
-        }
+          enable: { type: Boolean, default: true },
+        },
       ],
 
       req_body_form: [
         {
           name: String,
           value: String,
-          enable: { type: Boolean, default: true }
-        }
+          enable: { type: Boolean, default: true },
+        },
       ],
       req_body_other: String,
       test_res_body: String,
@@ -52,84 +55,84 @@ class interfaceCase extends baseModel {
       test_res_header: Schema.Types.Mixed,
       mock_verify: { type: Boolean, default: false },
       enable_script: { type: Boolean, default: false },
-      test_script: String
-    };
+      test_script: String,
+    }
   }
 
   save(data) {
-    let m = new this.model(data);
-    return m.save();
+    const m = new this.model(data)
+    return m.save()
   }
 
-  //获取全部测试接口信息
+  // 获取全部测试接口信息
   getInterfaceCaseListCount() {
-    return this.model.countDocuments({});
+    return this.model.countDocuments({})
   }
 
   get(id) {
     return this.model
       .findOne({
-        _id: id
+        _id: id,
       })
-      .exec();
+      .exec()
   }
 
   list(col_id, select) {
-    select = select || 'casename uid col_id _id index interface_id project_id';
+    select = select || 'casename uid col_id _id index interface_id project_id'
     if (select === 'all') {
       return this.model
         .find({
-          col_id: col_id
+          col_id: col_id,
         })
-        .exec();
+        .exec()
     }
     return this.model
       .find({
-        col_id: col_id
+        col_id: col_id,
       })
       .select(select)
-      .exec();
+      .exec()
   }
 
   del(id) {
     return this.model.remove({
-      _id: id
-    });
+      _id: id,
+    })
   }
 
   delByProjectId(id) {
     return this.model.remove({
-      project_id: id
-    });
+      project_id: id,
+    })
   }
 
   delByInterfaceId(id) {
     return this.model.remove({
-      interface_id: id
-    });
+      interface_id: id,
+    })
   }
 
   delByCol(id) {
     return this.model.remove({
-      col_id: id
-    });
+      col_id: id,
+    })
   }
 
   up(id, data) {
-    data.up_time = yapi.commons.time();
-    return this.model.update({ _id: id }, data);
+    data.up_time = yapi.commons.time()
+    return this.model.update({ _id: id }, data)
   }
 
   upCaseIndex(id, index) {
     return this.model.update(
       {
-        _id: id
+        _id: id,
       },
       {
-        index: index
-      }
-    );
+        index: index,
+      },
+    )
   }
 }
 
-module.exports = interfaceCase;
+export default interfaceCase

@@ -597,7 +597,7 @@ function addPluginRouter(config) {
   createAction(router, '/api', config.controller, config.action, routerPath, method, false)
 }
 
-yapi.emitHookSync('add_router', addPluginRouter)
+yapi.emitHook('add_router', addPluginRouter)
 
 for (const ctrl of Object.keys(routerConfig)) {
   const actions = routerConfig[ctrl]

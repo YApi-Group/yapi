@@ -7,7 +7,7 @@ import yapi from '../yapi.js'
 /**
  * 所有的model都需要继承baseModel, 且需要 getSchema和getName方法，不然会报错
  */
-class baseModel {
+class BaseModel {
   constructor() {
     this.schema = new mongoose.Schema(this.getSchema())
     this.name = this.getName()
@@ -47,4 +47,4 @@ class baseModel {
   }
 }
 
-export default baseModel
+export default BaseModel

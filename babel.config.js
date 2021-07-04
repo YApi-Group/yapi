@@ -5,13 +5,14 @@
 module.exports = {
   plugins: [
     // '@babel/plugin-transform-modules-umd',
-    '@babel/plugin-transform-runtime',
-    ['@babel/plugin-proposal-decorators', { legacy: true }],
+    // '@babel/plugin-transform-runtime',
+    // ['@babel/plugin-proposal-decorators', { legacy: true }],
   ],
 
   presets: [
     /* 这里的 target 设置已经移动到 package.json browserslist 字段中了 */
-    '@babel/preset-env',
-    '@babel/preset-react',
+    ['@babel/preset-env', { targets: { node: 'current' } }],
+    // '@babel/preset-env',
+    // '@babel/preset-react',
   ],
 }

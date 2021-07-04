@@ -1,13 +1,13 @@
-import _ from 'underscore'
 import jwt from 'jsonwebtoken'
+import _ from 'underscore'
 
-import yapi from '../yapi.js'
-import projectModel from '../models/project.js'
-import userModel from '../models/user.js'
-import interfaceModel from '../models/interface.js'
 import groupModel from '../models/group.js'
+import interfaceModel from '../models/interface.js'
+import projectModel from '../models/project.js'
 import tokenModel from '../models/token.js'
+import userModel from '../models/user.js'
 import { parseToken } from '../utils/token'
+import yapi from '../yapi.js'
 
 class baseController {
   constructor(ctx) {

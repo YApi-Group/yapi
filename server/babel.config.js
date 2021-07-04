@@ -4,7 +4,6 @@
 
 module.exports = {
   presets: [
-    /* 这里的 target 设置已经移动到 package.json browserslist 字段中了 */
     ['@babel/preset-env', { targets: { node: 'current' } }],
   ],
 }

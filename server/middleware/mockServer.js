@@ -1,12 +1,16 @@
 import Mock from 'mockjs'
 import _ from 'underscore'
 
-import variable from '../../client/constants/variable.js'
+// import variable from '../../client/constants/variable.js'
+// eslint-disable-next-line
+import variable from '../../variable.js'
+
 import mockExtra from '../../common/mock-extra.js'
 import { schemaValidator } from '../../common/utils.js'
 import interfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import yapi from '../yapi.js'
+
 /**
  *
  * @param {*} apiPath /user/tom
