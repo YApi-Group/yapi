@@ -55,7 +55,6 @@
     "react-dom": "^16.13.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
     "reactabular-dnd": "^8.16.0",
     "reactabular-table": "^8.14.0",
     "recharts": "^2.0.9",
