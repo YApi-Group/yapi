@@ -2,7 +2,6 @@
 set -Eeuo pipefail
 
 # 启动ssh服务
-echo whoami
 service ssh restart
 
 if [ "${1:0:1}" = '-' ]; then
