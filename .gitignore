@@ -45,3 +45,4 @@ client/plugin-module.js
 dist/
 dist-*
 /log
+/static

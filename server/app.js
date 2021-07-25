@@ -23,8 +23,6 @@ yapi.connect = dbModule.connect()
 
 // TODO 优化及 remove?
 global.storageCreator = storageCreator
-// TODO remove
-const indexFile = process.argv[2] === 'dev' ? 'dev.html' : 'index.html'
 
 const app = websockify(new Koa())
 app.proxy = true
@@ -58,7 +56,7 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-app.use(koaStatic(path.join(yapi.WEBROOT, 'static'), { index: indexFile, gzip: true }))
+app.use(koaStatic(path.join(yapi.WEBROOT, 'static'), { index: 'index.html', gzip: true }))
 
 const server = app.listen(yapi.WEBCONFIG.port)
 

@@ -8,10 +8,13 @@
     "basepath",
     "casename",
     "errcode",
+    "errmsg",
     "insts",
     "jsondiffpatch",
+    "passsalt",
     "stylelint",
     "userinfo",
+    "websockify",
     "yapi"
   ],
   "prettier.tabWidth": 2,

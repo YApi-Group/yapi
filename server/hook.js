@@ -165,6 +165,7 @@ export function emitHook(name) {
     if (hooks[name].type === 'single' && typeof hooks[name].listener === 'function') {
       return Promise.resolve(hooks[name].listener.apply(yapi, args))
     }
+
     const promiseAll = []
     if (Array.isArray(hooks[name].listener)) {
       const listenerList = hooks[name].listener

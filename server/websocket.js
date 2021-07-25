@@ -1,10 +1,10 @@
-const koaRouter = require('koa-router')
+import koaRouter from 'koa-router'
 
-const interfaceController = require('./controllers/interface.js')
-const yapi = require('./yapi.js')
+import interfaceController from './controllers/interface.js'
+import { createAction } from './utils/commons.js'
+import yapi from './yapi.js'
 
 const router = koaRouter()
-const { createAction } = require('./utils/commons.js')
 
 const pluginsRouterPath = []
 
@@ -12,12 +12,14 @@ function addPluginRouter(config) {
   if (!config.path || !config.controller || !config.action) {
     throw new Error('Plugin Route config Error')
   }
-  const method = config.method || 'GET'
+
   const routerPath = '/ws_plugin/' + config.path
   if (pluginsRouterPath.indexOf(routerPath) > -1) {
     throw new Error('Plugin Route path conflict, please try rename the path')
   }
   pluginsRouterPath.push(routerPath)
+
+  const method = config.method || 'GET'
   createAction(router, '/api', config.controller, config.action, routerPath, method, true)
 }
 
@@ -28,7 +30,7 @@ function websocket(app) {
 
   app.ws.use(router.routes())
   app.ws.use(router.allowedMethods())
-  app.ws.use(function (ctx, next) {
+  app.ws.use(function (ctx /* next */) {
     return ctx.websocket.send(JSON.stringify({
       errcode: 404,
       errmsg: 'No Fount.',

@@ -5,16 +5,18 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js dev",
+    "dev:init-db": "ts-node install.js",
     "prod": "tsc",
     "start": "node app.js",
-    "install-server": "node install.js",
+    "start:init-db": "node install.js",
     "test": "ava"
   },
   "scripts-info": {
     "dev": "运行后端开发服务器",
-    "prod": "构建生产服务器文件",
+    "dev:init-db": "用于开发时初始化数据库，一般只需要运行一次",
+    "prod": "构建生产环境代码文件",
     "start": "运行生产环境服务器",
-    "install-server": "初始化数据库数据，用于安装",
+    "start:init-db": "用于生产环境初始化数据库数据，一般只需要运行一次",
     "test": "执行测试"
   },
   "author": "",
@@ -77,7 +79,10 @@
     "@babel/core": "^7.14.6",
     "@babel/preset-env": "^7.14.7",
     "@babel/register": "^7.14.5",
+    "@types/fs-extra": "^9.0.12",
     "@types/koa__router": "^8.0.4",
+    "@types/koa-static": "^4.0.2",
+    "@types/koa-websocket": "^5.0.6",
     "@typescript-eslint/parser": "^4.27.0",
     "ava": "^3.15.0",
     "brace": "^0.11.1",

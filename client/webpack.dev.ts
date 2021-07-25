@@ -5,6 +5,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ip from 'ip'
 import moment from 'moment-timezone'
 import { DefinePlugin, Configuration } from 'webpack'
+
 import 'webpack-dev-server'
 
 const localHost = ip.address()

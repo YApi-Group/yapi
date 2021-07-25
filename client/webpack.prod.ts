@@ -9,7 +9,9 @@ import TerserWebpackPlugin from 'terser-webpack-plugin'
 import { Configuration, DefinePlugin } from 'webpack'
 
 const prodFile: Configuration = {
-  entry: path.resolve(__dirname, './src/index.js'),
+  entry: {
+    main: path.resolve(__dirname, './index.js'),
+  },
 
   output: {
     path: path.resolve(__dirname, './dist-prod'),

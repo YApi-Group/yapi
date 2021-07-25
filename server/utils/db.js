@@ -41,8 +41,8 @@ function connect(callback) {
     connectString = connectString + `?authSource=${config.db.authSource}`
   }
   // }
-  // console.log(connectString)
-  
+  // console.log(connectString, options)
+
   const db = mongoose.connect(connectString, options)
   db.then(() => {
     yapi.commons.log('mongodb load success...')
@@ -52,9 +52,8 @@ function connect(callback) {
     }
   })
     .catch(err => {
-      // if (err) {
+      // console.log(err)
       yapi.commons.log(err + ', mongodb Authentication failed', 'error')
-      // }
     })
 
   autoIncrement.initialize(db)
