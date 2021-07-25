@@ -32,39 +32,30 @@ function connect(callback) {
 
   options = { ...options, ...config.db.options }
 
-  let connectString = ''
-
-  if (config.db.connectString) {
-    connectString = config.db.connectString
-  } else {
-    connectString = `mongodb://${config.db.servername}:${config.db.port}/${config.db.DATABASE}`
-    if (config.db.authSource) {
-      connectString = connectString + `?authSource=${config.db.authSource}`
-    }
+  // let connectString = ''
+  // if (config.db.connectString) {
+  //   connectString = config.db.connectString
+  // } else {
+  let connectString = `mongodb://${config.db.servername}:${config.db.port}/${config.db.DATABASE}`
+  if (config.db.authSource) {
+    connectString = connectString + `?authSource=${config.db.authSource}`
   }
+  // }
+  // console.log(connectString)
+  
+  const db = mongoose.connect(connectString, options)
+  db.then(() => {
+    yapi.commons.log('mongodb load success...')
 
-  const db = mongoose.connect(
-    connectString,
-    options,
-    function (err) {
-      if (err) {
-        yapi.commons.log(err + ', mongodb Authentication failed', 'error')
-      }
-    },
-  )
-
-  db.then(
-    function () {
-      yapi.commons.log('mongodb load success...')
-
-      if (typeof callback === 'function') {
-        callback.call(db)
-      }
-    },
-    function (err) {
-      yapi.commons.log(err + 'mongodb connect error', 'error')
-    },
-  )
+    if (typeof callback === 'function') {
+      callback.call(db)
+    }
+  })
+    .catch(err => {
+      // if (err) {
+      yapi.commons.log(err + ', mongodb Authentication failed', 'error')
+      // }
+    })
 
   autoIncrement.initialize(db)
   return db
