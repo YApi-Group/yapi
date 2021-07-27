@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 
-import yapi from '../yapi.js'
+import cons from '../cons'
+import * as commons from '../utils/commons'
 
 import autoIncrement from './mongoose-auto-increment.js'
 
@@ -22,7 +23,7 @@ function connect(callback) {
   mongoose.set('useFindAndModify', false)
   mongoose.set('useCreateIndex', true)
 
-  const config = yapi.WEBCONFIG
+  const config = cons.WEBCONFIG
   let options = { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }
 
   if (config.db.user) {
@@ -45,7 +46,7 @@ function connect(callback) {
 
   const db = mongoose.connect(connectString, options)
   db.then(() => {
-    yapi.commons.log('mongodb load success...')
+    commons.log('mongodb load success...')
 
     if (typeof callback === 'function') {
       callback.call(db)
@@ -53,7 +54,7 @@ function connect(callback) {
   })
     .catch(err => {
       // console.log(err)
-      yapi.commons.log(err + ', mongodb Authentication failed', 'error')
+      commons.log(err + ', mongodb Authentication failed', 'error')
     })
 
   autoIncrement.initialize(db)

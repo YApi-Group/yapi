@@ -3,6 +3,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import mongoose from 'mongoose'
 
+import cons from './cons'
 import userModel from './models/user.js'
 import * as commons from './utils/commons.js'
 import dbModule from './utils/db.js'
@@ -10,11 +11,10 @@ import yapi from './yapi.js'
 
 const connect = dbModule.connect()
 
-yapi.commons = commons
 yapi.connect = connect
 
 function install() {
-  const exist = commons.fileExist(path.join(yapi.WEBROOT_RUNTIME, 'init.lock'))
+  const exist = commons.fileExist(path.join(cons.WEBROOT_RUNTIME, 'init.lock'))
 
   if (exist) {
     throw new Error('init.lock文件已存在，请确认您是否已安装。如果需要重新安装，请删掉init.lock文件')
@@ -24,12 +24,12 @@ function install() {
   // }
   // function setupSql() {
 
-  const userInst = yapi.getInst(userModel)
+  const userInst = cons.getInst(userModel)
   const passsalt = commons.randStr()
   const result = userInst.save({
-    username: yapi.WEBCONFIG.adminAccount.substr(0, yapi.WEBCONFIG.adminAccount.indexOf('@')),
-    email: yapi.WEBCONFIG.adminAccount,
-    password: commons.generatePassword(yapi.WEBCONFIG.adminPassword, passsalt),
+    username: cons.WEBCONFIG.adminAccount.substr(0, cons.WEBCONFIG.adminAccount.indexOf('@')),
+    email: cons.WEBCONFIG.adminAccount,
+    password: commons.generatePassword(cons.WEBCONFIG.adminPassword, passsalt),
     passsalt: passsalt,
     role: 'admin',
     add_time: commons.time(),
@@ -86,12 +86,12 @@ function install() {
 
       result.then(
         function () {
-          fs.ensureFileSync(path.join(yapi.WEBROOT_RUNTIME, 'init.lock'))
-          console.log(`初始化管理员账号成功,账号名："${yapi.WEBCONFIG.adminAccount}"，密码："${yapi.WEBCONFIG.adminPassword}"`)
+          fs.ensureFileSync(path.join(cons.WEBROOT_RUNTIME, 'init.lock'))
+          console.log(`初始化管理员账号成功,账号名："${cons.WEBCONFIG.adminAccount}"，密码："${cons.WEBCONFIG.adminPassword}"`)
           process.exit(0)
         },
         function (err) {
-          throw new Error(`初始化管理员账号 "${yapi.WEBCONFIG.adminAccount}" 失败, ${err.message}`); // eslint-disable-line
+          throw new Error(`初始化管理员账号 "${cons.WEBCONFIG.adminAccount}" 失败, ${err.message}`); // eslint-disable-line
         },
       )
     })

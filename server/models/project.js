@@ -1,4 +1,4 @@
-import yapi from '../yapi.js'
+import * as commons from '../utils/commons'
 
 import BaseModel from './base.js'
 
@@ -234,7 +234,7 @@ class projectModel extends BaseModel {
   }
 
   up(id, data) {
-    data.up_time = yapi.commons.time()
+    data.up_time = commons.time()
     return this.model.update(
       {
         _id: id,

@@ -1,3 +1,5 @@
+import cons from '../cons'
+import * as commons from '../utils/commons'
 import yapi from '../yapi.js'
 
 function arrUnique(arr1, arr2) {
@@ -12,7 +14,7 @@ const noticeObj = {
   mail: {
     title: '邮件',
     hander: (emails, title, content) => {
-      yapi.commons.sendMail({
+      commons.sendMail({
         to: emails,
         contents: content,
         subject: title,
@@ -28,9 +30,9 @@ yapi.commons.sendNotice = async function (projectId, data) {
   const userModel = require('../models/user.js')
   const followModel = require('../models/follow.js')
 
-  const followInst = yapi.getInst(followModel)
-  const userInst = yapi.getInst(userModel)
-  const projectInst = yapi.getInst(projectModel)
+  const followInst = cons.getInst(followModel)
+  const userInst = cons.getInst(userModel)
+  const projectInst = cons.getInst(projectModel)
   const list = await followInst.listByProjectId(projectId)
   const starUsers = list.map(item => item.uid)
 

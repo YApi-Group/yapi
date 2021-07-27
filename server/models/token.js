@@ -1,5 +1,3 @@
-import yapi from '../yapi.js'
-
 import BaseModel from './base.js'
 
 class tokenModel extends BaseModel {

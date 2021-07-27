@@ -3,13 +3,14 @@ import path from 'path'
 import fs from 'fs-extra'
 import jwt from 'jsonwebtoken'
 
+import cons from '../cons'
 import avatarModel from '../models/avatar.js'
 import groupModel from '../models/group.js'
 import interfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import userModel from '../models/user.js'
-import common from '../utils/commons.js'
-import ldap from '../utils/ldap.js'
+import * as commons from '../utils/commons.js'
+import * as ldap from '../utils/ldap.js'
 import yapi from '../yapi.js'
 
 import baseController from './base.js'
@@ -17,7 +18,7 @@ import baseController from './base.js'
 class userController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = yapi.getInst(userModel)
+    this.Model = cons.getInst(userModel)
   }
   /**
    * 用户登录接口
@@ -32,26 +33,26 @@ class userController extends baseController {
    */
   async login(ctx) {
     // 登录
-    const userInst = yapi.getInst(userModel) // 创建user实体
+    const userInst = cons.getInst(userModel) // 创建user实体
     let email = ctx.request.body.email
     email = (email || '').trim()
     const password = ctx.request.body.password
 
     if (!email) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, 'email不能为空'))
+      return (ctx.body = commons.resReturn(null, 400, 'email不能为空'))
     }
     if (!password) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, '密码不能为空'))
+      return (ctx.body = commons.resReturn(null, 400, '密码不能为空'))
     }
 
     const result = await userInst.findByEmail(email)
 
     if (!result) {
-      return (ctx.body = yapi.commons.resReturn(null, 404, '该用户不存在'))
-    } else if (yapi.commons.generatePassword(password, result.passsalt) === result.password) {
+      return (ctx.body = commons.resReturn(null, 404, '该用户不存在'))
+    } else if (commons.generatePassword(password, result.passsalt) === result.password) {
       this.setLoginCookie(result._id, result.passsalt)
 
-      return (ctx.body = yapi.commons.resReturn(
+      return (ctx.body = commons.resReturn(
         {
           username: result.username,
           role: result.role,
@@ -66,7 +67,7 @@ class userController extends baseController {
         'logout success...',
       ))
     }
-    return (ctx.body = yapi.commons.resReturn(null, 405, '密码错误'))
+    return (ctx.body = commons.resReturn(null, 405, '密码错误'))
 
   }
 
@@ -83,7 +84,7 @@ class userController extends baseController {
   async logout(ctx) {
     ctx.cookies.set('_yapi_token', null)
     ctx.cookies.set('_yapi_uid', null)
-    ctx.body = yapi.commons.resReturn('ok')
+    ctx.body = commons.resReturn('ok')
   }
 
   /**
@@ -97,16 +98,16 @@ class userController extends baseController {
    */
 
   async upStudy(ctx) {
-    const userInst = yapi.getInst(userModel) // 创建user实体
+    const userInst = cons.getInst(userModel) // 创建user实体
     const data = {
-      up_time: yapi.commons.time(),
+      up_time: commons.time(),
       study: true,
     }
     try {
       const result = await userInst.update(this.getUid(), data)
-      ctx.body = yapi.commons.resReturn(result)
+      ctx.body = commons.resReturn(result)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 401, e.message)
+      ctx.body = commons.resReturn(null, 401, e.message)
     }
   }
 
@@ -115,11 +116,11 @@ class userController extends baseController {
       const ret = await yapi.emitHook('third_login', ctx)
       const login = await this.handleThirdLogin(ret.email, ret.username)
       if (login === true) {
-        yapi.commons.log('login success')
+        commons.log('login success')
         ctx.redirect('/group')
       }
     } catch (e) {
-      yapi.commons.log(e.message, 'error')
+      commons.log(e.message, 'error')
       ctx.redirect('/')
     }
   }
@@ -141,19 +142,19 @@ class userController extends baseController {
       // const username = email.split(/\@/g)[0];
       const { info: ldapInfo } = await ldap.ldapQuery(email, password)
       const emailPrefix = email.split(/@/g)[0]
-      const emailPostfix = yapi.WEBCONFIG.ldapLogin.emailPostfix
+      const emailPostfix = cons.WEBCONFIG.ldapLogin.emailPostfix
 
       const emailParams
-        = ldapInfo[yapi.WEBCONFIG.ldapLogin.emailKey || 'mail']
+        = ldapInfo[cons.WEBCONFIG.ldapLogin.emailKey || 'mail']
         || (emailPostfix ? emailPrefix + emailPostfix : email)
-      const username = ldapInfo[yapi.WEBCONFIG.ldapLogin.usernameKey] || emailPrefix
+      const username = ldapInfo[cons.WEBCONFIG.ldapLogin.usernameKey] || emailPrefix
 
       const login = await this.handleThirdLogin(emailParams, username)
 
       if (login === true) {
-        const userInst = yapi.getInst(userModel) // 创建user实体
+        const userInst = cons.getInst(userModel) // 创建user实体
         const result = await userInst.findByEmail(emailParams)
-        return (ctx.body = yapi.commons.resReturn(
+        return (ctx.body = commons.resReturn(
           {
             username: result.username,
             role: result.role,
@@ -169,35 +170,35 @@ class userController extends baseController {
         ))
       }
     } catch (e) {
-      yapi.commons.log(e.message, 'error')
-      return (ctx.body = yapi.commons.resReturn(null, 401, e.message))
+      commons.log(e.message, 'error')
+      return (ctx.body = commons.resReturn(null, 401, e.message))
     }
   }
 
   // 处理第三方登录
   async handleThirdLogin(email, username) {
     let user, data, passsalt
-    const userInst = yapi.getInst(userModel)
+    const userInst = cons.getInst(userModel)
 
     try {
       user = await userInst.findByEmail(email)
 
       // 新建用户信息
       if (!user || !user._id) {
-        passsalt = yapi.commons.randStr()
+        passsalt = commons.randStr()
         data = {
           username: username,
-          password: yapi.commons.generatePassword(passsalt, passsalt),
+          password: commons.generatePassword(passsalt, passsalt),
           email: email,
           passsalt: passsalt,
           role: 'member',
-          add_time: yapi.commons.time(),
-          up_time: yapi.commons.time(),
+          add_time: commons.time(),
+          up_time: commons.time(),
           type: 'third',
         }
         user = await userInst.save(data)
         await this.handlePrivateGroup(user._id, username, email)
-        yapi.commons.sendMail({
+        commons.sendMail({
           to: email,
           contents: `<h3>亲爱的用户：</h3><p>您好，感谢使用YApi平台，你的邮箱账号是：${email}</p>`,
         })
@@ -224,52 +225,52 @@ class userController extends baseController {
    */
   async changePassword(ctx) {
     const params = ctx.request.body
-    const userInst = yapi.getInst(userModel)
+    const userInst = cons.getInst(userModel)
 
     if (!params.uid) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, 'uid不能为空'))
+      return (ctx.body = commons.resReturn(null, 400, 'uid不能为空'))
     }
 
     if (!params.password) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, '密码不能为空'))
+      return (ctx.body = commons.resReturn(null, 400, '密码不能为空'))
     }
 
     const user = await userInst.findById(params.uid)
     if (this.getRole() !== 'admin' && params.uid !== this.getUid()) {
-      return (ctx.body = yapi.commons.resReturn(null, 402, '没有权限'))
+      return (ctx.body = commons.resReturn(null, 402, '没有权限'))
     }
 
     if (this.getRole() !== 'admin' || user.role === 'admin') {
       if (!params.old_password) {
-        return (ctx.body = yapi.commons.resReturn(null, 400, '旧密码不能为空'))
+        return (ctx.body = commons.resReturn(null, 400, '旧密码不能为空'))
       }
 
-      if (yapi.commons.generatePassword(params.old_password, user.passsalt) !== user.password) {
-        return (ctx.body = yapi.commons.resReturn(null, 402, '旧密码错误'))
+      if (commons.generatePassword(params.old_password, user.passsalt) !== user.password) {
+        return (ctx.body = commons.resReturn(null, 402, '旧密码错误'))
       }
     }
 
-    const passsalt = yapi.commons.randStr()
+    const passsalt = commons.randStr()
     const data = {
-      up_time: yapi.commons.time(),
-      password: yapi.commons.generatePassword(params.password, passsalt),
+      up_time: commons.time(),
+      password: commons.generatePassword(params.password, passsalt),
       passsalt: passsalt,
     }
     try {
       const result = await userInst.update(params.uid, data)
-      ctx.body = yapi.commons.resReturn(result)
+      ctx.body = commons.resReturn(result)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 401, e.message)
+      ctx.body = commons.resReturn(null, 401, e.message)
     }
   }
 
   async handlePrivateGroup(uid) {
-    const groupInst = yapi.getInst(groupModel)
+    const groupInst = cons.getInst(groupModel)
     await groupInst.save({
       uid: uid,
       group_name: 'User-' + uid,
-      add_time: yapi.commons.time(),
-      up_time: yapi.commons.time(),
+      add_time: commons.time(),
+      up_time: commons.time(),
       type: 'private',
     })
   }
@@ -278,11 +279,11 @@ class userController extends baseController {
     const token = jwt.sign({ uid: uid }, passsalt, { expiresIn: '7 days' })
 
     this.ctx.cookies.set('_yapi_token', token, {
-      expires: yapi.commons.expireDate(7),
+      expires: commons.expireDate(7),
       httpOnly: true,
     })
     this.ctx.cookies.set('_yapi_uid', uid, {
-      expires: yapi.commons.expireDate(7),
+      expires: commons.expireDate(7),
       httpOnly: true,
     })
   }
@@ -301,41 +302,41 @@ class userController extends baseController {
    */
   async reg(ctx) {
     // 注册
-    if (yapi.WEBCONFIG.closeRegister) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, '禁止注册，请联系管理员'))
+    if (cons.WEBCONFIG.closeRegister) {
+      return (ctx.body = commons.resReturn(null, 400, '禁止注册，请联系管理员'))
     }
-    const userInst = yapi.getInst(userModel)
+    const userInst = cons.getInst(userModel)
     let params = ctx.request.body // 获取请求的参数,检查是否存在用户名和密码
 
-    params = yapi.commons.handleParams(params, {
+    params = commons.handleParams(params, {
       username: 'string',
       password: 'string',
       email: 'string',
     })
 
     if (!params.email) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, '邮箱不能为空'))
+      return (ctx.body = commons.resReturn(null, 400, '邮箱不能为空'))
     }
 
     if (!params.password) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, '密码不能为空'))
+      return (ctx.body = commons.resReturn(null, 400, '密码不能为空'))
     }
 
     const checkRepeat = await userInst.checkRepeat(params.email) // 然后检查是否已经存在该用户
 
     if (checkRepeat > 0) {
-      return (ctx.body = yapi.commons.resReturn(null, 401, '该email已经注册'))
+      return (ctx.body = commons.resReturn(null, 401, '该email已经注册'))
     }
 
-    const passsalt = yapi.commons.randStr()
+    const passsalt = commons.randStr()
     const data = {
       username: params.username,
-      password: yapi.commons.generatePassword(params.password, passsalt), // 加密
+      password: commons.generatePassword(params.password, passsalt), // 加密
       email: params.email,
       passsalt: passsalt,
       role: 'member',
-      add_time: yapi.commons.time(),
-      up_time: yapi.commons.time(),
+      add_time: commons.time(),
+      up_time: commons.time(),
       type: 'site',
     }
 
@@ -348,7 +349,7 @@ class userController extends baseController {
 
       this.setLoginCookie(user._id, user.passsalt)
       await this.handlePrivateGroup(user._id, user.username, user.email)
-      ctx.body = yapi.commons.resReturn({
+      ctx.body = commons.resReturn({
         uid: user._id,
         email: user.email,
         username: user.username,
@@ -358,13 +359,13 @@ class userController extends baseController {
         type: user.type,
         study: false,
       })
-      yapi.commons.sendMail({
+      commons.sendMail({
         to: user.email,
         contents: `<h3>亲爱的用户：</h3><p>您好，感谢使用YApi可视化接口平台,您的账号 ${params.email
         } 已经注册成功</p>`,
       })
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 401, e.message)
+      ctx.body = commons.resReturn(null, 401, e.message)
     }
   }
 
@@ -383,17 +384,17 @@ class userController extends baseController {
     const page = ctx.request.query.page || 1,
       limit = ctx.request.query.limit || 10
 
-    const userInst = yapi.getInst(userModel)
+    const userInst = cons.getInst(userModel)
     try {
       const user = await userInst.listWithPaging(page, limit)
       const count = await userInst.listCount()
-      return (ctx.body = yapi.commons.resReturn({
+      return (ctx.body = commons.resReturn({
         count: count,
         total: Math.ceil(count / limit),
         list: user,
       }))
     } catch (e) {
-      return (ctx.body = yapi.commons.resReturn(null, 402, e.message))
+      return (ctx.body = commons.resReturn(null, 402, e.message))
     }
   }
 
@@ -410,24 +411,24 @@ class userController extends baseController {
   async findById(ctx) {
     // 根据id获取用户信息
     try {
-      const userInst = yapi.getInst(userModel)
+      const userInst = cons.getInst(userModel)
       const id = ctx.request.query.id
 
       if (this.getRole() !== 'admin' && id !== this.getUid()) {
-        return (ctx.body = yapi.commons.resReturn(null, 401, '没有权限'))
+        return (ctx.body = commons.resReturn(null, 401, '没有权限'))
       }
 
       if (!id) {
-        return (ctx.body = yapi.commons.resReturn(null, 400, 'uid不能为空'))
+        return (ctx.body = commons.resReturn(null, 400, 'uid不能为空'))
       }
 
       const result = await userInst.findById(id)
 
       if (!result) {
-        return (ctx.body = yapi.commons.resReturn(null, 402, '不存在的用户'))
+        return (ctx.body = commons.resReturn(null, 402, '不存在的用户'))
       }
 
-      return (ctx.body = yapi.commons.resReturn({
+      return (ctx.body = commons.resReturn({
         uid: result._id,
         username: result.username,
         email: result.email,
@@ -437,7 +438,7 @@ class userController extends baseController {
         up_time: result.up_time,
       }))
     } catch (e) {
-      return (ctx.body = yapi.commons.resReturn(null, 402, e.message))
+      return (ctx.body = commons.resReturn(null, 402, e.message))
     }
   }
 
@@ -455,23 +456,23 @@ class userController extends baseController {
     // 根据id删除一个用户
     try {
       if (this.getRole() !== 'admin') {
-        return (ctx.body = yapi.commons.resReturn(null, 402, 'Without permission.'))
+        return (ctx.body = commons.resReturn(null, 402, 'Without permission.'))
       }
 
-      const userInst = yapi.getInst(userModel)
+      const userInst = cons.getInst(userModel)
       const id = ctx.request.body.id
       if (id === this.getUid()) {
-        return (ctx.body = yapi.commons.resReturn(null, 403, '禁止删除管理员'))
+        return (ctx.body = commons.resReturn(null, 403, '禁止删除管理员'))
       }
       if (!id) {
-        return (ctx.body = yapi.commons.resReturn(null, 400, 'uid不能为空'))
+        return (ctx.body = commons.resReturn(null, 400, 'uid不能为空'))
       }
 
       const result = await userInst.del(id)
 
-      ctx.body = yapi.commons.resReturn(result)
+      ctx.body = commons.resReturn(result)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -493,29 +494,29 @@ class userController extends baseController {
     try {
       let params = ctx.request.body
 
-      params = yapi.commons.handleParams(params, {
+      params = commons.handleParams(params, {
         username: 'string',
         email: 'string',
       })
 
       if (this.getRole() !== 'admin' && params.uid !== this.getUid()) {
-        return (ctx.body = yapi.commons.resReturn(null, 401, '没有权限'))
+        return (ctx.body = commons.resReturn(null, 401, '没有权限'))
       }
 
-      const userInst = yapi.getInst(userModel)
+      const userInst = cons.getInst(userModel)
       const id = params.uid
 
       if (!id) {
-        return (ctx.body = yapi.commons.resReturn(null, 400, 'uid不能为空'))
+        return (ctx.body = commons.resReturn(null, 400, 'uid不能为空'))
       }
 
       const userData = await userInst.findById(id)
       if (!userData) {
-        return (ctx.body = yapi.commons.resReturn(null, 400, 'uid不存在'))
+        return (ctx.body = commons.resReturn(null, 400, 'uid不存在'))
       }
 
       const data = {
-        up_time: yapi.commons.time(),
+        up_time: commons.time(),
       }
 
       params.username && (data.username = params.username)
@@ -524,7 +525,7 @@ class userController extends baseController {
       if (data.email) {
         const checkRepeat = await userInst.checkRepeat(data.email) // 然后检查是否已经存在该用户
         if (checkRepeat > 0) {
-          return (ctx.body = yapi.commons.resReturn(null, 401, '该email已经注册'))
+          return (ctx.body = commons.resReturn(null, 401, '该email已经注册'))
         }
       }
 
@@ -533,15 +534,15 @@ class userController extends baseController {
         username: data.username || userData.username,
         email: data.email || userData.email,
       }
-      const groupInst = yapi.getInst(groupModel)
+      const groupInst = cons.getInst(groupModel)
       await groupInst.updateMember(member)
-      const projectInst = yapi.getInst(projectModel)
+      const projectInst = cons.getInst(projectModel)
       await projectInst.updateMember(member)
 
       const result = await userInst.update(id, data)
-      ctx.body = yapi.commons.resReturn(result)
+      ctx.body = commons.resReturn(result)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -559,7 +560,7 @@ class userController extends baseController {
     try {
       let basecode = ctx.request.body.basecode
       if (!basecode) {
-        return (ctx.body = yapi.commons.resReturn(null, 400, 'basecode不能为空'))
+        return (ctx.body = commons.resReturn(null, 400, 'basecode不能为空'))
       }
       const pngPrefix = 'data:image/png;base64,'
       const jpegPrefix = 'data:image/jpeg;base64,'
@@ -571,18 +572,18 @@ class userController extends baseController {
         basecode = basecode.substr(jpegPrefix.length)
         type = 'image/jpeg'
       } else {
-        return (ctx.body = yapi.commons.resReturn(null, 400, '仅支持jpeg和png格式的图片'))
+        return (ctx.body = commons.resReturn(null, 400, '仅支持jpeg和png格式的图片'))
       }
       const strLength = basecode.length
       if (parseInt(strLength - (strLength / 8) * 2) > 200000) {
-        return (ctx.body = yapi.commons.resReturn(null, 400, '图片大小不能超过200kb'))
+        return (ctx.body = commons.resReturn(null, 400, '图片大小不能超过200kb'))
       }
 
-      const avatarInst = yapi.getInst(avatarModel)
+      const avatarInst = cons.getInst(avatarModel)
       const result = await avatarInst.up(this.getUid(), basecode, type)
-      ctx.body = yapi.commons.resReturn(result)
+      ctx.body = commons.resReturn(result)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 401, e.message)
+      ctx.body = commons.resReturn(null, 401, e.message)
     }
   }
 
@@ -599,11 +600,11 @@ class userController extends baseController {
   async avatar(ctx) {
     try {
       const uid = ctx.query.uid ? ctx.query.uid : this.getUid()
-      const avatarInst = yapi.getInst(avatarModel)
+      const avatarInst = cons.getInst(avatarModel)
       const data = await avatarInst.get(uid)
       let dataBuffer, type
       if (!data || !data.basecode) {
-        dataBuffer = fs.readFileSync(path.join(yapi.WEBROOT, 'static/image/avatar.png'))
+        dataBuffer = fs.readFileSync(path.join(cons.WEBROOT, 'static/image/avatar.png'))
         type = 'image/png'
       } else {
         type = data.type
@@ -631,11 +632,11 @@ class userController extends baseController {
     const { q } = ctx.request.query
 
     if (!q) {
-      return (ctx.body = yapi.commons.resReturn(void 0, 400, 'No keyword.'))
+      return (ctx.body = commons.resReturn(void 0, 400, 'No keyword.'))
     }
 
-    if (!yapi.commons.validateSearchKeyword(q)) {
-      return (ctx.body = yapi.commons.resReturn(void 0, 400, 'Bad query.'))
+    if (!commons.validateSearchKeyword(q)) {
+      return (ctx.body = commons.resReturn(void 0, 400, 'Bad query.'))
     }
 
     const queryList = await this.Model.search(q)
@@ -657,9 +658,9 @@ class userController extends baseController {
       },
     ]
 
-    const filteredRes = common.filterRes(queryList, rules)
+    const filteredRes = commons.filterRes(queryList, rules)
 
-    return (ctx.body = yapi.commons.resReturn(filteredRes, 0, 'ok'))
+    return (ctx.body = commons.resReturn(filteredRes, 0, 'ok'))
   }
 
   /**
@@ -678,7 +679,7 @@ class userController extends baseController {
     const result = {}
     try {
       if (type === 'interface') {
-        const interfaceInst = yapi.getInst(interfaceModel)
+        const interfaceInst = cons.getInst(interfaceModel)
         const interfaceData = await interfaceInst.get(id)
         result.interface = interfaceData
         type = 'project'
@@ -686,7 +687,7 @@ class userController extends baseController {
       }
 
       if (type === 'project') {
-        const projectInst = yapi.getInst(projectModel)
+        const projectInst = cons.getInst(projectModel)
         const projectData = await projectInst.get(id)
         result.project = projectData.toObject()
         let ownerAuth = await this.checkAuth(id, 'project', 'danger'),
@@ -706,7 +707,7 @@ class userController extends baseController {
       }
 
       if (type === 'group') {
-        const groupInst = yapi.getInst(groupModel)
+        const groupInst = cons.getInst(groupModel)
         const groupData = await groupInst.get(id)
         result.group = groupData.toObject()
         let ownerAuth = await this.checkAuth(id, 'group', 'danger'),
@@ -723,9 +724,9 @@ class userController extends baseController {
         }
       }
 
-      return (ctx.body = yapi.commons.resReturn(result))
+      return (ctx.body = commons.resReturn(result))
     } catch (e) {
-      return (ctx.body = yapi.commons.resReturn(result, 422, e.message))
+      return (ctx.body = commons.resReturn(result, 422, e.message))
     }
   }
 }

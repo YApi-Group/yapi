@@ -1,5 +1,6 @@
 import koaRouter from 'koa-router'
 
+import cons from './cons'
 import interfaceController from './controllers/interface.js'
 import { createAction } from './utils/commons.js'
 import yapi from './yapi.js'

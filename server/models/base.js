@@ -1,8 +1,8 @@
 import mongoose from 'mongoose'
 
+import * as commons from '../utils/commons'
 import db from '../utils/db'
 import autoIncrement from '../utils/mongoose-auto-increment'
-import yapi from '../yapi.js'
 
 /**
  * 所有的model都需要继承baseModel, 且需要 getSchema和getName方法，不然会报错
@@ -17,7 +17,7 @@ class BaseModel {
         model: this.name,
         field: this.getPrimaryKey(),
         startAt: 11,
-        incrementBy: yapi.commons.rand(1, 10),
+        incrementBy: commons.rand(1, 10),
       })
     }
 
@@ -39,11 +39,11 @@ class BaseModel {
    * 获取collection的schema结构
    */
   getSchema() {
-    yapi.commons.log('Model Class need getSchema function', 'error')
+    commons.log('Model Class need getSchema function', 'error')
   }
 
   getName() {
-    yapi.commons.log('Model Class need name', 'error')
+    commons.log('Model Class need name', 'error')
   }
 }
 

@@ -5,6 +5,7 @@ import handleImportData from '../../common/HandleImportData'
 import createContext from '../../common/createContext'
 import { handleParams, crossRequest, handleCurrDomain, checkNameIsExistInArray } from '../../common/postmanLib'
 import { handleParamsValue, ArrayToObject } from '../../common/utils.js'
+import cons from '../cons'
 import followModel from '../models/follow.js'
 import interfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
@@ -28,13 +29,13 @@ yapi.emitHook('import_data', importDataModule)
 class openController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.projectModel = yapi.getInst(projectModel)
-    this.interfaceColModel = yapi.getInst(interfaceColModel)
-    this.interfaceCaseModel = yapi.getInst(interfaceCaseModel)
-    this.interfaceModel = yapi.getInst(interfaceModel)
-    this.interfaceCatModel = yapi.getInst(interfaceCatModel)
-    this.followModel = yapi.getInst(followModel)
-    this.userModel = yapi.getInst(userModel)
+    this.projectModel = cons.getInst(projectModel)
+    this.interfaceColModel = cons.getInst(interfaceColModel)
+    this.interfaceCaseModel = cons.getInst(interfaceCaseModel)
+    this.interfaceModel = cons.getInst(interfaceModel)
+    this.interfaceCatModel = cons.getInst(interfaceCatModel)
+    this.followModel = cons.getInst(followModel)
+    this.userModel = cons.getInst(userModel)
     this.handleValue = this.handleValue.bind(this)
     this.schemaMap = {
       runAutoTest: {
@@ -139,7 +140,7 @@ class openController extends baseController {
       },
       () => { /* noop */ },
       token,
-      yapi.WEBCONFIG.port,
+      cons.WEBCONFIG.port,
     )
 
     if (errorMessage.length > 0) {

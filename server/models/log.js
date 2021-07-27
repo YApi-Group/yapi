@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-import yapi from '../yapi.js'
+import * as commons from '../utils/commons'
 
 import BaseModel from './base.js'
 
@@ -42,7 +42,7 @@ class logModel extends BaseModel {
       uid: data.uid,
       username: data.username,
       typeid: data.typeid,
-      add_time: yapi.commons.time(),
+      add_time: commons.time(),
       data: data.data,
     }
 

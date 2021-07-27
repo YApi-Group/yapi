@@ -5,6 +5,7 @@ import koaBody from 'koa-body'
 import koaStatic from 'koa-static'
 import websockify from 'koa-websocket'
 
+import cons from './cons'
 import mockServer from './middleware/mockServer.js'
 import router from './router.js'
 import * as commons from './utils/commons.js'
@@ -18,7 +19,6 @@ import yapi from './yapi.js'
 import './plugin.js'
 // require('./utils/notice')
 
-yapi.commons = commons
 yapi.connect = dbModule.connect()
 
 // TODO 优化及 remove?
@@ -48,7 +48,7 @@ app.use(async (ctx, next) => {
 app.use(async (ctx, next) => {
   if (ctx.path.indexOf('/prd') === 0) {
     ctx.set('Cache-Control', 'max-age=8640000000')
-    if (yapi.commons.fileExist(path.join(yapi.WEBROOT, 'static', ctx.path + '.gz'))) {
+    if (commons.fileExist(path.join(cons.WEBROOT, 'static', ctx.path + '.gz'))) {
       ctx.set('Content-Encoding', 'gzip')
       ctx.path = ctx.path + '.gz'
     }
@@ -56,11 +56,13 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-app.use(koaStatic(path.join(yapi.WEBROOT, 'static'), { index: 'index.html', gzip: true }))
+app.use(koaStatic(path.join(cons.WEBROOT, 'static'), { index: 'index.html', gzip: true }))
 
-const server = app.listen(yapi.WEBCONFIG.port)
+const server = app.listen(cons.WEBCONFIG.port)
 
-server.setTimeout(yapi.WEBCONFIG.timeout)
+server.setTimeout(cons.WEBCONFIG.timeout)
 
-commons.log(`服务已启动，请打开下面链接访问: \nhttp://127.0.0.1${yapi.WEBCONFIG.port === '80' ? '' : ':' + yapi.WEBCONFIG.port
-}/`)
+commons.log(`
+服务已启动，请打开下面链接访问:
+http://127.0.0.1${cons.WEBCONFIG.port === '80' ? '' : ':' + cons.WEBCONFIG.port}/
+`)

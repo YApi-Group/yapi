@@ -3,12 +3,13 @@ import _ from 'underscore'
 
 // import variable from '../../client/constants/variable.js'
 // eslint-disable-next-line
-import variable from '../../variable.js'
-
 import mockExtra from '../../common/mock-extra.js'
 import { schemaValidator } from '../../common/utils.js'
+import variable from '../../variable.js'
+import cons from '../cons'
 import interfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
+import * as commons from '../utils/commons'
 import yapi from '../yapi.js'
 
 /**
@@ -128,8 +129,8 @@ function mockValidator(interfaceData, ctx) {
   let validResult
   // json schema 判断
   if (variable.HTTP_METHOD[method].request_body && interfaceData.req_body_type === 'json' && interfaceData.req_body_is_json_schema === true) {
-    const schema = yapi.commons.json_parse(interfaceData.req_body_other)
-    const params = yapi.commons.json_parse(ctx.request.body)
+    const schema = commons.json_parse(interfaceData.req_body_other)
+    const params = commons.json_parse(ctx.request.body)
     validResult = schemaValidator(schema, params)
   }
   if (noRequiredArr.length > 0 || (validResult && !validResult.valid)) {
@@ -149,7 +150,7 @@ function mockValidator(interfaceData, ctx) {
 export default async (ctx, next) => {
   // no used variable 'hostname' & 'config'
   // let hostname = ctx.hostname;
-  // let config = yapi.WEBCONFIG;
+  // let config = cons.WEBCONFIG;
   let path = ctx.path
   const header = ctx.request.header
 
@@ -169,23 +170,23 @@ export default async (ctx, next) => {
   // ctx.set('Access-Control-Allow-Origin', '*');
 
   if (!projectId) {
-    return (ctx.body = yapi.commons.resReturn(null, 400, 'projectId不能为空'))
+    return (ctx.body = commons.resReturn(null, 400, 'projectId不能为空'))
   }
 
-  let projectInst = yapi.getInst(projectModel),
+  let projectInst = cons.getInst(projectModel),
     project
   try {
     project = await projectInst.get(projectId)
   } catch (e) {
-    return (ctx.body = yapi.commons.resReturn(null, 403, e.message))
+    return (ctx.body = commons.resReturn(null, 403, e.message))
   }
 
   if (!project) {
-    return (ctx.body = yapi.commons.resReturn(null, 400, '不存在的项目'))
+    return (ctx.body = commons.resReturn(null, 400, '不存在的项目'))
   }
 
   let interfaceData, newpath
-  const interfaceInst = yapi.getInst(interfaceModel)
+  const interfaceInst = cons.getInst(interfaceModel)
 
   try {
     newpath = path.substr(project.basepath.length)
@@ -252,7 +253,7 @@ export default async (ctx, next) => {
           return handleCorsRequest(ctx)
         }
 
-        return (ctx.body = yapi.commons.resReturn(
+        return (ctx.body = commons.resReturn(
           null,
           404,
           `不存在的api, 当前请求path为 ${newpath}， 请求方法为 ${
@@ -264,7 +265,7 @@ export default async (ctx, next) => {
     }
 
     if (interfaceData.length > 1) {
-      return (ctx.body = yapi.commons.resReturn(null, 405, '存在多个api，请检查数据库'))
+      return (ctx.body = commons.resReturn(null, 405, '存在多个api，请检查数据库'))
     } 
     interfaceData = interfaceData[0]
 
@@ -272,7 +273,7 @@ export default async (ctx, next) => {
     if (project.strice) {
       const validResult = mockValidator(interfaceData, ctx)
       if (!validResult.valid) {
-        return (ctx.body = yapi.commons.resReturn(
+        return (ctx.body = commons.resReturn(
           null,
           404,
           `接口字段验证不通过, ${validResult.message}`,
@@ -287,8 +288,8 @@ export default async (ctx, next) => {
       if (interfaceData.res_body_type === 'json') {
         if (interfaceData.res_body_is_json_schema === true) {
           // json-schema
-          const schema = yapi.commons.json_parse(interfaceData.res_body)
-          res = yapi.commons.schemaToJson(schema, {
+          const schema = commons.json_parse(interfaceData.res_body)
+          res = commons.schemaToJson(schema, {
             alwaysFakeOptionals: true,
           })
         } else {
@@ -303,7 +304,7 @@ export default async (ctx, next) => {
           }
           // console.log('body', ctx.request.body)
 
-          res = mockExtra(yapi.commons.json_parse(interfaceData.res_body), {
+          res = mockExtra(commons.json_parse(interfaceData.res_body), {
             query: ctx.request.query,
             body: ctx.request.body,
             params: { ...ctx.request.query, ...ctx.request.body },
@@ -315,7 +316,7 @@ export default async (ctx, next) => {
           res = Mock.mock(res)
         } catch (e) {
           console.log('err', e.message)
-          yapi.commons.log(e, 'error')
+          commons.log(e, 'error')
         }
       }
 
@@ -332,7 +333,7 @@ export default async (ctx, next) => {
       if (project.is_mock_open && project.project_mock_script) {
         // 项目层面的mock脚本解析
         const script = project.project_mock_script
-        yapi.commons.handleMockScript(script, context)
+        commons.handleMockScript(script, context)
       }
 
       await yapi.emitHook('mock_after', context)
@@ -376,7 +377,7 @@ export default async (ctx, next) => {
       ctx.body = context.mockJson
       return  
     } catch (e) {
-      yapi.commons.log(e, 'error')
+      commons.log(e, 'error')
       return (ctx.body = {
         errcode: 400,
         errmsg: '解析出错，请检查。Error: ' + e.message,
@@ -384,7 +385,7 @@ export default async (ctx, next) => {
       })
     }
   } catch (e) {
-    yapi.commons.log(e, 'error')
-    return (ctx.body = yapi.commons.resReturn(null, 409, e.message))
+    commons.log(e, 'error')
+    return (ctx.body = commons.resReturn(null, 409, e.message))
   }
 }

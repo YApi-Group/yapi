@@ -1,4 +1,4 @@
-import yapi from '../yapi.js'
+import * as commons from '../utils/commons'
 
 import BaseModel from './base.js'
 
@@ -185,7 +185,7 @@ class groupModel extends BaseModel {
         custom_field1: data.custom_field1,
         group_name: data.group_name,
         group_desc: data.group_desc,
-        up_time: yapi.commons.time(),
+        up_time: commons.time(),
       },
     )
   }

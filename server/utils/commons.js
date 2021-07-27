@@ -11,13 +11,13 @@ import sha1 from 'sha1'
 import _ from 'underscore'
 
 import { schemaValidator } from '../../common/utils.js'
+import cons from '../cons'
 import interfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import logModel from '../models/log.js'
 import projectModel from '../models/project.js'
 import userModel from '../models/user.js'
-import yapi from '../yapi.js'
 
 jsf.extend('mock', function () {
   return {
@@ -96,8 +96,6 @@ export const log = (msg, type) => {
   const year = date.getFullYear()
   const month = date.getMonth() + 1
 
-  const logfile = path.join(yapi.WEBROOT_LOG, year + '-' + month + '.log')
-
   if (typeof msg === 'object') {
     msg = msg instanceof Error ? msg.message : JSON.stringify(msg)
   }
@@ -105,7 +103,8 @@ export const log = (msg, type) => {
   // let data = (new Date).toLocaleString() + '\t|\t' + type + '\t|\t' + msg + '\n';
   const data = `[ ${new Date().toLocaleString()} ] [ ${type} ] ${msg}\n`
 
-  fs.writeFileSync(logfile, data, {
+  const logPath = path.join(cons.WEBROOT_LOG, year + '-' + month + '.log')
+  fs.writeFileSync(logPath, data, {
     flag: 'a',
   })
 }
@@ -119,6 +118,7 @@ export const fileExist = filePath => {
 }
 
 export const time = () => Date.parse(new Date()) / 1000
+// export const time = () => Math.floor(new Date().getTime() / 1000)
 
 export const fieldSelect = (data, field) => {
   if (!data || !field || !Array.isArray(field)) {
@@ -166,23 +166,21 @@ export const expireDate = day => {
 }
 
 export const sendMail = (options, cb) => {
-  if (!yapi.mail) { return false }
+  if (!cons.mail) { return false }
   options.subject = options.subject ? options.subject + '-YApi 平台' : 'YApi 平台'
 
-  cb
-    = cb
-    || function (err) {
-      if (err) {
-        yapi.commons.log('send mail ' + options.to + ' error,' + err.message, 'error')
-      } else {
-        yapi.commons.log('send mail ' + options.to + ' success')
-      }
+  cb = cb || function (err) {
+    if (err) {
+      log('send mail ' + options.to + ' error,' + err.message, 'error')
+    } else {
+      log('send mail ' + options.to + ' success')
     }
+  }
 
   try {
-    yapi.mail.sendMail(
+    cons.mail.sendMail(
       {
-        from: yapi.WEBCONFIG.mail.from,
+        from: cons.WEBCONFIG.mail.from,
         to: options.to,
         subject: options.subject,
         html: options.contents,
@@ -190,7 +188,7 @@ export const sendMail = (options, cb) => {
       cb,
     )
   } catch (e) {
-    yapi.commons.log(e.message, 'error')
+    log(e.message, 'error')
     console.error(e.message); // eslint-disable-line
   }
 }
@@ -370,7 +368,7 @@ export const validateParams = (schema2, params) => {
 
 export const saveLog = logData => {
   try {
-    const logInst = yapi.getInst(logModel)
+    const logInst = cons.getInst(logModel)
     const data = {
       content: logData.content,
       type: logData.type,
@@ -382,7 +380,7 @@ export const saveLog = logData => {
 
     logInst.save(data).then()
   } catch (e) {
-    yapi.commons.log(e, 'error'); // eslint-disable-line
+    log(e, 'error'); // eslint-disable-line
   }
 }
 
@@ -405,10 +403,10 @@ export const createAction = (router, baseurl, routerController, action, path, me
       ctx.params = { ...ctx.request.query, ...ctx.request.body, ...ctx.params }
       if (inst.schemaMap && typeof inst.schemaMap === 'object' && inst.schemaMap[action]) {
 
-        const validResult = yapi.commons.validateParams(inst.schemaMap[action], ctx.params)
+        const validResult = validateParams(inst.schemaMap[action], ctx.params)
 
         if (!validResult.valid) {
-          return (ctx.body = yapi.commons.resReturn(null, 400, validResult.message))
+          return (ctx.body = resReturn(null, 400, validResult.message))
         }
       }
       if (inst.$auth === true) {
@@ -416,11 +414,11 @@ export const createAction = (router, baseurl, routerController, action, path, me
       } else if (ws === true) {
         ctx.ws.send('请登录...')
       } else {
-        ctx.body = yapi.commons.resReturn(null, 40011, '请登录...')
+        ctx.body = resReturn(null, 40011, '请登录...')
       }
     } catch (err) {
-      ctx.body = yapi.commons.resReturn(null, 40011, '服务器出错...')
-      yapi.commons.log(err, 'error')
+      ctx.body = resReturn(null, 40011, '服务器出错...')
+      log(err, 'error')
     }
   })
 }
@@ -450,10 +448,10 @@ export function handleParamsValue(params, val) {
 }
 
 export async function getCaseList(id) {
-  const caseInst = yapi.getInst(interfaceCaseModel)
-  const colInst = yapi.getInst(interfaceColModel)
-  const projectInst = yapi.getInst(projectModel)
-  const interfaceInst = yapi.getInst(interfaceModel)
+  const caseInst = cons.getInst(interfaceCaseModel)
+  const colInst = cons.getInst(interfaceColModel)
+  const projectInst = cons.getInst(projectModel)
+  const interfaceInst = cons.getInst(interfaceModel)
 
   let resultList = await caseInst.list(id, 'all')
   const colData = await colInst.get(id)
@@ -477,7 +475,7 @@ export async function getCaseList(id) {
     resultList[index] = result
   }
   resultList = resultList.sort((a, b) => a.index - b.index)
-  const ctxBody = yapi.commons.resReturn(resultList)
+  const ctxBody = resReturn(resultList)
   ctxBody.colData = colData
   return ctxBody
 }
@@ -497,7 +495,7 @@ function convertString(variable) {
 }
 
 export const runCaseScript = async function runCaseScript(params, colId, interfaceId) {
-  const colInst = yapi.getInst(interfaceColModel)
+  const colInst = cons.getInst(interfaceColModel)
   const colData = await colInst.get(colId)
   const logs = []
   const context = {
@@ -529,7 +527,7 @@ export const runCaseScript = async function runCaseScript(params, colId, interfa
     }
 
     if (colData.checkResponseSchema) {
-      const interfaceInst = yapi.getInst(interfaceModel)
+      const interfaceInst = cons.getInst(interfaceModel)
       const interfaceData = await interfaceInst.get(interfaceId)
       if (interfaceData.res_body_is_json_schema && interfaceData.res_body) {
         const schema = JSON.parse(interfaceData.res_body)
@@ -547,7 +545,7 @@ ${JSON.stringify(schema, null, 2)}`)
       // script 是断言
       if (globalScript) {
         logs.push('执行脚本：' + globalScript)
-        result = yapi.commons.sandbox(context, globalScript)
+        result = sandbox(context, globalScript)
       }
     }
 
@@ -555,21 +553,21 @@ ${JSON.stringify(schema, null, 2)}`)
     // script 是断言
     if (script) {
       logs.push('执行脚本:' + script)
-      result = yapi.commons.sandbox(context, script)
+      result = sandbox(context, script)
     }
     result.logs = logs
-    return yapi.commons.resReturn(result)
+    return resReturn(result)
   } catch (err) {
     logs.push(convertString(err))
     result.logs = logs
     logs.push(err.name + ': ' + err.message)
-    return yapi.commons.resReturn(result, 400, err.name + ': ' + err.message)
+    return resReturn(result, 400, err.name + ': ' + err.message)
   }
 }
 
 export async function getUserdata(uid, role) {
   role = role || 'dev'
-  const userInst = yapi.getInst(userModel)
+  const userInst = cons.getInst(userModel)
   const userData = await userInst.findById(uid)
   if (!userData) {
     return null
@@ -602,7 +600,7 @@ export function handleMockScript(script, context) {
       const parts = Cookie.split('=')
       sandbox.cookie[parts[0].trim()] = (parts[1] || '').trim()
     })
-  sandbox = yapi.commons.sandbox(sandbox, script)
+  sandbox = sandbox(sandbox, script)
   sandbox.delay = isNaN(sandbox.delay) ? 0 : Number(sandbox.delay)
 
   context.mockJson = sandbox.mockJson

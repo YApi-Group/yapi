@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 
-import yapi from '../yapi.js'
+import cons from '../cons'
+import * as commons from '../utils/commons'
 
 import baseController from './base.js'
 
@@ -18,12 +19,12 @@ class interfaceColController extends baseController {
       const query = ctx.query
       // cookie 检测
       ctx.cookies.set('_uid', 12, {
-        expires: yapi.commons.expireDate(7),
+        expires: commons.expireDate(7),
         httpOnly: true,
       })
-      ctx.body = yapi.commons.resReturn(query)
+      ctx.body = commons.resReturn(query)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -39,9 +40,9 @@ class interfaceColController extends baseController {
     try {
       const params = ctx.request.body
       ctx.status = Number(ctx.query.code) || 200
-      ctx.body = yapi.commons.resReturn(params)
+      ctx.body = commons.resReturn(params)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -55,9 +56,9 @@ class interfaceColController extends baseController {
   async testPost(ctx) {
     try {
       const params = ctx.request.body
-      ctx.body = yapi.commons.resReturn(params)
+      ctx.body = commons.resReturn(params)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -91,14 +92,14 @@ class interfaceColController extends baseController {
           chunk.copy(data, pos)
           pos += chunk.length
         }
-        fs.writeFileSync(path.join(yapi.WEBROOT_RUNTIME, 'test.text'), data, function (err) {
-          return (ctx.body = yapi.commons.resReturn(null, 402, '写入失败'))
+        fs.writeFileSync(path.join(cons.WEBROOT_RUNTIME, 'test.text'), data, function (err) {
+          return (ctx.body = commons.resReturn(null, 402, '写入失败'))
         })
       })
 
-      ctx.body = yapi.commons.resReturn({ res: '上传成功' })
+      ctx.body = commons.resReturn({ res: '上传成功' })
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -112,11 +113,11 @@ class interfaceColController extends baseController {
   async testFilesUpload(ctx) {
     try {
       const file = ctx.request.body.files.file
-      const newPath = path.join(yapi.WEBROOT_RUNTIME, 'test.text')
+      const newPath = path.join(cons.WEBROOT_RUNTIME, 'test.text')
       fs.renameSync(file.path, newPath)
-      ctx.body = yapi.commons.resReturn({ res: '上传成功' })
+      ctx.body = commons.resReturn({ res: '上传成功' })
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -130,9 +131,9 @@ class interfaceColController extends baseController {
   async testPut(ctx) {
     try {
       const params = ctx.request.body
-      ctx.body = yapi.commons.resReturn(params)
+      ctx.body = commons.resReturn(params)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -146,9 +147,9 @@ class interfaceColController extends baseController {
   async testDelete(ctx) {
     try {
       const body = ctx.request.body
-      ctx.body = yapi.commons.resReturn(body)
+      ctx.body = commons.resReturn(body)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -162,9 +163,9 @@ class interfaceColController extends baseController {
   async testHead(ctx) {
     try {
       const query = ctx.query
-      ctx.body = yapi.commons.resReturn(query)
+      ctx.body = commons.resReturn(query)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -178,9 +179,9 @@ class interfaceColController extends baseController {
   async testOptions(ctx) {
     try {
       const query = ctx.query
-      ctx.body = yapi.commons.resReturn(query)
+      ctx.body = commons.resReturn(query)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -194,9 +195,9 @@ class interfaceColController extends baseController {
   async testPatch(ctx) {
     try {
       const params = ctx.request.body
-      ctx.body = yapi.commons.resReturn(params)
+      ctx.body = commons.resReturn(params)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
   /**
@@ -209,9 +210,9 @@ class interfaceColController extends baseController {
   async testRaw(ctx) {
     try {
       const params = ctx.request.body
-      ctx.body = yapi.commons.resReturn(params)
+      ctx.body = commons.resReturn(params)
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 
@@ -232,7 +233,7 @@ class interfaceColController extends baseController {
       console.log(ctx.response)
       ctx.body = result
     } catch (e) {
-      ctx.body = yapi.commons.resReturn(null, 402, e.message)
+      ctx.body = commons.resReturn(null, 402, e.message)
     }
   }
 }

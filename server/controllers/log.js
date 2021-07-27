@@ -1,18 +1,19 @@
+import cons from '../cons'
 import groupModel from '../models/group'
 import interfaceModel from '../models/interface'
 import logModel from '../models/log.js'
 import projectModel from '../models/project'
-import yapi from '../yapi.js'
+import * as commons from '../utils/commons'
 
 import baseController from './base.js'
 
 class logController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = yapi.getInst(logModel)
-    this.groupModel = yapi.getInst(groupModel)
-    this.projectModel = yapi.getInst(projectModel)
-    this.interfaceModel = yapi.getInst(interfaceModel)
+    this.Model = cons.getInst(logModel)
+    this.groupModel = cons.getInst(groupModel)
+    this.projectModel = cons.getInst(projectModel)
+    this.interfaceModel = cons.getInst(interfaceModel)
     this.schemaMap = {
       listByUpdate: {
         '*type': 'string',
@@ -47,10 +48,10 @@ class logController extends baseController {
       type = ctx.request.query.type,
       selectValue = ctx.request.query.selectValue
     if (!typeid) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, 'typeid不能为空'))
+      return (ctx.body = commons.resReturn(null, 400, 'typeid不能为空'))
     }
     if (!type) {
-      return (ctx.body = yapi.commons.resReturn(null, 400, 'type不能为空'))
+      return (ctx.body = commons.resReturn(null, 400, 'type不能为空'))
     }
     try {
       if (type === 'group') {
@@ -77,7 +78,7 @@ class logController extends baseController {
           projectLogList[index] = item
         })
         const total = await this.Model.listCountByGroup(typeid, projectIds)
-        ctx.body = yapi.commons.resReturn({
+        ctx.body = commons.resReturn({
           list: projectLogList,
           total: Math.ceil(total / limit),
         })
@@ -85,13 +86,13 @@ class logController extends baseController {
         const result = await this.Model.listWithPaging(typeid, type, page, limit, selectValue)
         const count = await this.Model.listCount(typeid, type, selectValue)
 
-        ctx.body = yapi.commons.resReturn({
+        ctx.body = commons.resReturn({
           total: Math.ceil(count / limit),
           list: result,
         })
       }
     } catch (err) {
-      ctx.body = yapi.commons.resReturn(null, 402, err.message)
+      ctx.body = commons.resReturn(null, 402, err.message)
     }
   }
   /**
@@ -136,9 +137,9 @@ class logController extends baseController {
       }
 
       // let result = await this.Model.listWithCatid(typeid, type, catId);
-      ctx.body = yapi.commons.resReturn(list)
+      ctx.body = commons.resReturn(list)
     } catch (err) {
-      ctx.body = yapi.commons.resReturn(null, 402, err.message)
+      ctx.body = commons.resReturn(null, 402, err.message)
     }
   }
 }

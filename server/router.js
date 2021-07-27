@@ -1,5 +1,6 @@
 import koaRouter from 'koa-router'
 
+import cons from './cons'
 import followController from './controllers/follow.js'
 import groupController from './controllers/group.js'
 import interfaceController from './controllers/interface.js'

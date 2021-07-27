@@ -1,3 +1,4 @@
+import cons from './cons'
 import yapi from './yapi.js'
 
 /**

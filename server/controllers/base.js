@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import _ from 'underscore'
 
+import cons from '../cons'
 import groupModel from '../models/group.js'
 import interfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
@@ -21,8 +22,8 @@ class baseController {
 
   async init(ctx) {
     this.$user = null
-    this.tokenModel = yapi.getInst(tokenModel)
-    this.projectModel = yapi.getInst(projectModel)
+    this.tokenModel = cons.getInst(tokenModel)
+    this.projectModel = cons.getInst(projectModel)
     const ignoreRouter = [
       '/api/user/login_by_token',
       '/api/user/login',
@@ -103,7 +104,7 @@ class baseController {
             username: 'system',
           }
         } else {
-          const userInst = yapi.getInst(userModel) // 创建user实体
+          const userInst = cons.getInst(userModel) // 创建user实体
           result = await userInst.findById(tokenUid)
         }
 
@@ -131,7 +132,7 @@ class baseController {
       if (!token || !uid) {
         return false
       }
-      const userInst = yapi.getInst(userModel) // 创建user实体
+      const userInst = cons.getInst(userModel) // 创建user实体
       const result = await userInst.findById(uid)
       if (!result) {
         return false
@@ -159,8 +160,8 @@ class baseController {
   }
 
   async checkRegister() {
-    // console.log('config', yapi.WEBCONFIG);
-    if (yapi.WEBCONFIG.closeRegister) {
+    // console.log('config', cons.WEBCONFIG);
+    if (cons.WEBCONFIG.closeRegister) {
       return false
     }
     return true
@@ -168,11 +169,11 @@ class baseController {
   }
 
   async checkLDAP() {
-    // console.log('config', yapi.WEBCONFIG);
-    if (!yapi.WEBCONFIG.ldapLogin) {
+    // console.log('config', cons.WEBCONFIG);
+    if (!cons.WEBCONFIG.ldapLogin) {
       return false
     }
-    return yapi.WEBCONFIG.ldapLogin.enable || false
+    return cons.WEBCONFIG.ldapLogin.enable || false
 
   }
   /**
@@ -222,7 +223,7 @@ class baseController {
         return 'admin'
       }
       if (type === 'interface') {
-        const interfaceInst = yapi.getInst(interfaceModel)
+        const interfaceInst = cons.getInst(interfaceModel)
         const interfaceData = await interfaceInst.get(id)
         result.interfaceData = interfaceData
         // 项目创建者相当于 owner
@@ -234,7 +235,7 @@ class baseController {
       }
 
       if (type === 'project') {
-        const projectInst = yapi.getInst(projectModel)
+        const projectInst = cons.getInst(projectModel)
         const projectData = await projectInst.get(id)
         if (projectData.uid === this.getUid()) {
           // 建立项目的人
@@ -260,7 +261,7 @@ class baseController {
       }
 
       if (type === 'group') {
-        const groupInst = yapi.getInst(groupModel)
+        const groupInst = cons.getInst(groupModel)
         const groupData = await groupInst.get(id)
         // 建立分组的人
         if (groupData.uid === this.getUid()) {
