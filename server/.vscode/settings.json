@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "Catid",
+    "LDAP",
     "WEBCONFIG",
     "WEBROOT",
     "abled",
@@ -11,6 +12,7 @@
     "errmsg",
     "insts",
     "jsondiffpatch",
+    "ladp",
     "passsalt",
     "stylelint",
     "userinfo",

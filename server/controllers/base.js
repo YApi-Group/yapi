@@ -7,8 +7,8 @@ import interfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import tokenModel from '../models/token.js'
 import userModel from '../models/user.js'
+import * as commons from '../utils/commons'
 import { parseToken } from '../utils/token'
-import yapi from '../yapi.js'
 
 class baseController {
   constructor(ctx) {
@@ -88,7 +88,7 @@ class baseController {
 
       const checkId = await this.getProjectIdByToken(token)
       if (!checkId) {
-        ctx.body = yapi.commons.resReturn(null, 42014, 'token 无效')
+        ctx.body = commons.resReturn(null, 42014, 'token 无效')
       }
       const projectData = await this.projectModel.get(checkId)
       if (projectData) {
@@ -154,12 +154,12 @@ class baseController {
 
       return false
     } catch (e) {
-      yapi.commons.log(e, 'error')
+      commons.log(e, 'error')
       return false
     }
   }
 
-  async checkRegister() {
+  checkRegister() {
     // console.log('config', cons.WEBCONFIG);
     if (cons.WEBCONFIG.closeRegister) {
       return false
@@ -168,7 +168,7 @@ class baseController {
 
   }
 
-  async checkLDAP() {
+  checkLDAP() {
     // console.log('config', cons.WEBCONFIG);
     if (!cons.WEBCONFIG.ldapLogin) {
       return false
@@ -184,7 +184,7 @@ class baseController {
   async getLoginStatus(ctx) {
     let body
     if ((await this.checkLogin(ctx)) === true) {
-      const result = yapi.commons.fieldSelect(this.$user, [
+      const result = commons.fieldSelect(this.$user, [
         '_id',
         'username',
         'email',
@@ -194,9 +194,9 @@ class baseController {
         'type',
         'study',
       ])
-      body = yapi.commons.resReturn(result)
+      body = commons.resReturn(result)
     } else {
-      body = yapi.commons.resReturn(null, 40011, '请登录...')
+      body = commons.resReturn(null, 40011, '请登录...')
     }
 
     body.ladp = await this.checkLDAP()
@@ -286,7 +286,7 @@ class baseController {
 
       return 'member'
     } catch (e) {
-      yapi.commons.log(e, 'error')
+      commons.log(e, 'error')
       return false
     }
   }

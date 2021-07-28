@@ -2,7 +2,7 @@ import path from 'path'
 import url from 'url'
 
 import fs from 'fs-extra'
-import { formatters } from 'jsondiffpatch'
+import * as jsondiffpatch from 'jsondiffpatch'
 import _ from 'underscore'
 
 import showDiffMsg from '../../common/diff-view.js'
@@ -20,7 +20,7 @@ import yapi from '../yapi.js'
 
 import baseController from './base.js'
 
-const formattersHtml = formatters.html
+const formattersHtml = jsondiffpatch.formatters.html
 
 // import annotatedCss from "jsondiffpatch/public/formatters-styles/annotated.css"
 // import htmlCss from "jsondiffpatch/public/formatters-styles/html.css"
@@ -48,14 +48,15 @@ function handleHeaders(values) {
       })
     }
   } else if (values.req_body_type === 'json') {
-    values.req_headers
-      ? values.req_headers.map(item => {
+    if (values.req_headers) {
+      values.req_headers.map(item => {
         if (item.name === 'Content-Type') {
           item.value = 'application/json'
           isHaveContentType = true
         }
       })
-      : []
+    }
+
     if (isHaveContentType === false) {
       values.req_headers = values.req_headers || []
       values.req_headers.unshift({
@@ -279,10 +280,8 @@ class interfaceController extends baseController {
     yapi.emitHook('interface_add', result).then()
     this.catModel.get(params.catid).then(cate => {
       const username = this.getUsername()
-      const title = `<a href="/user/profile/${this.getUid()}">${username}</a> 为分类 <a href="/project/${
-        params.project_id
-      }/interface/api/cat_${params.catid}">${cate.name}</a> 添加了接口 <a href="/project/${
-        params.project_id
+      const title = `<a href="/user/profile/${this.getUid()}">${username}</a> 为分类 <a href="/project/${params.project_id
+      }/interface/api/cat_${params.catid}">${cate.name}</a> 添加了接口 <a href="/project/${params.project_id
       }/interface/api/${result._id}">${data.title}</a> `
 
       commons.saveLog({
@@ -717,11 +716,9 @@ class interfaceController extends baseController {
       }
       commons.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 
-                    更新了分类 <a href="/project/${cate.project_id}/interface/api/cat_${
-  data.catid
+                    更新了分类 <a href="/project/${cate.project_id}/interface/api/cat_${data.catid
 }">${cate.name}</a> 
-                    下的接口 <a href="/project/${cate.project_id}/interface/api/${id}">${
-  interfaceData.title
+                    下的接口 <a href="/project/${cate.project_id}/interface/api/${id}">${interfaceData.title
 }</a><p>${params.message}</p>`,
         type: 'project',
         uid: this.getUid(),
@@ -748,8 +745,7 @@ class interfaceController extends baseController {
 
       const project = await this.projectModel.getBaseInfo(interfaceData.project_id)
 
-      const interfaceUrl = `${ctx.request.origin}/project/${
-        interfaceData.project_id
+      const interfaceUrl = `${ctx.request.origin}/project/${interfaceData.project_id
       }/interface/api/${id}`
 
       commons.sendNotice(interfaceData.project_id, {
@@ -825,8 +821,7 @@ class interfaceController extends baseController {
       const username = this.getUsername()
       this.catModel.get(data.catid).then(cate => {
         commons.saveLog({
-          content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分类 <a href="/project/${
-            cate.project_id
+          content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分类 <a href="/project/${cate.project_id
           }/interface/api/cat_${data.catid}">${cate.name}</a> 下的接口 "${data.title}"`,
           type: 'project',
           uid: this.getUid(),
@@ -907,8 +902,7 @@ class interfaceController extends baseController {
 
       const username = this.getUsername()
       commons.saveLog({
-        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 添加了分类  <a href="/project/${
-          params.project_id
+        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 添加了分类  <a href="/project/${params.project_id
         }/interface/api/cat_${result._id}">${params.name}</a>`,
         type: 'project',
         uid: this.getUid(),
@@ -941,8 +935,7 @@ class interfaceController extends baseController {
       })
 
       commons.saveLog({
-        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更新了分类 <a href="/project/${
-          cate.project_id
+        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更新了分类 <a href="/project/${cate.project_id
         }/interface/api/cat_${params.catid}">${cate.name}</a>`,
         type: 'project',
         uid: this.getUid(),
@@ -973,8 +966,7 @@ class interfaceController extends baseController {
 
       const username = this.getUsername()
       commons.saveLog({
-        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分类 "${
-          catData.name
+        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分类 "${catData.name
         }" 及该分类下的接口`,
         type: 'project',
         uid: this.getUid(),
@@ -1103,12 +1095,13 @@ class interfaceController extends baseController {
    * @returns {Object}
    * @example
    */
-  async upIndex(ctx) {
+  upIndex(ctx) {
     try {
       const params = ctx.request.body
       if (!params || !Array.isArray(params)) {
         ctx.body = commons.resReturn(null, 400, '请求参数必须是数组')
       }
+
       params.forEach(item => {
         if (item.id) {
           this.Model.upIndex(item.id, item.index).then(
@@ -1136,7 +1129,7 @@ class interfaceController extends baseController {
    * @returns {Object}
    * @example
    */
-  async upCatIndex(ctx) {
+  upCatIndex(ctx) {
     try {
       const params = ctx.request.body
       if (!params || !Array.isArray(params)) {

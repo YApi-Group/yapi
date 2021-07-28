@@ -1,6 +1,4 @@
-import cons from '../cons'
 import * as commons from '../utils/commons'
-import yapi from '../yapi.js'
 
 import BaseModel from './base.js'
 

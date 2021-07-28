@@ -663,7 +663,7 @@ class projectController extends baseController {
     const result = await projectInst.changeMemberRole(params.id, params.member_uid, params.role)
 
     const username = this.getUsername()
-    yapi
+    cons
       .getInst(userModel)
       .findById(params.member_uid)
       .then(member => {

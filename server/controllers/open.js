@@ -13,6 +13,7 @@ import interfaceCatModel from '../models/interfaceCat.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
 import userModel from '../models/user.js'
+import * as commons from '../utils/commons'
 import renderToHtml from '../utils/reportHtml'
 import yapi from '../yapi.js'
 
@@ -90,11 +91,11 @@ class openController extends baseController {
 
     const token = ctx.params.token
     if (!type || !importDataModule[type]) {
-      return (ctx.body = yapi.commons.resReturn(null, 40022, '不存在的导入方式'))
+      return (ctx.body = commons.resReturn(null, 40022, '不存在的导入方式'))
     }
 
     if (!content && !ctx.params.url) {
-      return (ctx.body = yapi.commons.resReturn(null, 40022, 'json 或者 url 参数，不能都为空'))
+      return (ctx.body = commons.resReturn(null, 40022, 'json 或者 url 参数，不能都为空'))
     }
     try {
       const syncGet = function (url) {
@@ -115,7 +116,7 @@ class openController extends baseController {
       }
       content = JSON.parse(content)
     } catch (e) {
-      return (ctx.body = yapi.commons.resReturn(null, 40022, 'json 格式有误:' + e))
+      return (ctx.body = commons.resReturn(null, 40022, 'json 格式有误:' + e))
     }
 
     const menuList = await this.interfaceCatModel.list(project_id)
@@ -144,9 +145,9 @@ class openController extends baseController {
     )
 
     if (errorMessage.length > 0) {
-      return (ctx.body = yapi.commons.resReturn(null, 404, errorMessage.join('\n')))
+      return (ctx.body = commons.resReturn(null, 404, errorMessage.join('\n')))
     }
-    ctx.body = yapi.commons.resReturn(null, 0, successMessage + warnMessage)
+    ctx.body = commons.resReturn(null, 0, successMessage + warnMessage)
   }
 
   projectInterfaceData(ctx) {
@@ -163,7 +164,7 @@ class openController extends baseController {
     const result = []
     Object.keys(params).map(item => {
       if (/env_/gi.test(item)) {
-        const curEnv = yapi.commons.trim(params[item])
+        const curEnv = commons.trim(params[item])
         const value = { curEnv, project_id: item.split('_')[1] }
         result.push(value)
       }
@@ -172,7 +173,7 @@ class openController extends baseController {
   }
   async runAutoTest(ctx) {
     if (!this.$tokenAuth) {
-      return (ctx.body = yapi.commons.resReturn(null, 40022, 'token 验证失败'))
+      return (ctx.body = commons.resReturn(null, 40022, 'token 验证失败'))
     }
     // console.log(1231312)
     const token = ctx.query.token
@@ -187,12 +188,12 @@ class openController extends baseController {
 
     const colData = await this.interfaceColModel.get(id)
     if (!colData) {
-      return (ctx.body = yapi.commons.resReturn(null, 40022, 'id值不存在'))
+      return (ctx.body = commons.resReturn(null, 40022, 'id值不存在'))
     }
 
     const projectData = await this.projectModel.get(projectId)
 
-    let caseList = await yapi.commons.getCaseList(id)
+    let caseList = await commons.getCaseList(id)
     if (caseList.errcode !== 0) {
       ctx.body = caseList
     }
@@ -261,7 +262,7 @@ class openController extends baseController {
       const autoTestUrl = `${
         ctx.request.origin
       }/api/open/run_auto_test?id=${id}&token=${token}&mode=${ctx.params.mode}`
-      yapi.commons.sendNotice(projectId, {
+      commons.sendNotice(projectId, {
         title: 'YApi自动化测试报告',
         content: `
         <html>
@@ -358,7 +359,7 @@ class openController extends baseController {
   async handleScriptTest(interfaceData, response, validRes, requestParams) {
     
     try {
-      const test = await yapi.commons.runCaseScript({
+      const test = await commons.runCaseScript({
         response: response,
         records: this.records,
         script: interfaceData.test_script,

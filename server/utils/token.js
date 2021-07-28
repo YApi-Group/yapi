@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 
-import yapi from '../yapi'
+import cons from '../cons'
 
 /* 下面是使用加密算法 */
 
