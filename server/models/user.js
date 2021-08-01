@@ -1,6 +1,6 @@
 import BaseModel from './base.js'
 
-class userModel extends BaseModel {
+class UserModel extends BaseModel {
   getName() {
     return 'user'
   }
@@ -111,4 +111,4 @@ class userModel extends BaseModel {
   }
 }
 
-export default userModel
+export default UserModel

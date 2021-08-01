@@ -6,8 +6,9 @@ import interfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
-import userModel from '../models/user.js'
+import UserModel from '../models/user.js'
 import * as commons from '../utils/commons'
+import * as modelUtils from '../utils/modelUtils'
 
 import baseController from './base.js'
 
@@ -144,7 +145,7 @@ class groupController extends baseController {
     if (params.owner_uids) {
       for (let i = 0, len = params.owner_uids.length; i < len; i++) {
         const id = params.owner_uids[i]
-        const groupUserdata = await this.getUserdata(id, 'owner')
+        const groupUserdata = await this.getUserData(id, 'owner')
         if (groupUserdata) {
           owners.push(groupUserdata)
         }
@@ -178,7 +179,7 @@ class groupController extends baseController {
       'type',
     ])
     const username = this.getUsername()
-    commons.saveLog({
+    modelUtils.saveLog({
       content: `<a href="/user/profile/${this.getUid()}">${username}</a> 新增了分组 <a href="/group/${result._id
       }">${params.group_name}</a>`,
       type: 'group',
@@ -196,9 +197,9 @@ class groupController extends baseController {
    * @returns {Promise.<*>}
    */
 
-  async getUserdata(uid, role) {
+  async getUserData(uid, role) {
     role = role || 'dev'
-    const userInst = cons.getInst(userModel)
+    const userInst = cons.getInst(UserModel)
     const userData = await userInst.findById(uid)
     if (!userData) {
       return null
@@ -254,7 +255,7 @@ class groupController extends baseController {
     for (let i = 0, len = params.member_uids.length; i < len; i++) {
       const id = params.member_uids[i]
       const check = await groupInst.checkMemberRepeat(params.id, id)
-      const userdata = await this.getUserdata(id, params.role)
+      const userdata = await this.getUserData(id, params.role)
       if (check > 0) {
         exist_members.push(userdata)
       } else if (!userdata) {
@@ -270,7 +271,7 @@ class groupController extends baseController {
     if (add_members.length) {
       let members = add_members.map(item => `<a href = "/user/profile/${item.uid}">${item.username}</a>`)
       members = members.join('、')
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 新增了分组成员 ${members} 为 ${rolename[params.role]
         }`,
         type: 'group',
@@ -316,8 +317,8 @@ class groupController extends baseController {
     const result = await groupInst.changeMemberRole(params.id, params.member_uid, params.role)
     const username = this.getUsername()
 
-    const groupUserdata = await this.getUserdata(params.member_uid, params.role)
-    commons.saveLog({
+    const groupUserdata = await this.getUserData(params.member_uid, params.role)
+    modelUtils.saveLog({
       content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更改了分组成员 <a href="/user/profile/${params.member_uid
       }">${groupUserdata ? groupUserdata.username : ''}</a> 的权限为 "${rolename[params.role]}"`,
       type: 'group',
@@ -372,8 +373,8 @@ class groupController extends baseController {
     const result = await groupInst.delMember(params.id, params.member_uid)
     const username = this.getUsername()
 
-    const groupUserdata = await this.getUserdata(params.member_uid, params.role)
-    commons.saveLog({
+    const groupUserdata = await this.getUserData(params.member_uid, params.role)
+    modelUtils.saveLog({
       content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分组成员 <a href="/user/profile/${params.member_uid
       }">${groupUserdata ? groupUserdata.username : ''}</a>`,
       type: 'group',
@@ -513,7 +514,7 @@ class groupController extends baseController {
 
     const result = await groupInst.up(params.id, params)
     const username = this.getUsername()
-    commons.saveLog({
+    modelUtils.saveLog({
       content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更新了 <a href="/group/${params.id
       }">${params.group_name}</a> 分组`,
       type: 'group',

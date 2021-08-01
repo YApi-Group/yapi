@@ -4,7 +4,7 @@ import fs from 'fs-extra'
 import mongoose from 'mongoose'
 
 import cons from './cons'
-import userModel from './models/user.js'
+import UserModel from './models/user.js'
 import * as commons from './utils/commons.js'
 import dbModule from './utils/db.js'
 import yapi from './yapi.js'
@@ -24,7 +24,7 @@ function install() {
   // }
   // function setupSql() {
 
-  const userInst = cons.getInst(userModel)
+  const userInst = cons.getInst(UserModel)
   const passsalt = commons.randStr()
   const result = userInst.save({
     username: cons.WEBCONFIG.adminAccount.substr(0, cons.WEBCONFIG.adminAccount.indexOf('@')),

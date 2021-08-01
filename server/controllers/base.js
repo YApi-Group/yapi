@@ -6,7 +6,7 @@ import groupModel from '../models/group.js'
 import interfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import tokenModel from '../models/token.js'
-import userModel from '../models/user.js'
+import UserModel from '../models/user.js'
 import * as commons from '../utils/commons'
 import { parseToken } from '../utils/token'
 
@@ -104,7 +104,7 @@ class baseController {
             username: 'system',
           }
         } else {
-          const userInst = cons.getInst(userModel) // 创建user实体
+          const userInst = cons.getInst(UserModel) // 创建user实体
           result = await userInst.findById(tokenUid)
         }
 
@@ -132,7 +132,7 @@ class baseController {
       if (!token || !uid) {
         return false
       }
-      const userInst = cons.getInst(userModel) // 创建user实体
+      const userInst = cons.getInst(UserModel) // 创建user实体
       const result = await userInst.findById(uid)
       if (!result) {
         return false

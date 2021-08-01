@@ -14,8 +14,9 @@ import interfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceCatModel from '../models/interfaceCat.js'
 import projectModel from '../models/project.js'
-import userModel from '../models/user.js'
+import UserModel from '../models/user.js'
 import * as commons from '../utils/commons'
+import * as modelUtils from '../utils/modelUtils'
 import yapi from '../yapi.js'
 
 import baseController from './base.js'
@@ -75,7 +76,7 @@ class interfaceController extends baseController {
     this.projectModel = cons.getInst(projectModel)
     this.caseModel = cons.getInst(interfaceCaseModel)
     this.followModel = cons.getInst(followModel)
-    this.userModel = cons.getInst(userModel)
+    this.UserModel = cons.getInst(UserModel)
     this.groupModel = cons.getInst(groupModel)
 
     const minLengthStringField = {
@@ -268,7 +269,7 @@ class interfaceController extends baseController {
     const uid = this.getUid()
 
     if (this.getRole() !== 'admin' && uid !== 999999) {
-      const userdata = await commons.getUserdata(uid, 'dev')
+      const userdata = await modelUtils.getUserData(uid, 'dev')
       // 检查一下是否有这个人
       const check = await this.projectModel.checkMemberRepeat(params.project_id, uid)
       if (check === 0 && userdata) {
@@ -284,7 +285,7 @@ class interfaceController extends baseController {
       }/interface/api/cat_${params.catid}">${cate.name}</a> 添加了接口 <a href="/project/${params.project_id
       }/interface/api/${result._id}">${data.title}</a> `
 
-      commons.saveLog({
+      modelUtils.saveLog({
         content: title,
         type: 'project',
         uid: this.getUid(),
@@ -412,7 +413,7 @@ class interfaceController extends baseController {
       if (!result) {
         return (ctx.body = commons.resReturn(null, 490, '不存在的'))
       }
-      const userinfo = await this.userModel.findById(result.uid)
+      const userinfo = await this.UserModel.findById(result.uid)
       const project = await this.projectModel.getBaseInfo(result.project_id)
       if (project.project_type === 'private') {
         if ((await this.checkAuth(project._id, 'project', 'view')) !== true) {
@@ -714,7 +715,7 @@ class interfaceController extends baseController {
       if (diffView2.length <= 0) {
         return // 没有变化时，不写日志
       }
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 
                     更新了分类 <a href="/project/${cate.project_id}/interface/api/cat_${data.catid
 }">${cate.name}</a> 
@@ -820,7 +821,7 @@ class interfaceController extends baseController {
       await this.caseModel.delByInterfaceId(id)
       const username = this.getUsername()
       this.catModel.get(data.catid).then(cate => {
-        commons.saveLog({
+        modelUtils.saveLog({
           content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分类 <a href="/project/${cate.project_id
           }/interface/api/cat_${data.catid}">${cate.name}</a> 下的接口 "${data.title}"`,
           type: 'project',
@@ -846,7 +847,7 @@ class interfaceController extends baseController {
 
       const result = await this.Model.get(id)
       if (result.edit_uid !== 0 && result.edit_uid !== this.getUid()) {
-        userInst = cons.getInst(userModel)
+        userInst = cons.getInst(UserModel)
         userinfo = await userInst.findById(result.edit_uid)
         data = {
           errno: result.edit_uid,
@@ -901,7 +902,7 @@ class interfaceController extends baseController {
       })
 
       const username = this.getUsername()
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 添加了分类  <a href="/project/${params.project_id
         }/interface/api/cat_${result._id}">${params.name}</a>`,
         type: 'project',
@@ -934,7 +935,7 @@ class interfaceController extends baseController {
         up_time: commons.time(),
       })
 
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更新了分类 <a href="/project/${cate.project_id
         }/interface/api/cat_${params.catid}">${cate.name}</a>`,
         type: 'project',
@@ -965,7 +966,7 @@ class interfaceController extends baseController {
       }
 
       const username = this.getUsername()
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分类 "${catData.name
         }" 及该分类下的接口`,
         type: 'project',

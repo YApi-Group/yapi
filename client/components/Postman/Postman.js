@@ -1,5 +1,4 @@
-import React, { PureComponent as Component } from 'react'
-import PropTypes from 'prop-types'
+import { EditOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import {
   Button,
   Input,
@@ -15,31 +14,26 @@ import {
   Col,
   Alert,
 } from 'antd'
-import { EditOutlined, QuestionCircleOutlined } from '@ant-design/icons'
-import AceEditor from '@/components/AceEditor/AceEditor'
-import _ from 'underscore'
 import axios from 'axios'
 import json5 from 'json5'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import _ from 'underscore'
 
-import constants from '../../constants/variable.js'
+import AceEditor from '@/components/AceEditor/AceEditor'
+import plugin from '@/plugin.js'
+import createContext from '@common/createContext'
+import { handleParams, checkRequestBodyIsRaw, handleContentType, crossRequest, checkNameIsExistInArray } from '@common/postmanLib.js'
+import { handleParamsValue, changeArrayToObject, schemaValidator } from '@common/utils.js'
+
 import { isJson, deepCopyJson, json5_parse } from '../../common.js'
-import ModalPostman from '../ModalPostman/index.js'
+import constants from '../../constants/variable.js'
 import ProjectEnv from '../../containers/Project/Setting/ProjectEnv/index.js'
+import ModalPostman from '../ModalPostman/index.js'
 
 import CheckCrossInstall, { initCrossRequest } from './CheckCrossInstall.js'
 
 import './Postman.scss'
-
-const { handleParamsValue, ArrayToObject, schemaValidator } = require('@common/utils.js')
-const {
-  handleParams,
-  checkRequestBodyIsRaw,
-  handleContentType,
-  crossRequest,
-  checkNameIsExistInArray,
-} = require('@common/postmanLib.js')
-const plugin = require('@/plugin.js')
-const createContext = require('@common/createContext')
 
 const HTTP_METHOD = constants.HTTP_METHOD
 const InputGroup = Input.Group
@@ -294,7 +288,7 @@ export default class Run extends Component {
   }
 
   handleValue(val, global) {
-    const globalValue = ArrayToObject(global)
+    const globalValue = changeArrayToObject(global)
     return handleParamsValue(val, {
       global: globalValue,
     })

@@ -8,7 +8,7 @@ import avatarModel from '../models/avatar.js'
 import groupModel from '../models/group.js'
 import interfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
-import userModel from '../models/user.js'
+import UserModel from '../models/user.js'
 import * as commons from '../utils/commons.js'
 import * as ldap from '../utils/ldap.js'
 import yapi from '../yapi.js'
@@ -18,7 +18,7 @@ import baseController from './base.js'
 class userController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = cons.getInst(userModel)
+    this.Model = cons.getInst(UserModel)
   }
   /**
    * 用户登录接口
@@ -33,7 +33,7 @@ class userController extends baseController {
    */
   async login(ctx) {
     // 登录
-    const userInst = cons.getInst(userModel) // 创建user实体
+    const userInst = cons.getInst(UserModel) // 创建user实体
     let email = ctx.request.body.email
     email = (email || '').trim()
     const password = ctx.request.body.password
@@ -98,7 +98,7 @@ class userController extends baseController {
    */
 
   async upStudy(ctx) {
-    const userInst = cons.getInst(userModel) // 创建user实体
+    const userInst = cons.getInst(UserModel) // 创建user实体
     const data = {
       up_time: commons.time(),
       study: true,
@@ -152,7 +152,7 @@ class userController extends baseController {
       const login = await this.handleThirdLogin(emailParams, username)
 
       if (login === true) {
-        const userInst = cons.getInst(userModel) // 创建user实体
+        const userInst = cons.getInst(UserModel) // 创建user实体
         const result = await userInst.findByEmail(emailParams)
         return (ctx.body = commons.resReturn(
           {
@@ -178,7 +178,7 @@ class userController extends baseController {
   // 处理第三方登录
   async handleThirdLogin(email, username) {
     let user, data, passsalt
-    const userInst = cons.getInst(userModel)
+    const userInst = cons.getInst(UserModel)
 
     try {
       user = await userInst.findByEmail(email)
@@ -225,7 +225,7 @@ class userController extends baseController {
    */
   async changePassword(ctx) {
     const params = ctx.request.body
-    const userInst = cons.getInst(userModel)
+    const userInst = cons.getInst(UserModel)
 
     if (!params.uid) {
       return (ctx.body = commons.resReturn(null, 400, 'uid不能为空'))
@@ -305,7 +305,7 @@ class userController extends baseController {
     if (cons.WEBCONFIG.closeRegister) {
       return (ctx.body = commons.resReturn(null, 400, '禁止注册，请联系管理员'))
     }
-    const userInst = cons.getInst(userModel)
+    const userInst = cons.getInst(UserModel)
     let params = ctx.request.body // 获取请求的参数,检查是否存在用户名和密码
 
     params = commons.handleParams(params, {
@@ -384,7 +384,7 @@ class userController extends baseController {
     const page = ctx.request.query.page || 1,
       limit = ctx.request.query.limit || 10
 
-    const userInst = cons.getInst(userModel)
+    const userInst = cons.getInst(UserModel)
     try {
       const user = await userInst.listWithPaging(page, limit)
       const count = await userInst.listCount()
@@ -411,7 +411,7 @@ class userController extends baseController {
   async findById(ctx) {
     // 根据id获取用户信息
     try {
-      const userInst = cons.getInst(userModel)
+      const userInst = cons.getInst(UserModel)
       const id = ctx.request.query.id
 
       if (this.getRole() !== 'admin' && id !== this.getUid()) {
@@ -459,7 +459,7 @@ class userController extends baseController {
         return (ctx.body = commons.resReturn(null, 402, 'Without permission.'))
       }
 
-      const userInst = cons.getInst(userModel)
+      const userInst = cons.getInst(UserModel)
       const id = ctx.request.body.id
       if (id === this.getUid()) {
         return (ctx.body = commons.resReturn(null, 403, '禁止删除管理员'))
@@ -503,7 +503,7 @@ class userController extends baseController {
         return (ctx.body = commons.resReturn(null, 401, '没有权限'))
       }
 
-      const userInst = cons.getInst(userModel)
+      const userInst = cons.getInst(UserModel)
       const id = params.uid
 
       if (!id) {

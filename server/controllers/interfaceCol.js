@@ -1,3 +1,4 @@
+import * as modelUtils from '../utils/modelUtils'
 import _ from 'underscore'
 
 import cons from '../cons'
@@ -6,6 +7,7 @@ import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
 import * as commons from '../utils/commons'
+import * as modelUtils from '../utils/modelUtils'
 
 import baseController from './base.js'
 
@@ -104,7 +106,7 @@ class interfaceColController extends baseController {
         up_time: commons.time(),
       })
       const username = this.getUsername()
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 添加了接口集 <a href="/project/${
           params.project_id
         }/interface/col/${result._id}">${params.name}</a>`,
@@ -145,7 +147,7 @@ class interfaceColController extends baseController {
         }
       }
 
-      ctx.body = await commons.getCaseList(id)
+      ctx.body = await modelUtils.getCaseList(id)
     } catch (e) {
       ctx.body = commons.resReturn(null, 402, e.message)
     }
@@ -340,7 +342,7 @@ class interfaceColController extends baseController {
       const username = this.getUsername()
 
       this.colModel.get(params.col_id).then(col => {
-        commons.saveLog({
+        modelUtils.saveLog({
           content: `<a href="/user/profile/${this.getUid()}">${username}</a> 在接口集 <a href="/project/${
             params.project_id
           }/interface/col/${params.col_id}">${col.name}</a> 下添加了测试用例 <a href="/project/${
@@ -418,7 +420,7 @@ class interfaceColController extends baseController {
         const caseResultData = await this.caseModel.save(data)
         const username = this.getUsername()
         this.colModel.get(params.col_id).then(col => {
-          commons.saveLog({
+          modelUtils.saveLog({
             content: `<a href="/user/profile/${this.getUid()}">${username}</a> 在接口集 <a href="/project/${
               params.project_id
             }/interface/col/${params.col_id}">${col.name}</a> 下导入了测试用例 <a href="/project/${
@@ -583,7 +585,7 @@ class interfaceColController extends baseController {
       const result = await this.caseModel.up(params.id, params)
       const username = this.getUsername()
       this.colModel.get(caseData.col_id).then(col => {
-        commons.saveLog({
+        modelUtils.saveLog({
           content: `<a href="/user/profile/${this.getUid()}">${username}</a> 在接口集 <a href="/project/${
             caseData.project_id
           }/interface/col/${caseData.col_id}">${col.name}</a> 更新了测试用例 <a href="/project/${
@@ -681,7 +683,7 @@ class interfaceColController extends baseController {
       delete params.col_id
       const result = await this.colModel.up(id, params)
       const username = this.getUsername()
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更新了测试集合 <a href="/project/${
           colData.project_id
         }/interface/col/${id}">${colData.name}</a> 的信息`,
@@ -793,7 +795,7 @@ class interfaceColController extends baseController {
       const result = await this.colModel.del(id)
       await this.caseModel.delByCol(id)
       const username = this.getUsername()
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了接口集 ${
           colData.name
         } 及其下面的接口`,
@@ -832,7 +834,7 @@ class interfaceColController extends baseController {
 
       const username = this.getUsername()
       this.colModel.get(caseData.col_id).then(col => {
-        commons.saveLog({
+        modelUtils.saveLog({
           content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了接口集 <a href="/project/${
             caseData.project_id
           }/interface/col/${caseData.col_id}">${col.name}</a> 下的接口 ${caseData.casename}`,
@@ -852,7 +854,7 @@ class interfaceColController extends baseController {
 
   async runCaseScript(ctx) {
     const params = ctx.request.body
-    ctx.body = await commons.runCaseScript(params, params.col_id, params.interface_id, this.getUid())
+    ctx.body = await modelUtils.runCaseScript(params, params.col_id, params.interface_id, this.getUid())
   }
 
   // 数组去重

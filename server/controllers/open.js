@@ -4,7 +4,7 @@ import _ from 'underscore'
 import handleImportData from '../../common/HandleImportData'
 import createContext from '../../common/createContext'
 import { handleParams, crossRequest, handleCurrDomain, checkNameIsExistInArray } from '../../common/postmanLib'
-import { handleParamsValue, ArrayToObject } from '../../common/utils.js'
+import { handleParamsValue, changeArrayToObject } from '../../common/utils.js'
 import cons from '../cons'
 import followModel from '../models/follow.js'
 import interfaceModel from '../models/interface.js'
@@ -12,8 +12,9 @@ import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceCatModel from '../models/interfaceCat.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
-import userModel from '../models/user.js'
+import UserModel from '../models/user.js'
 import * as commons from '../utils/commons'
+import * as modelUtils from '../utils/modelUtils'
 import renderToHtml from '../utils/reportHtml'
 import yapi from '../yapi.js'
 
@@ -36,7 +37,7 @@ class openController extends baseController {
     this.interfaceModel = cons.getInst(interfaceModel)
     this.interfaceCatModel = cons.getInst(interfaceCatModel)
     this.followModel = cons.getInst(followModel)
-    this.userModel = cons.getInst(userModel)
+    this.UserModel = cons.getInst(UserModel)
     this.handleValue = this.handleValue.bind(this)
     this.schemaMap = {
       runAutoTest: {
@@ -155,7 +156,7 @@ class openController extends baseController {
   }
 
   handleValue(val, global) {
-    const globalValue = ArrayToObject(global)
+    const globalValue = changeArrayToObject(global)
     const context = { global: globalValue, ...this.records }
     return handleParamsValue(val, context)
   }
@@ -193,7 +194,7 @@ class openController extends baseController {
 
     const projectData = await this.projectModel.get(projectId)
 
-    let caseList = await commons.getCaseList(id)
+    let caseList = await modelUtils.getCaseList(id)
     if (caseList.errcode !== 0) {
       ctx.body = caseList
     }
@@ -359,7 +360,7 @@ class openController extends baseController {
   async handleScriptTest(interfaceData, response, validRes, requestParams) {
     
     try {
-      const test = await commons.runCaseScript({
+      const test = await modelUtils.runCaseScript({
         response: response,
         records: this.records,
         script: interfaceData.test_script,

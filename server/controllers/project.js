@@ -12,8 +12,9 @@ import interfaceColModel from '../models/interfaceCol.js'
 import logModel from '../models/log.js'
 import projectModel from '../models/project.js'
 import tokenModel from '../models/token.js'
-import userModel from '../models/user.js'
+import UserModel from '../models/user.js'
 import * as commons from '../utils/commons.js'
+import * as modelUtils from '../utils/modelUtils'
 import { getToken } from '../utils/token'
 import yapi from '../yapi.js'
 
@@ -249,11 +250,11 @@ class projectController extends baseController {
     const uid = this.getUid()
     // 将项目添加者变成项目组长,除admin以外
     if (this.getRole() !== 'admin') {
-      const userdata = await commons.getUserdata(uid, 'owner')
+      const userdata = await modelUtils.getUserData(uid, 'owner')
       await this.Model.addMember(result._id, [userdata])
     }
     const username = this.getUsername()
-    commons.saveLog({
+    modelUtils.saveLog({
       content: `<a href="/user/profile/${this.getUid()}">${username}</a> 添加了项目 <a href="/project/${
         result._id
       }">${params.name}</a>`,
@@ -358,7 +359,7 @@ class projectController extends baseController {
       const uid = this.getUid()
       // 将项目添加者变成项目组长,除admin以外
       if (this.getRole() !== 'admin') {
-        const userdata = await commons.getUserdata(uid, 'owner')
+        const userdata = await modelUtils.getUserData(uid, 'owner')
         const check = await this.Model.checkMemberRepeat(copyId, uid)
         if (check === 0) {
           copyProjectMembers.push(userdata)
@@ -369,7 +370,7 @@ class projectController extends baseController {
       // 在每个测试结合下添加interface
 
       const username = this.getUsername()
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 复制了项目 ${
           params.preName
         } 为 <a href="/project/${result._id}">${params.name}</a>`,
@@ -408,7 +409,7 @@ class projectController extends baseController {
     for (let i = 0, len = params.member_uids.length; i < len; i++) {
       const id = params.member_uids[i]
       const check = await this.Model.checkMemberRepeat(params.id, id)
-      const userdata = await commons.getUserdata(id, params.role)
+      const userdata = await modelUtils.getUserData(id, params.role)
       if (check > 0) {
         exist_members.push(userdata)
       } else if (!userdata) {
@@ -423,7 +424,7 @@ class projectController extends baseController {
       let members = add_members.map(item => `<a href = "/user/profile/${item.uid}">${item.username}</a>`)
       members = members.join('、')
       const username = this.getUsername()
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 添加了项目成员 ${members}`,
         type: 'project',
         uid: this.getUid(),
@@ -465,10 +466,10 @@ class projectController extends baseController {
 
       const result = await this.Model.delMember(params.id, params.member_uid)
       const username = this.getUsername()
-      cons.getInst(userModel)
+      cons.getInst(UserModel)
         .findById(params.member_uid)
         .then(member => {
-          commons.saveLog({
+          modelUtils.saveLog({
             content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了项目中的成员 <a href="/user/profile/${
               params.member_uid
             }">${member ? member.username : ''}</a>`,
@@ -664,10 +665,10 @@ class projectController extends baseController {
 
     const username = this.getUsername()
     cons
-      .getInst(userModel)
+      .getInst(UserModel)
       .findById(params.member_uid)
       .then(member => {
-        commons.saveLog({
+        modelUtils.saveLog({
           content: `<a href="/user/profile/${this.getUid()}">${username}</a> 修改了项目中的成员 <a href="/user/profile/${
             params.member_uid
           }">${member.username}</a> 的角色为 "${rolename[params.role]}"`,
@@ -744,7 +745,7 @@ class projectController extends baseController {
     try {
       this.followModel.updateById(this.getUid(), id, data).then(() => {
         const username = this.getUsername()
-        commons.saveLog({
+        modelUtils.saveLog({
           content: `<a href="/user/profile/${this.getUid()}">${username}</a> 修改了项目图标、颜色`,
           type: 'project',
           uid: this.getUid(),
@@ -820,7 +821,7 @@ class projectController extends baseController {
 
       const result = await this.Model.up(id, data)
       const username = this.getUsername()
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更新了项目 <a href="/project/${id}/interface/api">${
           projectData.name
         }</a>`,
@@ -878,7 +879,7 @@ class projectController extends baseController {
       }
       const result = await this.Model.up(id, data)
       const username = this.getUsername()
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更新了项目 <a href="/project/${id}/interface/api">${
           projectData.name
         }</a> 的环境`,
@@ -930,7 +931,7 @@ class projectController extends baseController {
 
       const result = await this.Model.up(id, data)
       const username = this.getUsername()
-      commons.saveLog({
+      modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更新了项目 <a href="/project/${id}/interface/api">${
           projectData.name
         }</a> 的tag`,

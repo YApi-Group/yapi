@@ -1,6 +1,6 @@
-import Mock from 'mockjs'
-import json5 from 'json5'
 import Ajv from 'ajv'
+import json5 from 'json5'
+import Mock from 'mockjs'
 
 import { filter, utils as stringUtils } from './power-string.js'
 /**
@@ -175,7 +175,7 @@ export const json_format = function (json) {
   }
 }
 
-export const ArrayToObject = function (arr) {
+export const changeArrayToObject = function (arr) {
   const obj = {}
   safeArray(arr).forEach(item => {
     obj[item.name] = item.value

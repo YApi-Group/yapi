@@ -1,52 +1,46 @@
-import React, { PureComponent as Component } from 'react'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import { withRouter } from 'react-router'
-import { Link } from 'react-router-dom'
-import { Tooltip, Input, Button, Row, Col, Spin, Modal, message, Select, Switch } from 'antd'
 import {
   CheckCircleOutlined,
   ExclamationCircleFilled,
   InfoCircleOutlined,
   QuestionCircleOutlined, 
 } from '@ant-design/icons'
-import HTML5Backend from 'react-dnd-html5-backend'
-import { DragDropContext } from 'react-dnd'
-import AceEditor from '@/components/AceEditor/AceEditor'
-import * as Table from 'reactabular-table'
-import * as dnd from 'reactabular-dnd'
-import * as resolve from 'table-resolver'
+import { Tooltip, Input, Button, Row, Col, Spin, Modal, message, Select, Switch } from 'antd'
 import axios from 'axios'
-import _ from 'underscore'
-import { initCrossRequest } from '@/components/Postman/CheckCrossInstall.js'
-import produce from 'immer'
-import { InsertCodeMap } from '@/components/Postman/Postman.js'
-import CaseEnv from '@/components/CaseEnv'
 import copy from 'copy-to-clipboard'
+import produce from 'immer'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { DragDropContext } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { Link } from 'react-router-dom'
+import * as dnd from 'reactabular-dnd'
+import * as Table from 'reactabular-table'
+import * as resolve from 'table-resolver'
+import _ from 'underscore'
+
+import AceEditor from '@/components/AceEditor/AceEditor'
+import CaseEnv from '@/components/CaseEnv'
+import { initCrossRequest } from '@/components/Postman/CheckCrossInstall.js'
+import { InsertCodeMap } from '@/components/Postman/Postman.js'
+import plugin from '@/plugin.js'
+import createContext from '@common/createContext'
+import { handleParams, crossRequest, handleCurrDomain, checkNameIsExistInArray } from '@common/postmanLib.js'
+import { handleParamsValue, json_parse, changeArrayToObject } from '@common/utils.js'
 
 import Label from '../../../../components/Label/Label.js'
-import { getToken, getEnv } from '../../../../reducer/modules/project'
 import {
   fetchInterfaceColList,
   fetchCaseList,
   setColData,
   fetchCaseEnvList,
 } from '../../../../reducer/modules/interfaceCol'
+import { getToken, getEnv } from '../../../../reducer/modules/project'
 
 import CaseReport from './CaseReport.js'
 
-const plugin = require('@/plugin.js')
-const {
-  handleParams,
-  crossRequest,
-  handleCurrDomain,
-  checkNameIsExistInArray,
-} = require('@common/postmanLib.js')
-const { handleParamsValue, json_parse, ArrayToObject } = require('@common/utils.js')
-
 const Option = Select.Option
-
-const createContext = require('@common/createContext')
 
 const defaultModalStyle = {
   top: 10,
@@ -421,7 +415,7 @@ class InterfaceColContent extends Component {
   };
 
   handleValue = (val, global) => {
-    const globalValue = ArrayToObject(global)
+    const globalValue = changeArrayToObject(global)
     const context = { global: globalValue, ...this.records }
     return handleParamsValue(val, context)
   };
@@ -1005,7 +999,7 @@ class InterfaceColContent extends Component {
             {this.state.hasPlugin ? (
               <div
                 style={{
-                  float: 'right',
+                  cssFloat: 'right',
                   paddingTop: '8px',
                 }}
               >
@@ -1035,7 +1029,7 @@ class InterfaceColContent extends Component {
                   disabled
                   type="primary"
                   style={{
-                    float: 'right',
+                    cssFloat: 'right',
                     marginTop: '8px',
                   }}
                 >
