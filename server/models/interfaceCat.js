@@ -5,7 +5,7 @@ import BaseModel from './base.js'
 /**
  * 接口分类
  */
-class interfaceCat extends BaseModel {
+class InterfaceCatModel extends BaseModel {
   getName() {
     return 'interface_cat'
   }
@@ -84,4 +84,4 @@ class interfaceCat extends BaseModel {
   }
 }
 
-export default interfaceCat
+export default InterfaceCatModel

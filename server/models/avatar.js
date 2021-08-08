@@ -1,6 +1,6 @@
 import BaseModel from './base.js'
 
-class avatarModel extends BaseModel {
+class AvatarModel extends BaseModel {
   getName() {
     return 'avatar'
   }
@@ -35,4 +35,4 @@ class avatarModel extends BaseModel {
   }
 }
 
-export default avatarModel
+export default AvatarModel

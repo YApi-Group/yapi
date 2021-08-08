@@ -1,9 +1,9 @@
 import { schemaValidator } from '../../common/utils.js'
 import cons from '../cons'
-import interfaceModel from '../models/interface.js'
+import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceColModel from '../models/interfaceCol.js'
-import logModel from '../models/log.js'
+import LogModel from '../models/log.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
 
@@ -27,7 +27,7 @@ export async function getCaseList(id: any) {
   const caseInst = cons.getInst(interfaceCaseModel)
   const colInst = cons.getInst(interfaceColModel)
   const projectInst = cons.getInst(projectModel)
-  const interfaceInst = cons.getInst(interfaceModel)
+  const interfaceInst = cons.getInst(InterfaceModel)
 
   let resultList = await caseInst.list(id, 'all')
   const colData = await colInst.get(id)
@@ -89,7 +89,7 @@ export async function runCaseScript(params: any, colId: any, interfaceId: any) {
     }
 
     if (colData.checkResponseSchema) {
-      const interfaceInst = cons.getInst(interfaceModel)
+      const interfaceInst = cons.getInst(InterfaceModel)
       const interfaceData = await interfaceInst.get(interfaceId)
       if (interfaceData.res_body_is_json_schema && interfaceData.res_body) {
         const schema = JSON.parse(interfaceData.res_body)
@@ -129,7 +129,7 @@ export async function runCaseScript(params: any, colId: any, interfaceId: any) {
 
 export function saveLog(logData: any) {
   try {
-    const logInst = cons.getInst(logModel)
+    const logInst = cons.getInst(LogModel)
     const data = {
       content: logData.content,
       type: logData.type,

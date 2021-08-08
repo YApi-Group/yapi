@@ -1,6 +1,6 @@
 import BaseModel from './base.js'
 
-class tokenModel extends BaseModel {
+class TokenModel extends BaseModel {
   getName() {
     return 'token'
   }
@@ -44,4 +44,4 @@ class tokenModel extends BaseModel {
   }
 }
 
-export default tokenModel
+export default TokenModel

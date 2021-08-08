@@ -2,7 +2,7 @@ import * as commons from '../utils/commons'
 
 import BaseModel from './base.js'
 
-class groupModel extends BaseModel {
+class GroupModel extends BaseModel {
   getName() {
     return 'group'
   }
@@ -209,4 +209,4 @@ class groupModel extends BaseModel {
   }
 }
 
-export default groupModel
+export default GroupModel

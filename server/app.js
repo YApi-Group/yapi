@@ -48,7 +48,7 @@ app.use(async (ctx, next) => {
 app.use(async (ctx, next) => {
   if (ctx.path.indexOf('/prd') === 0) {
     ctx.set('Cache-Control', 'max-age=8640000000')
-    if (commons.fileExist(path.join(cons.WEBROOT, 'static', ctx.path + '.gz'))) {
+    if (commons.fileExist(path.join(cons.WEB_ROOT, 'static', ctx.path + '.gz'))) {
       ctx.set('Content-Encoding', 'gzip')
       ctx.path = ctx.path + '.gz'
     }
@@ -56,13 +56,13 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-app.use(koaStatic(path.join(cons.WEBROOT, 'static'), { index: 'index.html', gzip: true }))
+app.use(koaStatic(path.join(cons.WEB_ROOT, 'static'), { index: 'index.html', gzip: true }))
 
-const server = app.listen(cons.WEBCONFIG.port)
+const server = app.listen(cons.WEB_CONFIG.port)
 
-server.setTimeout(cons.WEBCONFIG.timeout)
+server.setTimeout(cons.WEB_CONFIG.timeout)
 
 commons.log(`
 服务已启动，请打开下面链接访问:
-http://127.0.0.1${cons.WEBCONFIG.port === '80' ? '' : ':' + cons.WEBCONFIG.port}/
+http://127.0.0.1${cons.WEB_CONFIG.port === '80' ? '' : ':' + cons.WEB_CONFIG.port}/
 `)

@@ -7,24 +7,22 @@ import config from '../config.json'
 
 const insts = new Map()
 
-const WEBROOT = path.resolve(__dirname, '../') // 路径
-const WEBROOT_SERVER = __dirname
-const WEBROOT_RUNTIME = path.resolve(__dirname, '../')
-const WEBROOT_LOG = path.join(WEBROOT_RUNTIME, 'log')
-const WEBCONFIG = config
+const WEB_ROOT = path.resolve(__dirname, '../') // 路径
+const WEB_LOG_DIR = path.join(WEB_ROOT, 'log')
+const WEB_CONFIG = config
 
-fs.ensureDirSync(WEBROOT_LOG)
+fs.ensureDirSync(WEB_LOG_DIR)
 
 let mailObj = null
-if (WEBCONFIG.mail && WEBCONFIG.mail.enable) {
-  mailObj = nodemailer.createTransport(WEBCONFIG.mail)
+if (WEB_CONFIG.mail && WEB_CONFIG.mail.enable) {
+  mailObj = nodemailer.createTransport(WEB_CONFIG.mail)
 }
 
 /**
  * 获取一个model实例，如果不存在则创建一个新的返回
  * @param {*} m class
  * @example
- * yapi.getInst(groupModel, arg1, arg2)
+ * yapi.getInst(GroupModel, arg1, arg2)
  */
 function getInst(m: any, ...args: any[]) {
   if (!insts.get(m)) {
@@ -43,11 +41,9 @@ function delInst(m: any) {
 }
 
 export default {
-  WEBROOT: WEBROOT,
-  WEBROOT_SERVER: WEBROOT_SERVER,
-  WEBROOT_RUNTIME: WEBROOT_RUNTIME,
-  WEBROOT_LOG: WEBROOT_LOG,
-  WEBCONFIG: WEBCONFIG,
+  WEB_ROOT: WEB_ROOT,
+  WEB_LOG_DIR: WEB_LOG_DIR,
+  WEB_CONFIG: WEB_CONFIG,
 
   mail: mailObj,
 

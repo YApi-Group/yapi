@@ -2,7 +2,7 @@ import * as modelUtils from '../utils/modelUtils'
 import _ from 'underscore'
 
 import cons from '../cons'
-import interfaceModel from '../models/interface.js'
+import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
@@ -16,7 +16,7 @@ class interfaceColController extends baseController {
     super(ctx)
     this.colModel = cons.getInst(interfaceColModel)
     this.caseModel = cons.getInst(interfaceCaseModel)
-    this.interfaceModel = cons.getInst(interfaceModel)
+    this.InterfaceModel = cons.getInst(InterfaceModel)
     this.projectModel = cons.getInst(projectModel)
   }
 
@@ -48,7 +48,7 @@ class interfaceColController extends baseController {
 
         for (let j = 0; j < caseList.length; j++) {
           const item = caseList[j].toObject()
-          const interfaceData = await this.interfaceModel.getBaseinfo(item.interface_id)
+          const interfaceData = await this.InterfaceModel.getBaseinfo(item.interface_id)
           item.path = interfaceData.path
           caseList[j] = item
         }
@@ -242,7 +242,7 @@ class interfaceColController extends baseController {
           query,
           bodyParams,
           pathParams
-        const data = await this.interfaceModel.get(result.interface_id)
+        const data = await this.InterfaceModel.get(result.interface_id)
         if (!data) {
           await this.caseModel.del(result._id)
           continue
@@ -396,7 +396,7 @@ class interfaceColController extends baseController {
       }
 
       for (let i = 0; i < params.interface_list.length; i++) {
-        const interfaceData = await this.interfaceModel.get(params.interface_list[i])
+        const interfaceData = await this.InterfaceModel.get(params.interface_list[i])
         data.interface_id = params.interface_list[i]
         data.casename = interfaceData.title
 
@@ -625,7 +625,7 @@ class interfaceColController extends baseController {
         return (ctx.body = commons.resReturn(null, 400, '不存在的case'))
       }
       result = result.toObject()
-      let data = await this.interfaceModel.get(result.interface_id)
+      let data = await this.InterfaceModel.get(result.interface_id)
       if (!data) {
         return (ctx.body = commons.resReturn(null, 400, '找不到对应的接口，请联系管理员'))
       }

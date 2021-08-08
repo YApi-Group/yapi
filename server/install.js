@@ -14,7 +14,7 @@ const connect = dbModule.connect()
 yapi.connect = connect
 
 function install() {
-  const exist = commons.fileExist(path.join(cons.WEBROOT_RUNTIME, 'init.lock'))
+  const exist = commons.fileExist(path.join(cons.WEB_ROOT, 'init.lock'))
 
   if (exist) {
     throw new Error('init.lock文件已存在，请确认您是否已安装。如果需要重新安装，请删掉init.lock文件')
@@ -27,9 +27,9 @@ function install() {
   const userInst = cons.getInst(UserModel)
   const passsalt = commons.randStr()
   const result = userInst.save({
-    username: cons.WEBCONFIG.adminAccount.substr(0, cons.WEBCONFIG.adminAccount.indexOf('@')),
-    email: cons.WEBCONFIG.adminAccount,
-    password: commons.generatePassword(cons.WEBCONFIG.adminPassword, passsalt),
+    username: cons.WEB_CONFIG.adminAccount.substr(0, cons.WEB_CONFIG.adminAccount.indexOf('@')),
+    email: cons.WEB_CONFIG.adminAccount,
+    password: commons.generatePassword(cons.WEB_CONFIG.adminPassword, passsalt),
     passsalt: passsalt,
     role: 'admin',
     add_time: commons.time(),
@@ -86,12 +86,12 @@ function install() {
 
       result.then(
         function () {
-          fs.ensureFileSync(path.join(cons.WEBROOT_RUNTIME, 'init.lock'))
-          console.log(`初始化管理员账号成功,账号名："${cons.WEBCONFIG.adminAccount}"，密码："${cons.WEBCONFIG.adminPassword}"`)
+          fs.ensureFileSync(path.join(cons.WEB_ROOT, 'init.lock'))
+          console.log(`初始化管理员账号成功,账号名："${cons.WEB_CONFIG.adminAccount}"，密码："${cons.WEB_CONFIG.adminPassword}"`)
           process.exit(0)
         },
         function (err) {
-          throw new Error(`初始化管理员账号 "${cons.WEBCONFIG.adminAccount}" 失败, ${err.message}`); // eslint-disable-line
+          throw new Error(`初始化管理员账号 "${cons.WEB_CONFIG.adminAccount}" 失败, ${err.message}`); // eslint-disable-line
         },
       )
     })

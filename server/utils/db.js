@@ -23,7 +23,7 @@ function connect(callback) {
   mongoose.set('useFindAndModify', false)
   mongoose.set('useCreateIndex', true)
 
-  const config = cons.WEBCONFIG
+  const config = cons.WEB_CONFIG
   let options = { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }
 
   if (config.db.user) {

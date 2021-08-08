@@ -6,7 +6,7 @@ export function ldapQuery(username, password) {
   // const deferred = Q.defer();
 
   return new Promise((resolve, reject) => {
-    const { ldapLogin } = cons.WEBCONFIG
+    const { ldapLogin } = cons.WEB_CONFIG
 
     //  使用ldapjs库创建一个LDAP客户端
     const client = ldap.createClient({

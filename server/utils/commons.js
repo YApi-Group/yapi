@@ -104,7 +104,7 @@ export const log = (msg, type) => {
   // let data = (new Date).toLocaleString() + '\t|\t' + type + '\t|\t' + msg + '\n';
   const data = `[ ${new Date().toLocaleString()} ] [ ${type} ] ${msg}\n`
 
-  const logPath = path.join(cons.WEBROOT_LOG, year + '-' + month + '.log')
+  const logPath = path.join(cons.WEB_LOG_DIR, year + '-' + month + '.log')
   fs.writeFileSync(logPath, data, {
     flag: 'a',
   })
@@ -176,7 +176,7 @@ export const sendMail = (options, cb) => {
   try {
     cons.mail.sendMail(
       {
-        from: cons.WEBCONFIG.mail.from,
+        from: cons.WEB_CONFIG.mail.from,
         to: options.to,
         subject: options.subject,
         html: options.contents,

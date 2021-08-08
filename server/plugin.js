@@ -6,10 +6,10 @@ import { initPlugins } from '../common/plugin.js'
 import cons from './cons'
 import yapi from './yapi.js'
 
-const plugin_path = path.join(cons.WEBROOT, 'node_modules')
-const plugin_system_path = path.join(cons.WEBROOT, 'exts')
+const plugin_path = path.join(cons.WEB_ROOT, 'node_modules')
+const plugin_system_path = path.join(cons.WEB_ROOT, 'exts')
 
-const pluginsConfig = initPlugins(cons.WEBCONFIG.plugins, 'plugin')
+const pluginsConfig = initPlugins(cons.WEB_CONFIG.plugins, 'plugin')
 pluginsConfig.forEach(plugin => {
   if (!plugin || plugin.enable === false || plugin.server === false) { return null }
 

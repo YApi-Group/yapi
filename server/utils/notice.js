@@ -28,9 +28,9 @@ yapi.emitHook('addNotice', noticeObj)
 yapi.commons.sendNotice = async function (projectId, data) {
   const projectModel = require('../models/project.js')
   const UserModel = require('../models/user.js')
-  const followModel = require('../models/follow.js')
+  const FollowModel = require('../models/follow.js')
 
-  const followInst = cons.getInst(followModel)
+  const followInst = cons.getInst(FollowModel)
   const userInst = cons.getInst(UserModel)
   const projectInst = cons.getInst(projectModel)
   const list = await followInst.listByProjectId(projectId)

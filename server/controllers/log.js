@@ -1,7 +1,7 @@
 import cons from '../cons'
-import groupModel from '../models/group'
-import interfaceModel from '../models/interface'
-import logModel from '../models/log.js'
+import GroupModel from '../models/group'
+import InterfaceModel from '../models/interface'
+import LogModel from '../models/log.js'
 import projectModel from '../models/project'
 import * as commons from '../utils/commons'
 
@@ -10,10 +10,10 @@ import baseController from './base.js'
 class logController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = cons.getInst(logModel)
-    this.groupModel = cons.getInst(groupModel)
+    this.Model = cons.getInst(LogModel)
+    this.GroupModel = cons.getInst(GroupModel)
     this.projectModel = cons.getInst(projectModel)
-    this.interfaceModel = cons.getInst(interfaceModel)
+    this.InterfaceModel = cons.getInst(InterfaceModel)
     this.schemaMap = {
       listByUpdate: {
         '*type': 'string',
@@ -120,7 +120,7 @@ class logController extends baseController {
         if (basePath) {
           api.path = api.path.indexOf(basePath) === 0 ? api.path.substr(basePath.length) : api.path
         }
-        const interfaceIdList = await this.interfaceModel.getByPath(
+        const interfaceIdList = await this.InterfaceModel.getByPath(
           typeid,
           api.path,
           api.method,

@@ -127,7 +127,7 @@ module.exports = {
           new this.webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(ENV_PARAMS),
             'process.env.version': JSON.stringify(package.version),
-            'process.env.versionNotify': yapi.WEBCONFIG.versionNotify
+            'process.env.versionNotify': yapi.WEB_CONFIG.versionNotify
           })
         );
 

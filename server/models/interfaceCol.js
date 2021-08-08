@@ -2,7 +2,7 @@ import * as commons from '../utils/commons'
 
 import BaseModel from './base.js'
 
-class interfaceCol extends BaseModel {
+class InterfaceColModel extends BaseModel {
   getName() {
     return 'interface_col'
   }
@@ -115,4 +115,4 @@ class interfaceCol extends BaseModel {
   }
 }
 
-export default interfaceCol
+export default InterfaceColModel

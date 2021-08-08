@@ -3,13 +3,13 @@ import sha from 'sha.js'
 import _ from 'underscore'
 
 import cons from '../cons'
-import followModel from '../models/follow.js'
-import groupModel from '../models/group'
-import interfaceModel from '../models/interface.js'
+import FollowModel from '../models/follow.js'
+import GroupModel from '../models/group'
+import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceCatModel from '../models/interfaceCat.js'
 import interfaceColModel from '../models/interfaceCol.js'
-import logModel from '../models/log.js'
+import LogModel from '../models/log.js'
 import projectModel from '../models/project.js'
 import tokenModel from '../models/token.js'
 import UserModel from '../models/user.js'
@@ -24,11 +24,11 @@ class projectController extends baseController {
   constructor(ctx) {
     super(ctx)
     this.Model = cons.getInst(projectModel)
-    this.groupModel = cons.getInst(groupModel)
-    this.logModel = cons.getInst(logModel)
-    this.followModel = cons.getInst(followModel)
+    this.GroupModel = cons.getInst(GroupModel)
+    this.LogModel = cons.getInst(LogModel)
+    this.FollowModel = cons.getInst(FollowModel)
     this.tokenModel = cons.getInst(tokenModel)
-    this.interfaceModel = cons.getInst(interfaceModel)
+    this.InterfaceModel = cons.getInst(InterfaceModel)
 
     const id = 'number'
     const member_uid = ['number']
@@ -333,7 +333,7 @@ class projectController extends baseController {
           const catResult = await catInst.save(catDate)
 
           // 获取每个集合中的interface
-          const interfaceData = await this.interfaceModel.listByInterStatus(item._id)
+          const interfaceData = await this.InterfaceModel.listByInterStatus(item._id)
 
           // 将interfaceData存到新的catID中
           for (let key = 0; key < interfaceData.length; key++) {
@@ -347,7 +347,7 @@ class projectController extends baseController {
             })
             delete data._id
 
-            await this.interfaceModel.save(data)
+            await this.InterfaceModel.save(data)
           }
         }
       }
@@ -558,14 +558,14 @@ class projectController extends baseController {
     let group_id = ctx.params.group_id,
       project_list = []
 
-    const groupData = await this.groupModel.get(group_id)
+    const groupData = await this.GroupModel.get(group_id)
     let isPrivateGroup = false
     if (groupData.type === 'private' && this.getUid() === groupData.uid) {
       isPrivateGroup = true
     }
     const auth = await this.checkAuth(group_id, 'group', 'view')
     const result = await this.Model.list(group_id)
-    let follow = await this.followModel.list(this.getUid())
+    let follow = await this.FollowModel.list(this.getUid())
     if (isPrivateGroup === false) {
       for (let index = 0, item, r = 1; index < result.length; index++) {
         item = result[index].toObject()
@@ -619,7 +619,7 @@ class projectController extends baseController {
       return (ctx.body = commons.resReturn(null, 405, '没有权限'))
     }
 
-    const interfaceInst = cons.getInst(interfaceModel)
+    const interfaceInst = cons.getInst(InterfaceModel)
     const interfaceColInst = cons.getInst(interfaceColModel)
     const interfaceCaseInst = cons.getInst(interfaceCaseModel)
     await interfaceInst.delByProjectId(id)
@@ -743,7 +743,7 @@ class projectController extends baseController {
       ctx.body = commons.resReturn(null, 402, e.message)
     }
     try {
-      this.followModel.updateById(this.getUid(), id, data).then(() => {
+      this.FollowModel.updateById(this.getUid(), id, data).then(() => {
         const username = this.getUsername()
         modelUtils.saveLog({
           content: `<a href="/user/profile/${this.getUid()}">${username}</a> 修改了项目图标、颜色`,
@@ -1076,8 +1076,8 @@ class projectController extends baseController {
     }
 
     let projectList = await this.Model.search(q)
-    let groupList = await this.groupModel.search(q)
-    let interfaceList = await this.interfaceModel.search(q)
+    let groupList = await this.GroupModel.search(q)
+    let interfaceList = await this.InterfaceModel.search(q)
 
     const projectRules = [
       '_id',

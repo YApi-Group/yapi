@@ -41,16 +41,16 @@ const defaultSalt = 'abcde'
 
 export function getToken(token, uid) {
   if (!token) { throw new Error('token 不能为空') }
-  cons.WEBCONFIG.passsalt = cons.WEBCONFIG.passsalt || defaultSalt
-  return aseEncode(uid + '|' + token, cons.WEBCONFIG.passsalt)
+  cons.WEB_CONFIG.passsalt = cons.WEB_CONFIG.passsalt || defaultSalt
+  return aseEncode(uid + '|' + token, cons.WEB_CONFIG.passsalt)
 }
 
 export function parseToken(token) {
   if (!token) { throw new Error('token 不能为空') }
-  cons.WEBCONFIG.passsalt = cons.WEBCONFIG.passsalt || defaultSalt
+  cons.WEB_CONFIG.passsalt = cons.WEB_CONFIG.passsalt || defaultSalt
   let tokens
   try {
-    tokens = aseDecode(token, cons.WEBCONFIG.passsalt)
+    tokens = aseDecode(token, cons.WEB_CONFIG.passsalt)
   } catch (e) { /* noop */ }
 
   if (tokens && typeof tokens === 'string' && tokens.indexOf('|') > 0) {

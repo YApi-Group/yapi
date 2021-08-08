@@ -6,7 +6,7 @@ import BaseModel from './base.js'
 
 const Schema = mongoose.Schema
 
-class logModel extends BaseModel {
+class LogModel extends BaseModel {
   getName() {
     return 'log'
   }
@@ -155,4 +155,4 @@ class logModel extends BaseModel {
   }
 }
 
-export default logModel
+export default LogModel

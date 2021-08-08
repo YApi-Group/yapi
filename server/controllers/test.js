@@ -14,7 +14,7 @@ class interfaceColController extends baseController {
    * @returns {Object}
    * @example
    */
-  async testGet(ctx) {
+  testGet(ctx) {
     try {
       const query = ctx.query
       // cookie 检测
@@ -36,7 +36,7 @@ class interfaceColController extends baseController {
    * @example
    */
 
-  async testHttpCode(ctx) {
+  testHttpCode(ctx) {
     try {
       const params = ctx.request.body
       ctx.status = Number(ctx.query.code) || 200
@@ -53,7 +53,7 @@ class interfaceColController extends baseController {
    * @returns {Object}
    * @example
    */
-  async testPost(ctx) {
+  testPost(ctx) {
     try {
       const params = ctx.request.body
       ctx.body = commons.resReturn(params)
@@ -69,13 +69,14 @@ class interfaceColController extends baseController {
    * @returns {Object}
    * @example
    */
-  async testSingleUpload(ctx) {
+  testSingleUpload(ctx) {
     try {
       // let params = ctx.request.body;
       const req = ctx.req
 
-      let chunks = [],
-        size = 0
+      let size = 0
+
+      const chunks = []
       req.on('data', function (chunk) {
         chunks.push(chunk)
         size += chunk.length
@@ -92,9 +93,12 @@ class interfaceColController extends baseController {
           chunk.copy(data, pos)
           pos += chunk.length
         }
-        fs.writeFileSync(path.join(cons.WEBROOT_RUNTIME, 'test.text'), data, function (err) {
-          return (ctx.body = commons.resReturn(null, 402, '写入失败'))
-        })
+
+        try {
+          fs.writeFileSync(path.join(cons.WEB_ROOT, 'test.text'), data)
+        } catch (err) {
+          ctx.body = commons.resReturn(null, 402, '写入失败')
+        }
       })
 
       ctx.body = commons.resReturn({ res: '上传成功' })
@@ -110,10 +114,10 @@ class interfaceColController extends baseController {
    * @returns {Object}
    * @example
    */
-  async testFilesUpload(ctx) {
+  testFilesUpload(ctx) {
     try {
       const file = ctx.request.body.files.file
-      const newPath = path.join(cons.WEBROOT_RUNTIME, 'test.text')
+      const newPath = path.join(cons.WEB_ROOT, 'test.text')
       fs.renameSync(file.path, newPath)
       ctx.body = commons.resReturn({ res: '上传成功' })
     } catch (e) {
@@ -128,7 +132,7 @@ class interfaceColController extends baseController {
    * @returns {Object}
    * @example
    */
-  async testPut(ctx) {
+  testPut(ctx) {
     try {
       const params = ctx.request.body
       ctx.body = commons.resReturn(params)
@@ -144,7 +148,7 @@ class interfaceColController extends baseController {
    * @returns {Object}
    * @example
    */
-  async testDelete(ctx) {
+  testDelete(ctx) {
     try {
       const body = ctx.request.body
       ctx.body = commons.resReturn(body)
@@ -160,7 +164,7 @@ class interfaceColController extends baseController {
    * @returns {Object}
    * @example
    */
-  async testHead(ctx) {
+  testHead(ctx) {
     try {
       const query = ctx.query
       ctx.body = commons.resReturn(query)
@@ -176,7 +180,7 @@ class interfaceColController extends baseController {
    * @returns {Object}
    * @example
    */
-  async testOptions(ctx) {
+  testOptions(ctx) {
     try {
       const query = ctx.query
       ctx.body = commons.resReturn(query)
@@ -192,7 +196,7 @@ class interfaceColController extends baseController {
    * @returns {Object}
    * @example
    */
-  async testPatch(ctx) {
+  testPatch(ctx) {
     try {
       const params = ctx.request.body
       ctx.body = commons.resReturn(params)
@@ -207,7 +211,7 @@ class interfaceColController extends baseController {
    * @return {Object}
    * @example
    */
-  async testRaw(ctx) {
+  testRaw(ctx) {
     try {
       const params = ctx.request.body
       ctx.body = commons.resReturn(params)
@@ -223,10 +227,10 @@ class interfaceColController extends baseController {
    * @return {Object}
    * @example
    */
-  async testResponse(ctx) {
+  testResponse(ctx) {
     try {
       // let result = `<div><h2>12222222</h2></div>`;
-      // let result = `wieieieieiieieie`
+      // let result = `test111`
       const result = { b: '12', c: '23' }
       ctx.set('Access-Control-Allow-Origin', '*')
       ctx.set('Content-Type', 'text')

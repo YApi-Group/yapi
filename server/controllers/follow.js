@@ -1,5 +1,5 @@
 import cons from '../cons'
-import followModel from '../models/follow'
+import FollowModel from '../models/follow'
 import projectModel from '../models/project'
 import yapi from '../yapi.js'
 
@@ -8,7 +8,7 @@ import baseController from './base.js'
 class followController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = cons.getInst(followModel)
+    this.Model = cons.getInst(FollowModel)
     this.projectModel = cons.getInst(projectModel)
   }
 

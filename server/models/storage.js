@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 import BaseModel from './base.js'
 
-class stroageModel extends BaseModel {
+class StorageModel extends BaseModel {
   constructor() {
     super()
     const storageCol = mongoose.connection.db.collection('storage')
@@ -68,4 +68,4 @@ class stroageModel extends BaseModel {
   }
 }
 
-export default stroageModel
+export default StorageModel

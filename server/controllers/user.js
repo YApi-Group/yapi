@@ -4,9 +4,9 @@ import fs from 'fs-extra'
 import jwt from 'jsonwebtoken'
 
 import cons from '../cons'
-import avatarModel from '../models/avatar.js'
-import groupModel from '../models/group.js'
-import interfaceModel from '../models/interface.js'
+import AvatarModel from '../models/avatar.js'
+import GroupModel from '../models/group.js'
+import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
 import * as commons from '../utils/commons.js'
@@ -142,12 +142,12 @@ class userController extends baseController {
       // const username = email.split(/\@/g)[0];
       const { info: ldapInfo } = await ldap.ldapQuery(email, password)
       const emailPrefix = email.split(/@/g)[0]
-      const emailPostfix = cons.WEBCONFIG.ldapLogin.emailPostfix
+      const emailPostfix = cons.WEB_CONFIG.ldapLogin.emailPostfix
 
       const emailParams
-        = ldapInfo[cons.WEBCONFIG.ldapLogin.emailKey || 'mail']
+        = ldapInfo[cons.WEB_CONFIG.ldapLogin.emailKey || 'mail']
         || (emailPostfix ? emailPrefix + emailPostfix : email)
-      const username = ldapInfo[cons.WEBCONFIG.ldapLogin.usernameKey] || emailPrefix
+      const username = ldapInfo[cons.WEB_CONFIG.ldapLogin.usernameKey] || emailPrefix
 
       const login = await this.handleThirdLogin(emailParams, username)
 
@@ -265,7 +265,7 @@ class userController extends baseController {
   }
 
   async handlePrivateGroup(uid) {
-    const groupInst = cons.getInst(groupModel)
+    const groupInst = cons.getInst(GroupModel)
     await groupInst.save({
       uid: uid,
       group_name: 'User-' + uid,
@@ -302,7 +302,7 @@ class userController extends baseController {
    */
   async reg(ctx) {
     // 注册
-    if (cons.WEBCONFIG.closeRegister) {
+    if (cons.WEB_CONFIG.closeRegister) {
       return (ctx.body = commons.resReturn(null, 400, '禁止注册，请联系管理员'))
     }
     const userInst = cons.getInst(UserModel)
@@ -534,7 +534,7 @@ class userController extends baseController {
         username: data.username || userData.username,
         email: data.email || userData.email,
       }
-      const groupInst = cons.getInst(groupModel)
+      const groupInst = cons.getInst(GroupModel)
       await groupInst.updateMember(member)
       const projectInst = cons.getInst(projectModel)
       await projectInst.updateMember(member)
@@ -579,7 +579,7 @@ class userController extends baseController {
         return (ctx.body = commons.resReturn(null, 400, '图片大小不能超过200kb'))
       }
 
-      const avatarInst = cons.getInst(avatarModel)
+      const avatarInst = cons.getInst(AvatarModel)
       const result = await avatarInst.up(this.getUid(), basecode, type)
       ctx.body = commons.resReturn(result)
     } catch (e) {
@@ -600,11 +600,11 @@ class userController extends baseController {
   async avatar(ctx) {
     try {
       const uid = ctx.query.uid ? ctx.query.uid : this.getUid()
-      const avatarInst = cons.getInst(avatarModel)
+      const avatarInst = cons.getInst(AvatarModel)
       const data = await avatarInst.get(uid)
       let dataBuffer, type
       if (!data || !data.basecode) {
-        dataBuffer = fs.readFileSync(path.join(cons.WEBROOT, 'static/image/avatar.png'))
+        dataBuffer = fs.readFileSync(path.join(cons.WEB_ROOT, 'static/image/avatar.png'))
         type = 'image/png'
       } else {
         type = data.type
@@ -679,7 +679,7 @@ class userController extends baseController {
     const result = {}
     try {
       if (type === 'interface') {
-        const interfaceInst = cons.getInst(interfaceModel)
+        const interfaceInst = cons.getInst(InterfaceModel)
         const interfaceData = await interfaceInst.get(id)
         result.interface = interfaceData
         type = 'project'
@@ -707,7 +707,7 @@ class userController extends baseController {
       }
 
       if (type === 'group') {
-        const groupInst = cons.getInst(groupModel)
+        const groupInst = cons.getInst(GroupModel)
         const groupData = await groupInst.get(id)
         result.group = groupData.toObject()
         let ownerAuth = await this.checkAuth(id, 'group', 'danger'),

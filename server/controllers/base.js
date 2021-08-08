@@ -2,15 +2,15 @@ import jwt from 'jsonwebtoken'
 import _ from 'underscore'
 
 import cons from '../cons'
-import groupModel from '../models/group.js'
-import interfaceModel from '../models/interface.js'
+import GroupModel from '../models/group.js'
+import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import tokenModel from '../models/token.js'
 import UserModel from '../models/user.js'
 import * as commons from '../utils/commons'
 import { parseToken } from '../utils/token'
 
-class baseController {
+class BaseController {
   constructor(ctx) {
     this.ctx = ctx
     // 网站上线后，role对象key是不能修改的，value可以修改
@@ -160,8 +160,8 @@ class baseController {
   }
 
   checkRegister() {
-    // console.log('config', cons.WEBCONFIG);
-    if (cons.WEBCONFIG.closeRegister) {
+    // console.log('config', cons.WEB_CONFIG);
+    if (cons.WEB_CONFIG.closeRegister) {
       return false
     }
     return true
@@ -169,11 +169,11 @@ class baseController {
   }
 
   checkLDAP() {
-    // console.log('config', cons.WEBCONFIG);
-    if (!cons.WEBCONFIG.ldapLogin) {
+    // console.log('config', cons.WEB_CONFIG);
+    if (!cons.WEB_CONFIG.ldapLogin) {
       return false
     }
-    return cons.WEBCONFIG.ldapLogin.enable || false
+    return cons.WEB_CONFIG.ldapLogin.enable || false
 
   }
   /**
@@ -223,7 +223,7 @@ class baseController {
         return 'admin'
       }
       if (type === 'interface') {
-        const interfaceInst = cons.getInst(interfaceModel)
+        const interfaceInst = cons.getInst(InterfaceModel)
         const interfaceData = await interfaceInst.get(id)
         result.interfaceData = interfaceData
         // 项目创建者相当于 owner
@@ -261,7 +261,7 @@ class baseController {
       }
 
       if (type === 'group') {
-        const groupInst = cons.getInst(groupModel)
+        const groupInst = cons.getInst(GroupModel)
         const groupData = await groupInst.get(id)
         // 建立分组的人
         if (groupData.uid === this.getUid()) {
@@ -316,4 +316,4 @@ class baseController {
   }
 }
 
-export default baseController
+export default BaseController

@@ -160,9 +160,10 @@ export function bindHook(name, listener) {
  * @param {*} hookname
  * @return promise
  */
-export function emitHook(name) {
+export function emitHook(name, ...args) {
   if (hooks[name] && typeof hooks[name] === 'object') {
-    const args = Array.prototype.slice.call(arguments, 1)
+    // const args = Array.prototype.slice.call(arguments, 1)
+
     if (hooks[name].type === 'single' && typeof hooks[name].listener === 'function') {
       return Promise.resolve(hooks[name].listener.apply(yapi, args))
     }

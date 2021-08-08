@@ -6,8 +6,8 @@ import createContext from '../../common/createContext'
 import { handleParams, crossRequest, handleCurrDomain, checkNameIsExistInArray } from '../../common/postmanLib'
 import { handleParamsValue, changeArrayToObject } from '../../common/utils.js'
 import cons from '../cons'
-import followModel from '../models/follow.js'
-import interfaceModel from '../models/interface.js'
+import FollowModel from '../models/follow.js'
+import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceCatModel from '../models/interfaceCat.js'
 import interfaceColModel from '../models/interfaceCol.js'
@@ -34,9 +34,9 @@ class openController extends baseController {
     this.projectModel = cons.getInst(projectModel)
     this.interfaceColModel = cons.getInst(interfaceColModel)
     this.interfaceCaseModel = cons.getInst(interfaceCaseModel)
-    this.interfaceModel = cons.getInst(interfaceModel)
+    this.InterfaceModel = cons.getInst(InterfaceModel)
     this.interfaceCatModel = cons.getInst(interfaceCatModel)
-    this.followModel = cons.getInst(followModel)
+    this.FollowModel = cons.getInst(FollowModel)
     this.UserModel = cons.getInst(UserModel)
     this.handleValue = this.handleValue.bind(this)
     this.schemaMap = {
@@ -142,7 +142,7 @@ class openController extends baseController {
       },
       () => { /* noop */ },
       token,
-      cons.WEBCONFIG.port,
+      cons.WEB_CONFIG.port,
     )
 
     if (errorMessage.length > 0) {

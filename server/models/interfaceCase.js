@@ -6,7 +6,7 @@ import BaseModel from './base.js'
 
 const Schema = mongoose.Schema
 
-class interfaceCase extends BaseModel {
+class InterfaceCase extends BaseModel {
   getName() {
     return 'interface_case'
   }
@@ -135,4 +135,4 @@ class interfaceCase extends BaseModel {
   }
 }
 
-export default interfaceCase
+export default InterfaceCase

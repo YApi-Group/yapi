@@ -1,6 +1,6 @@
 import BaseModel from './base.js'
 
-class followModel extends BaseModel {
+class FollowModel extends BaseModel {
   getName() {
     return 'follow'
   }
@@ -75,4 +75,4 @@ class followModel extends BaseModel {
   }
 }
 
-export default followModel
+export default FollowModel

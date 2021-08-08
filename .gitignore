@@ -46,3 +46,4 @@ dist/
 dist-*
 /log
 /static
+/init.lock

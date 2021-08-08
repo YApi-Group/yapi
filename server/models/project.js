@@ -2,7 +2,7 @@ import * as commons from '../utils/commons'
 
 import BaseModel from './base.js'
 
-class projectModel extends BaseModel {
+class ProjectModel extends BaseModel {
   getName() {
     return 'project'
   }
@@ -307,4 +307,4 @@ class projectModel extends BaseModel {
   }
 }
 
-export default projectModel
+export default ProjectModel

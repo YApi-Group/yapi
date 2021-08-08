@@ -7,7 +7,7 @@ import mockExtra from '../../common/mock-extra.js'
 import { schemaValidator } from '../../common/utils.js'
 import variable from '../../variable.js'
 import cons from '../cons'
-import interfaceModel from '../models/interface.js'
+import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import * as commons from '../utils/commons'
 import yapi from '../yapi.js'
@@ -150,7 +150,7 @@ function mockValidator(interfaceData, ctx) {
 export default async (ctx, next) => {
   // no used variable 'hostname' & 'config'
   // let hostname = ctx.hostname;
-  // let config = cons.WEBCONFIG;
+  // let config = cons.WEB_CONFIG;
   let path = ctx.path
   const header = ctx.request.header
 
@@ -186,7 +186,7 @@ export default async (ctx, next) => {
   }
 
   let interfaceData, newpath
-  const interfaceInst = cons.getInst(interfaceModel)
+  const interfaceInst = cons.getInst(InterfaceModel)
 
   try {
     newpath = path.substr(project.basepath.length)

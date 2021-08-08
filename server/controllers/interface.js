@@ -8,9 +8,9 @@ import _ from 'underscore'
 import showDiffMsg from '../../common/diff-view.js'
 import mergeJsonSchema from '../../common/mergeJsonSchema'
 import cons from '../cons'
-import followModel from '../models/follow.js'
-import groupModel from '../models/group.js'
-import interfaceModel from '../models/interface.js'
+import FollowModel from '../models/follow.js'
+import GroupModel from '../models/group.js'
+import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceCatModel from '../models/interfaceCat.js'
 import projectModel from '../models/project.js'
@@ -71,13 +71,13 @@ function handleHeaders(values) {
 class interfaceController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = cons.getInst(interfaceModel)
+    this.Model = cons.getInst(InterfaceModel)
     this.catModel = cons.getInst(interfaceCatModel)
     this.projectModel = cons.getInst(projectModel)
     this.caseModel = cons.getInst(interfaceCaseModel)
-    this.followModel = cons.getInst(followModel)
+    this.FollowModel = cons.getInst(FollowModel)
     this.UserModel = cons.getInst(UserModel)
-    this.groupModel = cons.getInst(groupModel)
+    this.GroupModel = cons.getInst(GroupModel)
 
     const minLengthStringField = {
       type: 'string',
@@ -501,7 +501,7 @@ class interfaceController extends baseController {
 
   downloadCrx(ctx) {
     const filename = 'crossRequest.zip'
-    const dataBuffer = fs.readFileSync(path.join(cons.WEBROOT, 'static/attachment/cross-request.zip'))
+    const dataBuffer = fs.readFileSync(path.join(cons.WEB_ROOT, 'static/attachment/cross-request.zip'))
     ctx.set('Content-disposition', 'attachment; filename=' + filename)
     ctx.set('Content-Type', 'application/zip')
     ctx.body = dataBuffer
@@ -734,13 +734,13 @@ class interfaceController extends baseController {
       const diffView = showDiffMsg(jsondiffpatch, formattersHtml, logData)
       const annotatedCss = fs.readFileSync(
         path.resolve(
-          cons.WEBROOT,
+          cons.WEB_ROOT,
           'node_modules/jsondiffpatch/dist/formatters-styles/annotated.css',
         ),
         'utf8',
       )
       const htmlCss = fs.readFileSync(
-        path.resolve(cons.WEBROOT, 'node_modules/jsondiffpatch/dist/formatters-styles/html.css'),
+        path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/dist/formatters-styles/html.css'),
         'utf8',
       )
 
@@ -1045,7 +1045,7 @@ class interfaceController extends baseController {
 
     try {
       //  查找有customFieldName的分组（group）
-      const groups = await this.groupModel.getcustomFieldName(customFieldName)
+      const groups = await this.GroupModel.getcustomFieldName(customFieldName)
       if (groups.length === 0) {
         return (ctx.body = commons.resReturn(null, 404, '没有找到对应自定义接口'))
       }

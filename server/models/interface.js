@@ -4,7 +4,7 @@ import BaseModel from './base.js'
 
 console.log(BaseModel)
 
-class interfaceModel extends BaseModel {
+class InterfaceModel extends BaseModel {
   getName() {
     return 'interface'
   }
@@ -344,4 +344,4 @@ class interfaceModel extends BaseModel {
   }
 }
 
-export default interfaceModel
+export default InterfaceModel
