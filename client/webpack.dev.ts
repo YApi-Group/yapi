@@ -46,7 +46,14 @@ const devsFile: Configuration = {
     historyApiFallback: true, // 404的页面会自动跳转到/页面
     // public: '/',
     // writeToDisk: true,
-    // proxy: [],
+    proxy: [
+      {
+        /* 所有 /api/ 请求都代理到后端 */
+        context: '/api/',
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: true,
+      },
+    ],
   },
 
   module: {

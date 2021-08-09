@@ -4,7 +4,6 @@
   "description": "YApi Client",
   "main": "index.js",
   "scripts": {
-    "dev-copy-icon": "cp -r static/iconfont ./",
     "dev": "webpack server --config webpack.dev.ts",
     "prod": "rimraf ./dist-prod && cross-env NODE_ENV=production webpack --config ./webpack.prod.ts",
     "test": "ava",

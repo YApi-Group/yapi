@@ -1,7 +1,8 @@
-import React, { PureComponent as Component } from 'react'
-import PropTypes from 'prop-types'
-import { Row, Col } from 'antd'
 import { GithubOutlined, TeamOutlined, AliwangwangOutlined } from '@ant-design/icons'
+import { Row, Col } from 'antd'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+
 import data from '@/package.json'
 
 import './Footer.scss'
@@ -36,16 +37,16 @@ class FootItem extends Component {
   static propTypes = {
     linkList: PropTypes.array,
     title: PropTypes.string,
-    iconType: PropTypes.string,
+    iconType: PropTypes.object,
   }
 
   render() {
-    const { iconType, title, linkList } = this.props
+    const { iconType: IconType, title, linkList } = this.props
 
     return (
       <Col span={6}>
         <h4 className="title">
-          {iconType ? <iconType className="icon" /> : ''}
+          {IconType ? <IconType className="icon" /> : ''}
           {title}
         </h4>
         {linkList.map(function (item, i) {

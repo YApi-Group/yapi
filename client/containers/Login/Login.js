@@ -1,8 +1,8 @@
-import React, { PureComponent as Component } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Form, Button, Input, message, Radio } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import { Form, Button, Input, message, Radio } from 'antd'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 
 import { loginActions, loginLdapActions } from '../../reducer/modules/user'
@@ -20,17 +20,17 @@ const changeHeight = {
   height: '.42rem',
 }
 
-@connect(
-  state => ({
-    loginData: state.user,
-    isLDAP: state.user.isLDAP,
-  }),
-  {
-    loginActions,
-    loginLdapActions,
-  },
-)
-@withRouter
+// @connect(
+//   state => ({
+//     loginData: state.user,
+//     isLDAP: state.user.isLDAP,
+//   }),
+//   {
+//     loginActions,
+//     loginLdapActions,
+//   },
+// )
+// @withRouter
 class Login extends Component {
   constructor(props) {
     super(props)
@@ -45,7 +45,7 @@ class Login extends Component {
     loginActions: PropTypes.func,
     loginLdapActions: PropTypes.func,
     isLDAP: PropTypes.bool,
-  };
+  }
 
   handleSubmit = e => {
     e.preventDefault()
@@ -69,7 +69,7 @@ class Login extends Component {
         }
       }
     })
-  };
+  }
 
   componentDidMount() {
     // Qsso.attach('qsso-login','/api/user/login_by_token')
@@ -77,11 +77,9 @@ class Login extends Component {
   }
   handleFormLayoutChange = e => {
     this.setState({ loginType: e.target.value })
-  };
+  }
 
   render() {
-    const { getFieldDecorator } = this.props.form
-
     const { isLDAP } = this.props
 
     const emailRule
@@ -90,7 +88,7 @@ class Login extends Component {
         : {
           required: true,
           message: '请输入正确的email!',
-          pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{1,})+$/,
+          pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{1,})+$/,
         }
     return (
       <Form onSubmit={this.handleSubmit}>
@@ -104,34 +102,23 @@ class Login extends Component {
           </FormItem>
         )}
         {/* 用户名 (Email) */}
-        <FormItem style={formItemStyle}>
-          {getFieldDecorator('email', { rules: [emailRule] })(<Input
-            style={changeHeight}
-            prefix={<UserOutlined style={{ fontSize: 13 }} />}
-            placeholder="Email"
-          />)}
+        <FormItem style={formItemStyle} name="email" rules={[emailRule]}>
+          <Input style={changeHeight} prefix={<UserOutlined style={{ fontSize: 13 }} />} placeholder="Email" />
         </FormItem>
 
         {/* 密码 */}
-        <FormItem style={formItemStyle}>
-          {getFieldDecorator('password', {
-            rules: [{ required: true, message: '请输入密码!' }],
-          })(<Input
+        <FormItem style={formItemStyle} name="password" rules={[{ required: true, message: '请输入密码!' }]}>
+          <Input
             style={changeHeight}
             prefix={<LockOutlined style={{ fontSize: 13 }} />}
             type="password"
             placeholder="Password"
-          />)}
+          />
         </FormItem>
 
         {/* 登录按钮 */}
         <FormItem style={formItemStyle}>
-          <Button
-            style={changeHeight}
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-          >
+          <Button style={changeHeight} type="primary" htmlType="submit" className="login-form-button">
             登录
           </Button>
         </FormItem>
@@ -145,4 +132,15 @@ class Login extends Component {
   }
 }
 
-export default Login
+const states = state => ({
+  loginData: state.user,
+  isLDAP: state.user.isLDAP,
+})
+
+const actions = {
+  loginActions,
+  loginLdapActions,
+}
+
+export default connect(states, actions)(withRouter(Login))
+// export default Login
