@@ -1,9 +1,9 @@
+import { FolderOpenOutlined } from '@ant-design/icons'
+import { Modal, Collapse, Row, Col, Input, message, Button } from 'antd'
+import axios from 'axios'
+import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { Modal, Collapse, Row, Col, Input, message, Button } from 'antd'
-import { FolderOpenOutlined } from '@ant-design/icons'
-import PropTypes from 'prop-types'
-import axios from 'axios'
 import { withRouter } from 'react-router'
 
 import { fetchInterfaceColList } from '../../../../../reducer/modules/interfaceCol'
@@ -43,12 +43,12 @@ export default class AddColModal extends Component {
     super(props)
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.fetchInterfaceColList(this.props.match.params.id)
     this.setState({ caseName: this.props.caseName })
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({ id: nextProps.interfaceColList[0]._id })
     this.setState({ caseName: nextProps.caseName })
   }

@@ -1,63 +1,62 @@
-import React, { PureComponent as Component } from 'react';
-import PropTypes from 'prop-types';
-import { Tabs, Layout } from 'antd';
-import { Route, Switch, matchPath } from 'react-router-dom';
-import { connect } from 'react-redux';
-const { Content, Sider } = Layout;
+import { Tabs, Layout } from 'antd'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+import { Route, Switch, matchPath } from 'react-router-dom'
+const { Content, Sider } = Layout
 
-import './interface.scss';
+import './interface.scss'
 
-import InterfaceMenu from './InterfaceList/InterfaceMenu.js';
-import InterfaceList from './InterfaceList/InterfaceList.js';
-import InterfaceContent from './InterfaceList/InterfaceContent.js';
+import { setColData } from '../../../reducer/modules/interfaceCol.js'
+import { getProject } from '../../../reducer/modules/project'
 
-import InterfaceColMenu from './InterfaceCol/InterfaceColMenu.js';
-import InterfaceColContent from './InterfaceCol/InterfaceColContent.js';
-import InterfaceCaseContent from './InterfaceCol/InterfaceCaseContent.js';
-import { getProject } from '../../../reducer/modules/project';
-import { setColData } from '../../../reducer/modules/interfaceCol.js';
+import InterfaceCaseContent from './InterfaceCol/InterfaceCaseContent.js'
+import InterfaceColContent from './InterfaceCol/InterfaceColContent.js'
+import InterfaceColMenu from './InterfaceCol/InterfaceColMenu.js'
+import InterfaceContent from './InterfaceList/InterfaceContent.js'
+import InterfaceList from './InterfaceList/InterfaceList.js'
+import InterfaceMenu from './InterfaceList/InterfaceMenu.js'
+
 const contentRouter = {
   path: '/project/:id/interface/:action/:actionId',
-  exact: true
-};
+  exact: true,
+}
 
 const InterfaceRoute = props => {
-  let C;
+  let C
   if (props.match.params.action === 'api') {
     if (!props.match.params.actionId) {
-      C = InterfaceList;
+      C = InterfaceList
     } else if (!isNaN(props.match.params.actionId)) {
-      C = InterfaceContent;
+      C = InterfaceContent
     } else if (props.match.params.actionId.indexOf('cat_') === 0) {
-      C = InterfaceList;
+      C = InterfaceList
     }
   } else if (props.match.params.action === 'col') {
-    C = InterfaceColContent;
+    C = InterfaceColContent
   } else if (props.match.params.action === 'case') {
-    C = InterfaceCaseContent;
+    C = InterfaceCaseContent
   } else {
-    const params = props.match.params;
-    props.history.replace('/project/' + params.id + '/interface/api');
-    return null;
+    const params = props.match.params
+    props.history.replace('/project/' + params.id + '/interface/api')
+    return null
   }
-  return <C {...props} />;
-};
+  return <C {...props} />
+}
 
 InterfaceRoute.propTypes = {
   match: PropTypes.object,
-  history: PropTypes.object
-};
+  history: PropTypes.object,
+}
 
 @connect(
-  state => {
-    return {
-      isShowCol: state.interfaceCol.isShowCol
-    };
-  },
+  state => ({
+    isShowCol: state.interfaceCol.isShowCol,
+  }),
   {
     setColData,
-    getProject
-  }
+    getProject,
+  },
 )
 class Interface extends Component {
   static propTypes = {
@@ -66,34 +65,34 @@ class Interface extends Component {
     location: PropTypes.object,
     isShowCol: PropTypes.bool,
     getProject: PropTypes.func,
-    setColData: PropTypes.func
+    setColData: PropTypes.func,
     // fetchInterfaceColList: PropTypes.func
   };
 
   constructor(props) {
-    super(props);
+    super(props)
     // this.state = {
     //   curkey: this.props.match.params.action === 'api' ? 'api' : 'colOrCase'
     // }
   }
 
   onChange = action => {
-    let params = this.props.match.params;
+    const params = this.props.match.params
     if (action === 'colOrCase') {
-      action = this.props.isShowCol ? 'col' : 'case';
+      action = this.props.isShowCol ? 'col' : 'case'
     }
-    this.props.history.push('/project/' + params.id + '/interface/' + action);
+    this.props.history.push('/project/' + params.id + '/interface/' + action)
   };
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     this.props.setColData({
-      isShowCol: true
-    });
+      isShowCol: true,
+    })
     // await this.props.fetchInterfaceColList(this.props.match.params.id)
   }
   render() {
-    const { action } = this.props.match.params;
+    const { action } = this.props.match.params
     // const activeKey = this.state.curkey;
-    const activeKey = action === 'api' ? 'api' : 'colOrCase';
+    const activeKey = action === 'api' ? 'api' : 'colOrCase'
 
     return (
       <Layout style={{ minHeight: 'calc(100vh - 156px)', marginLeft: '24px', marginTop: '24px' }}>
@@ -122,7 +121,7 @@ class Interface extends Component {
               height: '100%',
               margin: '0 24px 0 16px',
               overflow: 'initial',
-              backgroundColor: '#fff'
+              backgroundColor: '#fff',
             }}
           >
             <div className="right-content">
@@ -134,8 +133,8 @@ class Interface extends Component {
           </Content>
         </Layout>
       </Layout>
-    );
+    )
   }
 }
 
-export default Interface;
+export default Interface

@@ -1,16 +1,16 @@
-import React, { PureComponent as Component } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Button, Form, Input, Tooltip, Select, message, Row, Col, Radio } from 'antd'
 import { LockFilled, QuestionCircleOutlined } from '@ant-design/icons'
+import { Button, Form, Input, Tooltip, Select, message, Row, Col, Radio } from 'antd'
 import { autobind } from 'core-decorators'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 
-import { addProject } from '../../reducer/modules/project.js'
-import { fetchGroupList } from '../../reducer/modules/group.js'
-import { setBreadcrumb } from '../../reducer/modules/user'
 import { pickRandomProperty, handlePath, nameLengthLimit } from '../../common'
 import constants from '../../constants/variable.js'
+import { fetchGroupList } from '../../reducer/modules/group.js'
+import { addProject } from '../../reducer/modules/project.js'
+import { setBreadcrumb } from '../../reducer/modules/user'
 
 import './Addproject.scss'
 
@@ -33,18 +33,18 @@ const formItemLayout = {
   className: 'form-item',
 }
 
-@connect(
-  state => ({
-    groupList: state.group.groupList,
-    currGroup: state.group.currGroup,
-  }),
-  {
-    fetchGroupList,
-    addProject,
-    setBreadcrumb,
-  },
-)
-@withRouter
+// @connect(
+//   state => ({
+//     groupList: state.group.groupList,
+//     currGroup: state.group.currGroup,
+//   }),
+//   {
+//     fetchGroupList,
+//     addProject,
+//     setBreadcrumb,
+//   },
+// )
+// @withRouter
 class ProjectList extends Component {
   constructor(props) {
     super(props)
@@ -61,14 +61,14 @@ class ProjectList extends Component {
     history: PropTypes.object,
     setBreadcrumb: PropTypes.func,
     fetchGroupList: PropTypes.func,
-  };
+  }
 
   handlePath = e => {
     const val = e.target.value
     this.props.form.setFieldsValue({
       basepath: handlePath(val),
     })
-  };
+  }
 
   // 确认添加项目
   @autobind
@@ -91,7 +91,7 @@ class ProjectList extends Component {
     })
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     this.props.setBreadcrumb([{ name: '新建项目' }])
     if (!this.props.currGroup._id) {
       await this.props.fetchGroupList()
@@ -106,39 +106,32 @@ class ProjectList extends Component {
   }
 
   render() {
-    const { getFieldDecorator } = this.props.form
     return (
       <div className="g-row">
         <div className="g-row m-container">
           <Form>
-            <FormItem {...formItemLayout} label="项目名称">
-              {getFieldDecorator('name', {
-                rules: nameLengthLimit('项目'),
-              })(<Input />)}
+            <FormItem {...formItemLayout} label="项目名称" name="name" rules={nameLengthLimit('项目')}>
+              <Input />
             </FormItem>
 
-            <FormItem {...formItemLayout} label="所属分组">
-              {getFieldDecorator('group', {
-                initialValue: String(this.state.currGroupId),
-                rules: [
-                  {
-                    required: true,
-                    message: '请选择项目所属的分组!',
-                  },
-                ],
-              })(<Select>
+            <FormItem
+              {...formItemLayout}
+              label="所属分组"
+              name="group"
+              initialValue={String(this.state.currGroupId)}
+              rules={[{ required: true, message: '请选择项目所属的分组!' }]}
+            >
+              <Select>
                 {this.state.groupList.map((item, index) => (
                   <Option
-                    disabled={
-                      !(item.role === 'dev' || item.role === 'owner' || item.role === 'admin')
-                    }
+                    disabled={!(item.role === 'dev' || item.role === 'owner' || item.role === 'admin')}
                     value={item._id.toString()}
                     key={index}
                   >
                     {item.group_name}
                   </Option>
                 ))}
-              </Select>)}
+              </Select>
             </FormItem>
 
             <hr className="breakline" />
@@ -153,40 +146,33 @@ class ProjectList extends Component {
                   </Tooltip>
                 </span>
               }
+              name="basepath"
+              rules={[{ required: false, message: '请输入项目基本路径' }]}
             >
-              {getFieldDecorator('basepath', {
-                rules: [
-                  {
-                    required: false,
-                    message: '请输入项目基本路径',
-                  },
-                ],
-              })(<Input onBlur={this.handlePath} />)}
+              <Input onBlur={this.handlePath} />
             </FormItem>
 
-            <FormItem {...formItemLayout} label="描述">
-              {getFieldDecorator('desc', {
-                rules: [
-                  {
-                    required: false,
-                    message: '描述不超过144字!',
-                    max: 144,
-                  },
-                ],
-              })(<TextArea rows={4} />)}
+            <FormItem
+              {...formItemLayout}
+              label="描述"
+              name="desc"
+              rules={[{ required: false, message: '描述不超过144字!', max: 144 }]}
+            >
+              <TextArea rows={4} />
             </FormItem>
 
-            <FormItem {...formItemLayout} label="权限">
-              {getFieldDecorator('project_type', {
-                rules: [
-                  {
-                    required: true,
-                  },
-                ],
-                initialValue: 'private',
-              })(<RadioGroup>
+            <FormItem
+              {...formItemLayout}
+              label="权限"
+              name="project_type"
+              rules={[{ required: true }]}
+              initialValue="private"
+            >
+              <RadioGroup>
                 <Radio value="private" className="radio">
-                  <LockFilled />私有<br />
+                  <LockFilled />
+                  私有
+                  <br />
                   <span className="radio-desc">只有组长和项目开发者可以索引并查看项目信息</span>
                 </Radio>
                 <br />
@@ -194,9 +180,10 @@ class ProjectList extends Component {
                     <UnlockFilled />公开<br />
                     <span className="radio-desc">任何人都可以索引并查看项目信息</span>
                   </Radio> */}
-              </RadioGroup>)}
+              </RadioGroup>
             </FormItem>
           </Form>
+
           <Row>
             <Col sm={{ offset: 6 }} lg={{ offset: 3 }}>
               <Button className="m-btn" icon="plus" type="primary" onClick={this.handleOk}>
@@ -210,4 +197,15 @@ class ProjectList extends Component {
   }
 }
 
-export default ProjectList
+const states = state => ({
+  groupList: state.group.groupList,
+  currGroup: state.group.currGroup,
+})
+
+const actions = {
+  fetchGroupList,
+  addProject,
+  setBreadcrumb,
+}
+
+export default connect(states, actions)(withRouter(ProjectList))

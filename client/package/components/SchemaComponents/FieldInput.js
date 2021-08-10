@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react'
+import { Input } from 'antd'
 import PropTypes from 'prop-types'
-import {Input} from 'antd'
+import React, { PureComponent } from 'react'
 
 export default class FieldInput extends PureComponent {
   static propTypes = {
@@ -8,43 +8,43 @@ export default class FieldInput extends PureComponent {
     value: PropTypes.string,
   }
 
-  constructor(props){
+  constructor(props) {
     super(props)
     this.state = {
-      value: props.value
+      value: props.value,
     }
   }
 
-  handleChange =(e)=>{
-    let value = e.target.value;
+  handleChange =e => {
+    const value = e.target.value
     this.setState({
-      value
+      value,
     })
   }
 
-  componentWillReceiveProps(nextProps){
-    if(nextProps.value !== this.props.value){
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.value !== this.props.value) {
       this.setState({
-        value: nextProps.value
+        value: nextProps.value,
       })
     }
   }
 
-  onKeyup= e=> {
-    if(e.keyCode === 13) {
-      if(e.target.value !== this.props.value)return this.props.onChange(e)
+  onKeyup= e => {
+    if (e.keyCode === 13) {
+      if (e.target.value !== this.props.value) { return this.props.onChange(e) }
     }
   }
 
-  handleBlur = (e)=>{
-    if(e.target.value !== this.props.value)return this.props.onChange(e)
+  handleBlur = e => {
+    if (e.target.value !== this.props.value) { return this.props.onChange(e) }
   }
 
   render() {
-    const {value} = this.state;
+    const { value } = this.state
 
     return (
-      <Input  {...this.props} value={value} onKeyUp={this.onKeyup} onBlur={this.handleBlur} onChange={this.handleChange} />
+      <Input {...this.props} value={value} onKeyUp={this.onKeyup} onBlur={this.handleBlur} onChange={this.handleChange} />
     )
   }
 }

@@ -1,4 +1,14 @@
-import React, { PureComponent as Component } from 'react'
+import {
+  CheckOutlined,
+  CodeOutlined,
+  LockOutlined,
+  QuestionCircleOutlined,
+  UnlockOutlined,
+  ExclamationCircleOutlined,
+  UpOutlined, 
+  DownOutlined,
+  StarOutlined,
+} from '@ant-design/icons'
 import {
   Form,
   Input,
@@ -15,33 +25,23 @@ import {
   Modal,
   Popover,
 } from 'antd'
-import {
-  CheckOutlined,
-  CodeOutlined,
-  LockOutlined,
-  QuestionCircleOutlined,
-  UnlockOutlined,
-  ExclamationCircleOutlined,
-  UpOutlined, 
-  DownOutlined,
-  StarOutlined,
-} from '@ant-design/icons'
 import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import _ from 'underscore'
 import { withRouter } from 'react-router'
+import _ from 'underscore'
 
+import { nameLengthLimit, entries, trim, htmlFilter } from '../../../../common'
+import constants from '../../../../constants/variable.js'
+import { fetchGroupMsg } from '../../../../reducer/modules/group'
+import { fetchGroupList } from '../../../../reducer/modules/group.js'
 import {
   updateProject,
   delProject,
   getProject,
   upsetProject,
 } from '../../../../reducer/modules/project'
-import { fetchGroupMsg } from '../../../../reducer/modules/group'
-import { fetchGroupList } from '../../../../reducer/modules/group.js'
 import { setBreadcrumb } from '../../../../reducer/modules/user'
-import constants from '../../../../constants/variable.js'
-import { nameLengthLimit, entries, trim, htmlFilter } from '../../../../common'
 
 import ProjectTag from './ProjectTag.js'
 
@@ -227,7 +227,7 @@ class ProjectMessage extends Component {
     })
   };
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     await this.props.fetchGroupList()
     await this.props.fetchGroupMsg(this.props.projectMsg.group_id)
   }

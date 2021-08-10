@@ -1,20 +1,20 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import './Loading.scss';
+import PropTypes from 'prop-types'
+import React from 'react'
+import './Loading.scss'
 
 export default class Loading extends React.PureComponent {
   static defaultProps = {
-    visible: false
+    visible: false,
   };
   static propTypes = {
-    visible: PropTypes.bool
+    visible: PropTypes.bool,
   };
   constructor(props) {
-    super(props);
-    this.state = { show: props.visible };
+    super(props)
+    this.state = { show: props.visible }
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState({ show: nextProps.visible });
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    this.setState({ show: nextProps.visible })
   }
   render() {
     return (
@@ -31,6 +31,6 @@ export default class Loading extends React.PureComponent {
           <div />
         </div>
       </div>
-    );
+    )
   }
 }

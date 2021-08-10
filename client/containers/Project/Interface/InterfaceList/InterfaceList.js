@@ -1,19 +1,19 @@
+import { EyeOutlined } from '@ant-design/icons'
+import { Table, Button, Modal, message, Tooltip, Select } from 'antd'
+import axios from 'axios'
+import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import axios from 'axios'
-import { Table, Button, Modal, message, Tooltip, Select } from 'antd'
-import { EyeOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 
+import Label from '../../../../components/Label/Label.js'
+import variable from '../../../../constants/variable'
 import {
   fetchInterfaceListMenu,
   fetchInterfaceList,
   fetchInterfaceCatList,
 } from '../../../../reducer/modules/interface.js'
 import { getProject } from '../../../../reducer/modules/project.js'
-import variable from '../../../../constants/variable'
-import Label from '../../../../components/Label/Label.js'
 
 import AddInterfaceForm from './AddInterfaceForm'
 
@@ -124,12 +124,12 @@ class InterfaceList extends Component {
     }, () => this.handleRequest(this.props))
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.actionId = this.props.match.params.actionId
     this.handleRequest(this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const _actionId = nextProps.match.params.actionId
 
     if (this.actionId !== _actionId) {

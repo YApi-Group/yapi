@@ -8,7 +8,7 @@ import moment from 'moment-timezone'
 import TerserWebpackPlugin from 'terser-webpack-plugin'
 import { Configuration, DefinePlugin } from 'webpack'
 
-const prodFile: Configuration = {
+const prodConf: Configuration = {
   entry: {
     main: path.resolve(__dirname, './index.js'),
   },
@@ -168,4 +168,4 @@ const prodFile: Configuration = {
   ],
 }
 
-export default prodFile
+export default prodConf

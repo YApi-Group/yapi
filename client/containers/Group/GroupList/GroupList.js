@@ -1,17 +1,17 @@
-import React, { PureComponent as Component } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Modal, Input, message, Spin, Row, Menu, Col, Popover, Tooltip } from 'antd'
 import { FolderOutlined, UserOutlined, FolderOpenOutlined } from '@ant-design/icons'
-import { autobind } from 'core-decorators'
+import { Modal, Input, message, Spin, Row, Menu, Col, Popover, Tooltip } from 'antd'
 import axios from 'axios'
+import { autobind } from 'core-decorators'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import _ from 'underscore'
 
-import UsernameAutoComplete from '../../../components/UsernameAutoComplete/UsernameAutoComplete.js'
 import GuideBtns from '../../../components/GuideBtns/GuideBtns.js'
-import { fetchNewsData } from '../../../reducer/modules/news.js'
+import UsernameAutoComplete from '../../../components/UsernameAutoComplete/UsernameAutoComplete.js'
 import { fetchGroupList, setCurrGroup, fetchGroupMsg } from '../../../reducer/modules/group.js'
+import { fetchNewsData } from '../../../reducer/modules/news.js'
 
 import './GroupList.scss'
 
@@ -77,7 +77,7 @@ export default class GroupList extends Component {
     super(props)
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     const groupId = !isNaN(this.props.match.params.groupId)
       ? parseInt(this.props.match.params.groupId)
       : 0
@@ -192,7 +192,7 @@ export default class GroupList extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // GroupSetting 组件设置的分组信息，通过redux同步到左侧分组菜单中
     if (this.props.groupList !== nextProps.groupList) {
       this.setState({

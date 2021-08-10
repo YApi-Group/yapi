@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import { QuestionCircleOutlined } from '@ant-design/icons'
 import {
   Input,
   InputNumber,
@@ -9,9 +9,9 @@ import {
   Tooltip,
   Switch,
 } from 'antd'
-import { QuestionCircleOutlined } from '@ant-design/icons'
-import _ from 'underscore'
 import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'
+import _ from 'underscore'
 
 import AceEditor from '../AceEditor/AceEditor.js'
 import LocalProvider from '../LocalProvider/index.js'
@@ -35,7 +35,7 @@ class SchemaString extends PureComponent {
     this.format = context.Model.__jsonSchemaFormat
   }
 
-  componentWillReceiveProps(nextprops) {
+  UNSAFE_componentWillReceiveProps(nextprops) {
     if (this.props.data.enum !== nextprops.data.enum) {
       this.setState({
         checked: !_.isUndefined(nextprops.data.enum),
@@ -222,7 +222,7 @@ class SchemaNumber extends PureComponent {
     }
   }
 
-  componentWillReceiveProps(nextprops) {
+  UNSAFE_componentWillReceiveProps(nextprops) {
     const enumStr = _.isUndefined(this.props.data.enum) ? '' : this.props.data.enum.join('\n')
     const nextEnumStr = _.isUndefined(nextprops.data.enum) ? '' : nextprops.data.enum.join('\n')
     if (enumStr !== nextEnumStr) {

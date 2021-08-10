@@ -1,6 +1,6 @@
 import URL from 'url'
 
-import React, { PureComponent as Component } from 'react'
+import { QuestionCircleOutlined, InboxOutlined } from '@ant-design/icons'
 import {
   Upload,
   message,
@@ -14,10 +14,11 @@ import {
   Input,
   Checkbox,
 } from 'antd'
-import { QuestionCircleOutlined, InboxOutlined } from '@ant-design/icons'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
 import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+
 import HandleImportData from '@common/HandleImportData'
 
 import { saveImportData } from '../../../../reducer/modules/interface'
@@ -92,7 +93,7 @@ class ProjectData extends Component {
     swaggerUrlData: PropTypes.string,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     axios.get(`/api/interface/getCatMenu?project_id=${this.props.match.params.id}`).then(data => {
       if (data.data.errcode === 0) {
         const menuList = data.data.data

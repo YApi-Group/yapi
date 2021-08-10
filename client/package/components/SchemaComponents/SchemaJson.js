@@ -1,16 +1,3 @@
-import React, { Component, PureComponent } from 'react'
-import {
-  Dropdown,
-  Menu,
-  Row,
-  Col,
-  Form,
-  Select,
-  Checkbox,
-  Input,
-  message,
-  Tooltip,
-} from 'antd'
 import {
   CaretDownOutlined,
   CaretRightOutlined,
@@ -19,9 +6,21 @@ import {
   PlusOutlined,
   CloseOutlined,
 } from '@ant-design/icons'
-import _ from 'underscore'
-import { connect } from 'react-redux'
+import {
+  Dropdown,
+  Menu,
+  Row,
+  Col,
+  Select,
+  Checkbox,
+  Input,
+  message,
+  Tooltip,
+} from 'antd'
 import PropTypes from 'prop-types'
+import React, { Component, PureComponent } from 'react'
+import { connect } from 'react-redux'
+import _ from 'underscore'
 
 import { JSONPATH_JOIN_CHAR, SCHEMA_TYPE } from '../../utils.js'
 import LocaleProvider from '../LocalProvider/index.js'
@@ -55,7 +54,7 @@ class SchemaArray extends PureComponent {
     this.Model = context.Model.schema
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { prefix } = this.props
     const length = prefix.filter(name => name != 'properties').length
     this.__tagPaddingLeftStyle = {
@@ -231,7 +230,7 @@ class SchemaItem extends PureComponent {
     this.Model = context.Model.schema
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { prefix } = this.props
     const length = prefix.filter(name => name != 'properties').length
     this.__tagPaddingLeftStyle = {

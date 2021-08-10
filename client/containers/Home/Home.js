@@ -1,11 +1,11 @@
 import './Home.scss'
+import { AppstoreOutlined, ApiOutlined, DatabaseOutlined, TeamOutlined } from '@ant-design/icons'
+import { Row, Col, Button, Card } from 'antd'
+import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
-import { Row, Col, Button, Card } from 'antd'
-import { AppstoreOutlined, ApiOutlined, DatabaseOutlined, TeamOutlined } from '@ant-design/icons'
-import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
+import { Link } from 'react-router-dom'
 
 import LogoSVG from '../../components/LogoSVG/index.js'
 import { changeMenuItem } from '../../reducer/modules/menu'
@@ -340,7 +340,7 @@ class Home extends Component {
     super(props)
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (this.props.login) {
       this.props.history.push('/group/261')
     }

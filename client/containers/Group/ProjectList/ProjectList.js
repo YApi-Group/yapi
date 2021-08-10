@@ -1,17 +1,17 @@
-import React, { PureComponent as Component } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
 import { Row, Col, Button, Tooltip } from 'antd'
-import { Link } from 'react-router-dom'
 import { autobind } from 'core-decorators'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
+import ErrMsg from '../../../components/ErrMsg/ErrMsg.js'
+import ProjectCard from '../../../components/ProjectCard/ProjectCard.js'
 import {
   addProject,
   fetchProjectList,
   delProject,
 } from '../../../reducer/modules/project'
-import ProjectCard from '../../../components/ProjectCard/ProjectCard.js'
-import ErrMsg from '../../../components/ErrMsg/ErrMsg.js'
 import { setBreadcrumb } from '../../../reducer/modules/user'
 
 import './ProjectList.scss'
@@ -80,7 +80,7 @@ class ProjectList extends Component {
     this.props.fetchProjectList(this.props.currGroup._id, this.props.currPage)
   };
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.props.setBreadcrumb([{ name: String(nextProps.currGroup.group_name || '') }])
 
     // 切换分组

@@ -1,7 +1,3 @@
-import React, { PureComponent as Component } from 'react'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import { Input, Button, Modal, message, Tree, Tooltip } from 'antd'
 import {
   DeleteOutlined,
   CopyOutlined,
@@ -11,11 +7,15 @@ import {
   PlusOutlined,
   //  EllipsisOutlined 
 } from '@ant-design/icons'
+import { Input, Button, Modal, message, Tree, Tooltip } from 'antd'
 import axios from 'axios'
-import { Link, withRouter } from 'react-router-dom'
 import produce from 'immer'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+import { Link, withRouter } from 'react-router-dom'
 
-import { getProject } from '../../../../reducer/modules/project.js'
+import { arrayChangeIndex } from '../../../../common.js'
 import {
   fetchInterfaceListMenu,
   fetchInterfaceList,
@@ -25,7 +25,7 @@ import {
   deleteInterfaceCatData,
   initInterface,
 } from '../../../../reducer/modules/interface.js'
-import { arrayChangeIndex } from '../../../../common.js'
+import { getProject } from '../../../../reducer/modules/project.js'
 
 import AddInterfaceCatForm from './AddInterfaceCatForm'
 import AddInterfaceForm from './AddInterfaceForm'
@@ -117,11 +117,11 @@ class InterfaceMenu extends Component {
     })
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.handleRequest()
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.list !== nextProps.list) {
       // console.log('next', nextProps.list)
       this.setState({

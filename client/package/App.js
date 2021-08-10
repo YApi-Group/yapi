@@ -1,4 +1,11 @@
-import React from 'react'
+import {
+  QuestionCircleOutlined,
+  CaretDownOutlined,
+  CaretRightOutlined,
+  EditOutlined,
+  SettingOutlined,
+  PlusOutlined,
+} from '@ant-design/icons'
 import {
   Input,
   Row,
@@ -11,26 +18,19 @@ import {
   message,
   Tabs,
 } from 'antd'
-import {
-  QuestionCircleOutlined,
-  CaretDownOutlined,
-  CaretRightOutlined,
-  EditOutlined,
-  SettingOutlined,
-  PlusOutlined,
-} from '@ant-design/icons'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
 import GenerateSchema from 'generate-schema/src/schemas/json.js'
+import PropTypes from 'prop-types'
+import React from 'react'
+import { connect } from 'react-redux'
 
-import SchemaJson from './components/SchemaComponents/SchemaJson.js'
 import AceEditor from './components/AceEditor/AceEditor.js'
-import { SCHEMA_TYPE, debounce } from './utils.js'
-import { handleSchema } from './schema'
-import CustomItem from './components/SchemaComponents/SchemaOther.js'
 import LocalProvider from './components/LocalProvider/index.js'
 import MockSelect from './components/MockSelect/index.js'
+import SchemaJson from './components/SchemaComponents/SchemaJson.js'
+import CustomItem from './components/SchemaComponents/SchemaOther.js'
+import { handleSchema } from './schema'
 import * as utils from './utils'
+import { SCHEMA_TYPE, debounce } from './utils.js'
 
 import './index.css'
 
@@ -86,7 +86,7 @@ class jsonSchema extends React.Component {
     this.setState({ visible: false })
   };
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (typeof this.props.onChange === 'function' && this.props.schema !== nextProps.schema) {
       const oldData = JSON.stringify(this.props.schema || '')
       const newData = JSON.stringify(nextProps.schema || '')
@@ -97,7 +97,7 @@ class jsonSchema extends React.Component {
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     let data = this.props.data
     if (!data) {
       data = `{

@@ -1,16 +1,16 @@
-import React, { PureComponent as Component } from 'react'
 import { Timeline, Spin, Row, Col, Tag, Avatar, Button, Modal, AutoComplete } from 'antd'
 import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import { formatTime } from '../../common.js'
 import showDiffMsg from '../../../common/diff-view.js'
-import variable from '../../constants/variable'
-import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news.js'
-import { fetchInterfaceList } from '../../reducer/modules/interface.js'
-import ErrMsg from '../ErrMsg/ErrMsg.js'
 import { timeago } from '../../../common/utils.js'
+import { formatTime } from '../../common.js'
+import variable from '../../constants/variable'
+import { fetchInterfaceList } from '../../reducer/modules/interface.js'
+import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news.js'
+import ErrMsg from '../ErrMsg/ErrMsg.js'
 
 import 'jsondiffpatch/dist/formatters-styles/annotated.css'
 import 'jsondiffpatch/dist/formatters-styles/html.css'
@@ -112,7 +112,7 @@ class TimeTree extends Component {
     })
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.fetchNewsData(this.props.typeid, this.props.type, 1, 10)
     if (this.props.type === 'project') {
       this.getApiList()

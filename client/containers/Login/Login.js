@@ -21,14 +21,8 @@ const changeHeight = {
 }
 
 // @connect(
-//   state => ({
-//     loginData: state.user,
-//     isLDAP: state.user.isLDAP,
-//   }),
-//   {
-//     loginActions,
-//     loginLdapActions,
-//   },
+//   state => ({ //     loginData: state.user, //     isLDAP: state.user.isLDAP, //   }),
+//   { //     loginActions, //     loginLdapActions, //   },
 // )
 // @withRouter
 class Login extends Component {

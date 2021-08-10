@@ -1,12 +1,13 @@
+import { DeleteOutlined, CopyOutlined, FolderOpenOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import { Input, Button, Modal, message, Tooltip, Tree, Form } from 'antd'
+import axios from 'axios'
+import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
-import PropTypes from 'prop-types'
-import axios from 'axios'
-import { Input, Button, Modal, message, Tooltip, Tree, Form } from 'antd'
-import { DeleteOutlined, CopyOutlined, FolderOpenOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import _ from 'underscore'
 
+import { arrayChangeIndex } from '../../../../common.js'
 import {
   fetchInterfaceColList,
   setColData,
@@ -14,7 +15,6 @@ import {
   fetchCaseData,
 } from '../../../../reducer/modules/interfaceCol'
 import { fetchProjectList } from '../../../../reducer/modules/project'
-import { arrayChangeIndex } from '../../../../common.js'
 
 import ImportInterface from './ImportInterface'
 
@@ -27,44 +27,43 @@ import './InterfaceColMenu.scss'
 
 const ColModalForm = props => {
   const { visible, onCancel, onCreate, form, title } = props
-  const { getFieldDecorator } = form
   return (
     <Modal visible={visible} title={title} onCancel={onCancel} onOk={onCreate}>
       <Form layout="vertical">
-        <FormItem label="集合名">
-          {getFieldDecorator('colName', {
-            rules: [{ required: true, message: '请输入集合命名！' }],
-          })(<Input />)}
+        <FormItem label="集合名" name="colName" rules={[{ required: true, message: '请输入集合命名！' }]}>
+          <Input />
         </FormItem>
-        <FormItem label="简介">{getFieldDecorator('colDesc')(<Input type="textarea" />)}</FormItem>
+        <FormItem label="简介" name="colDesc">
+          <Input type="textarea" />
+        </FormItem>
       </Form>
     </Modal>
   )
 }
 
-@connect(
-  state => ({
-    interfaceColList: state.interfaceCol.interfaceColList,
-    currCase: state.interfaceCol.currCase,
-    isRander: state.interfaceCol.isRander,
-    currCaseId: state.interfaceCol.currCaseId,
-    // list: state.inter.list,
-    // 当前项目的信息
-    curProject: state.project.currProject,
-    // projectList: state.project.projectList
-  }),
-  {
-    fetchInterfaceColList,
-    // fetchInterfaceCaseList,
-    fetchCaseData,
-    // fetchInterfaceListMenu,
-    fetchCaseList,
-    setColData,
-    fetchProjectList,
-  },
-)
-@withRouter
-export default class InterfaceColMenu extends Component {
+// @connect(
+//   state => ({
+//     interfaceColList: state.interfaceCol.interfaceColList,
+//     currCase: state.interfaceCol.currCase,
+//     isRander: state.interfaceCol.isRander,
+//     currCaseId: state.interfaceCol.currCaseId,
+//     // list: state.inter.list,
+//     // 当前项目的信息
+//     curProject: state.project.currProject,
+//     // projectList: state.project.projectList
+//   }),
+//   {
+//     fetchInterfaceColList,
+//     // fetchInterfaceCaseList,
+//     fetchCaseData,
+//     // fetchInterfaceListMenu,
+//     fetchCaseList,
+//     setColData,
+//     fetchProjectList,
+//   },
+// )
+// @withRouter
+class InterfaceColMenu extends Component {
   static propTypes = {
     match: PropTypes.object,
     interfaceColList: PropTypes.array,
@@ -83,7 +82,7 @@ export default class InterfaceColMenu extends Component {
     curProject: PropTypes.object,
     fetchProjectList: PropTypes.func,
     // projectList: PropTypes.array
-  };
+  }
 
   state = {
     colModalType: '',
@@ -97,17 +96,13 @@ export default class InterfaceColMenu extends Component {
     list: [],
     delIcon: null,
     selectedProject: null,
-  };
-
-  constructor(props) {
-    super(props)
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.getList()
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.interfaceColList !== nextProps.interfaceColList) {
       this.setState({
         list: nextProps.interfaceColList,
@@ -143,11 +138,11 @@ export default class InterfaceColMenu extends Component {
     } else {
       message.error(res.data.errmsg)
     }
-  };
+  }
 
   onExpand = keys => {
     this.setState({ expands: keys })
-  };
+  }
 
   onSelect = _.debounce(keys => {
     if (keys.length) {
@@ -169,7 +164,7 @@ export default class InterfaceColMenu extends Component {
     this.setState({
       expands: null,
     })
-  }, 500);
+  }, 500)
 
   showDelColConfirm = colId => {
     const that = this
@@ -192,7 +187,7 @@ export default class InterfaceColMenu extends Component {
         }
       },
     })
-  };
+  }
 
   // 复制测试集合
   copyInterface = async item => {
@@ -232,21 +227,21 @@ export default class InterfaceColMenu extends Component {
     this.getList()
     this.props.setColData({ isRander: true })
     message.success('克隆测试集成功')
-  };
+  }
 
   showNoDelColConfirm = () => {
     confirm({
       title: '此测试集合为最后一个集合',
       content: '温馨提示：建议不要删除',
     })
-  };
+  }
   caseCopy = async caseId => {
     const that = this
     const caseData = await that.props.fetchCaseData(caseId)
     let data = caseData.payload.data.data
     data = JSON.parse(JSON.stringify(data))
     data.casename = `${data.casename}_copy`
-    delete data._id 
+    delete data._id
     const res = await axios.post('/api/col/add_case', data)
     if (!res.data.errcode) {
       message.success('克隆用例成功')
@@ -260,7 +255,7 @@ export default class InterfaceColMenu extends Component {
     } else {
       message.error(res.data.errmsg)
     }
-  };
+  }
   showDelCaseConfirm = caseId => {
     const that = this
     const params = this.props.match.params
@@ -286,24 +281,23 @@ export default class InterfaceColMenu extends Component {
         }
       },
     })
-  };
+  }
   showColModal = (type, col) => {
-    const editCol
-      = type === 'edit' ? { colName: col.name, colDesc: col.desc } : { colName: '', colDesc: '' }
+    const editCol = type === 'edit' ? { colName: col.name, colDesc: col.desc } : { colName: '', colDesc: '' }
     this.setState({
       colModalVisible: true,
       colModalType: type || 'add',
       editColId: col && col._id,
     })
     this.form.setFieldsValue(editCol)
-  };
+  }
   saveFormRef = form => {
     this.form = form
-  };
+  }
 
   selectInterface = (importInterIds, selectedProject) => {
     this.setState({ importInterIds, selectedProject })
-  };
+  }
 
   showImportInterfaceModal = async colId => {
     // const projectId = this.props.match.params.id;
@@ -312,7 +306,7 @@ export default class InterfaceColMenu extends Component {
     await this.props.fetchProjectList(groupId)
     // await this.props.fetchInterfaceListMenu(projectId)
     this.setState({ importInterVisible: true, importColId: colId })
-  };
+  }
 
   handleImportOk = async () => {
     const project_id = this.state.selectedProject || this.props.match.params.id
@@ -332,10 +326,10 @@ export default class InterfaceColMenu extends Component {
     } else {
       message.error(res.data.errmsg)
     }
-  };
+  }
   handleImportCancel = () => {
     this.setState({ importInterVisible: false })
-  };
+  }
 
   filterCol = e => {
     const value = e.target.value
@@ -347,7 +341,7 @@ export default class InterfaceColMenu extends Component {
       list: JSON.parse(JSON.stringify(this.props.interfaceColList)),
       // list: newList
     })
-  };
+  }
 
   onDrop = async e => {
     // const projectId = this.props.match.params.id;
@@ -379,15 +373,15 @@ export default class InterfaceColMenu extends Component {
       axios.post('/api/col/up_col_index', changes).then()
       this.getList()
     }
-  };
+  }
 
   enterItem = id => {
     this.setState({ delIcon: id })
-  };
+  }
 
   leaveItem = () => {
     this.setState({ delIcon: null })
-  };
+  }
 
   render() {
     // const { currColId, currCaseId, isShowCol } = this.props;
@@ -426,19 +420,17 @@ export default class InterfaceColMenu extends Component {
             expands: this.state.expands ? this.state.expands : ['col_' + currCase.col_id],
             selects: [String('case_' + currCase._id)],
           }
-        } 
+        }
         const col_id = router.params.actionId
         return {
           expands: this.state.expands ? this.state.expands : ['col_' + col_id],
           selects: ['col_' + col_id],
         }
-        
-      } 
+      }
       return {
         expands: this.state.expands ? this.state.expands : ['col_' + interfaceColList[0]._id],
         selects: ['root'],
       }
-      
     }
 
     const itemInterfaceColCreate = interfaceCase => (
@@ -488,10 +480,10 @@ export default class InterfaceColMenu extends Component {
     if (this.state.filterValue) {
       const arr = []
       list = list.filter(item => {
-
         item.caseList = item.caseList.filter(inter => {
-          if (inter.casename.indexOf(this.state.filterValue) === -1 
-          && inter.path.indexOf(this.state.filterValue) === -1
+          if (
+            inter.casename.indexOf(this.state.filterValue) === -1
+            && inter.path.indexOf(this.state.filterValue) === -1
           ) {
             return false
           }
@@ -567,7 +559,7 @@ export default class InterfaceColMenu extends Component {
                         />
                       </Tooltip>
                       <Tooltip title="导入接口">
-                        <PlusOutlined 
+                        <PlusOutlined
                           className="interface-delete-icon"
                           onClick={e => {
                             e.stopPropagation()
@@ -576,7 +568,7 @@ export default class InterfaceColMenu extends Component {
                         />
                       </Tooltip>
                       <Tooltip title="克隆集合">
-                        <CopyOutlined 
+                        <CopyOutlined
                           className="interface-delete-icon"
                           onClick={e => {
                             e.stopPropagation()
@@ -620,3 +612,26 @@ export default class InterfaceColMenu extends Component {
     )
   }
 }
+
+const states = state => ({
+  interfaceColList: state.interfaceCol.interfaceColList,
+  currCase: state.interfaceCol.currCase,
+  isRander: state.interfaceCol.isRander,
+  currCaseId: state.interfaceCol.currCaseId,
+  // list: state.inter.list,
+  // 当前项目的信息
+  curProject: state.project.currProject,
+  // projectList: state.project.projectList
+})
+
+const actions = {
+  fetchInterfaceColList,
+  // fetchInterfaceCaseList,
+  fetchCaseData,
+  // fetchInterfaceListMenu,
+  fetchCaseList,
+  setColData,
+  fetchProjectList,
+}
+
+export default connect(states, actions)(withRouter(InterfaceColMenu))

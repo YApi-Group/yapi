@@ -1,41 +1,40 @@
-import React, { PureComponent as Component } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { withRouter } from 'react-router';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { message, Tooltip, Input } from 'antd';
-import { getEnv } from '../../../../reducer/modules/project';
+import { message, Tooltip, Input } from 'antd'
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import { Link } from 'react-router-dom'
+
+import { Postman } from '../../../../components'
 import {
   fetchInterfaceColList,
   setColData,
   fetchCaseData,
-  fetchCaseList
-} from '../../../../reducer/modules/interfaceCol';
-import { Postman } from '../../../../components';
+  fetchCaseList,
+} from '../../../../reducer/modules/interfaceCol'
+import { getEnv } from '../../../../reducer/modules/project'
 
-import './InterfaceCaseContent.scss';
+import './InterfaceCaseContent.scss'
 
 @connect(
-  state => {
-    return {
-      interfaceColList: state.interfaceCol.interfaceColList,
-      currColId: state.interfaceCol.currColId,
-      currCaseId: state.interfaceCol.currCaseId,
-      currCase: state.interfaceCol.currCase,
-      isShowCol: state.interfaceCol.isShowCol,
-      currProject: state.project.currProject,
-      projectEnv: state.project.projectEnv,
-      curUid: state.user.uid
-    };
-  },
+  state => ({
+    interfaceColList: state.interfaceCol.interfaceColList,
+    currColId: state.interfaceCol.currColId,
+    currCaseId: state.interfaceCol.currCaseId,
+    currCase: state.interfaceCol.currCase,
+    isShowCol: state.interfaceCol.isShowCol,
+    currProject: state.project.currProject,
+    projectEnv: state.project.projectEnv,
+    curUid: state.user.uid,
+  }),
   {
     fetchInterfaceColList,
     fetchCaseData,
     setColData,
     fetchCaseList,
-    getEnv
-  }
+    getEnv,
+  },
 )
 @withRouter
 export default class InterfaceCaseContent extends Component {
@@ -54,63 +53,63 @@ export default class InterfaceCaseContent extends Component {
     currProject: PropTypes.object,
     getEnv: PropTypes.func,
     projectEnv: PropTypes.object,
-    curUid: PropTypes.number
+    curUid: PropTypes.number,
   };
 
   state = {
     isEditingCasename: true,
-    editCasename: ''
+    editCasename: '',
   };
 
   constructor(props) {
-    super(props);
+    super(props)
   }
 
   getColId(colList, currCaseId) {
-    let currColId = 0;
+    let currColId = 0
     colList.forEach(col => {
       col.caseList.forEach(caseItem => {
-        if (+caseItem._id === +currCaseId) {
-          currColId = col._id;
+        if (Number(caseItem._id) === Number(currCaseId)) {
+          currColId = col._id
         }
-      });
-    });
-    return currColId;
+      })
+    })
+    return currColId
   }
 
-  async componentWillMount() {
-    const result = await this.props.fetchInterfaceColList(this.props.match.params.id);
-    let { currCaseId } = this.props;
-    const params = this.props.match.params;
-    const { actionId } = params;
-    currCaseId = +actionId || +currCaseId || result.payload.data.data[0].caseList[0]._id;
-    let currColId = this.getColId(result.payload.data.data, currCaseId);
+  async UNSAFE_componentWillMount() {
+    const result = await this.props.fetchInterfaceColList(this.props.match.params.id)
+    let { currCaseId } = this.props
+    const params = this.props.match.params
+    const { actionId } = params
+    currCaseId = Number(actionId) || Number(currCaseId) || result.payload.data.data[0].caseList[0]._id
+    const currColId = this.getColId(result.payload.data.data, currCaseId)
     // this.props.history.push('/project/' + params.id + '/interface/case/' + currCaseId);
-    await this.props.fetchCaseData(currCaseId);
-    this.props.setColData({ currCaseId: +currCaseId, currColId, isShowCol: false });
+    await this.props.fetchCaseData(currCaseId)
+    this.props.setColData({ currCaseId: Number(currCaseId), currColId, isShowCol: false })
     // 获取当前case 下的环境变量
-    await this.props.getEnv(this.props.currCase.project_id);
+    await this.props.getEnv(this.props.currCase.project_id)
     // await this.getCurrEnv()
 
-    this.setState({ editCasename: this.props.currCase.casename });
+    this.setState({ editCasename: this.props.currCase.casename })
   }
 
-  async componentWillReceiveProps(nextProps) {
-    const oldCaseId = this.props.match.params.actionId;
-    const newCaseId = nextProps.match.params.actionId;
-    const { interfaceColList } = nextProps;
-    let currColId = this.getColId(interfaceColList, newCaseId);
+  async UNSAFE_componentWillReceiveProps(nextProps) {
+    const oldCaseId = this.props.match.params.actionId
+    const newCaseId = nextProps.match.params.actionId
+    const { interfaceColList } = nextProps
+    const currColId = this.getColId(interfaceColList, newCaseId)
     if (oldCaseId !== newCaseId) {
-      await this.props.fetchCaseData(newCaseId);
-      this.props.setColData({ currCaseId: +newCaseId, currColId, isShowCol: false });
-      await this.props.getEnv(this.props.currCase.project_id);
+      await this.props.fetchCaseData(newCaseId)
+      this.props.setColData({ currCaseId: Number(newCaseId), currColId, isShowCol: false })
+      await this.props.getEnv(this.props.currCase.project_id)
       // await this.getCurrEnv()
-      this.setState({ editCasename: this.props.currCase.casename });
+      this.setState({ editCasename: this.props.currCase.casename })
     }
   }
 
   savePostmanRef = postman => {
-    this.postman = postman;
+    this.postman = postman
   };
 
   updateCase = async () => {
@@ -125,12 +124,12 @@ export default class InterfaceCaseContent extends Component {
       test_script,
       enable_script,
       test_res_body,
-      test_res_header
-    } = this.postman.state;
+      test_res_header,
+    } = this.postman.state
 
-    const { editCasename: casename } = this.state;
-    const { _id: id } = this.props.currCase;
-    let params = {
+    const { editCasename: casename } = this.state
+    const { _id: id } = this.props.currCase
+    const params = {
       id,
       casename,
       case_env,
@@ -143,48 +142,46 @@ export default class InterfaceCaseContent extends Component {
       test_script,
       enable_script,
       test_res_body,
-      test_res_header
-    };
+      test_res_header,
+    }
 
-    const res = await axios.post('/api/col/up_case', params);
+    const res = await axios.post('/api/col/up_case', params)
     if (this.props.currCase.casename !== casename) {
-      this.props.fetchInterfaceColList(this.props.match.params.id);
+      this.props.fetchInterfaceColList(this.props.match.params.id)
     }
     if (res.data.errcode) {
-      message.error(res.data.errmsg);
+      message.error(res.data.errmsg)
     } else {
-      message.success('更新成功');
-      this.props.fetchCaseData(id);
+      message.success('更新成功')
+      this.props.fetchCaseData(id)
     }
   };
 
   triggerEditCasename = () => {
     this.setState({
       isEditingCasename: true,
-      editCasename: this.props.currCase.casename
-    });
+      editCasename: this.props.currCase.casename,
+    })
   };
   cancelEditCasename = () => {
     this.setState({
       isEditingCasename: false,
-      editCasename: this.props.currCase.casename
-    });
+      editCasename: this.props.currCase.casename,
+    })
   };
 
   render() {
-    const { currCase, currProject, projectEnv } = this.props;
-    const { isEditingCasename, editCasename } = this.state;
+    const { currCase, currProject, projectEnv } = this.props
+    const { isEditingCasename, editCasename } = this.state
 
-    const data = Object.assign(
-      {},
-      currCase,
-      {
-        env: projectEnv.env,
-        pre_script: currProject.pre_script,
-        after_script: currProject.after_script
-      },
-      { _id: currCase._id }
-    );
+    const data = {
+      
+      ...currCase,
+      env: projectEnv.env,
+      pre_script: currProject.pre_script,
+      after_script: currProject.after_script,
+      _id: currCase._id,
+    }
 
     return (
       <div style={{ padding: '6px 0' }} className="case-content">
@@ -230,6 +227,6 @@ export default class InterfaceCaseContent extends Component {
           )}
         </div>
       </div>
-    );
+    )
   }
 }

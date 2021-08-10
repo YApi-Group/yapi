@@ -1,5 +1,5 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 import _ from 'underscore'
 
 import mockEditor from './mockEditor'
@@ -47,7 +47,7 @@ class AceEditor extends React.PureComponent {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (!this.editor) { return }
 
     if (

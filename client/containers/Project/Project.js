@@ -1,19 +1,19 @@
+import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
 import { Route, Switch, Redirect, matchPath } from 'react-router-dom'
 
+import Loading from '../../components/Loading/Loading'
 import { Subnav } from '../../components/index'
 import { fetchGroupMsg } from '../../reducer/modules/group'
-import { setBreadcrumb } from '../../reducer/modules/user'
 import { getProject } from '../../reducer/modules/project'
-import Loading from '../../components/Loading/Loading'
+import { setBreadcrumb } from '../../reducer/modules/user'
 
-import Interface from './Interface/Interface.js'
 import Activity from './Activity/Activity.js'
-import Setting from './Setting/Setting.js'
-import ProjectMember from './Setting/ProjectMember/ProjectMember.js'
+import Interface from './Interface/Interface.js'
 import ProjectData from './Setting/ProjectData/ProjectData.js'
+import ProjectMember from './Setting/ProjectMember/ProjectMember.js'
+import Setting from './Setting/Setting.js'
 
 const plugin = require('@/plugin.js')
 @connect(
@@ -42,7 +42,7 @@ export default class Project extends Component {
     super(props)
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     await this.props.getProject(this.props.match.params.id)
     await this.props.fetchGroupMsg(this.props.curProject.group_id)
 
@@ -57,7 +57,7 @@ export default class Project extends Component {
     ])
   }
 
-  async componentWillReceiveProps(nextProps) {
+  async UNSAFE_componentWillReceiveProps(nextProps) {
     const currProjectId = this.props.match.params.id
     const nextProjectId = nextProps.match.params.id
     if (currProjectId !== nextProjectId) {

@@ -1,8 +1,9 @@
-import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import './index.scss'
 import { Row, Col, Form, Input, Select, Button, AutoComplete, Tooltip } from 'antd'
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+
 const FormItem = Form.Item
 const Option = Select.Option
 import constants from '@/constants/variable.js'
@@ -118,7 +119,7 @@ class ProjectEnvContent extends Component {
     this.setState({ ...newValue })
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const curEnvName = this.props.projectMsg.name
     const nextEnvName = nextProps.projectMsg.name
     if (curEnvName !== nextEnvName) {

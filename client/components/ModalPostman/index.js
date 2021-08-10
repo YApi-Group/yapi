@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { Alert, Modal, Row, Col, Collapse, Input, Tooltip } from 'antd'
 import { EditOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+import { Alert, Modal, Row, Col, Collapse, Input, Tooltip } from 'antd'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 
 import { trim } from '../../common.js'
 
-import MockList from './MockList.js'
 import MethodsList from './MethodsList.js'
+import MockList from './MockList.js'
 import VariablesSelect from './VariablesSelect.js'
 
 import './index.scss'
@@ -64,7 +64,7 @@ class ModalPostman extends Component {
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { inputValue } = this.props
     this.setState({
       constantInput: inputValue,

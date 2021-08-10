@@ -10,7 +10,7 @@ import 'webpack-dev-server'
 
 const localHost = ip.address()
 
-const devsFile: Configuration = {
+const devConf: Configuration = {
   entry: path.resolve(__dirname, './index.js'),
 
   output: {
@@ -162,4 +162,4 @@ const devsFile: Configuration = {
   ],
 }
 
-export default devsFile
+export default devConf

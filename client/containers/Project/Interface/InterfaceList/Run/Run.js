@@ -1,21 +1,23 @@
-import React, { PureComponent as Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
-import axios from 'axios';
-import { message } from 'antd';
-import { Postman } from '../../../../../components';
-import AddColModal from './AddColModal';
+import { message } from 'antd'
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+
+import { Postman } from '../../../../../components'
+
+import AddColModal from './AddColModal'
 
 // import {
 // } from '../../../reducer/modules/group.js'
 
-import './Run.scss';
+import './Run.scss'
 
 @connect(state => ({
   currInterface: state.inter.curdata,
   currProject: state.project.currProject,
-  curUid: state.user.uid
+  curUid: state.user.uid,
 }))
 @withRouter
 export default class Run extends Component {
@@ -23,26 +25,26 @@ export default class Run extends Component {
     currProject: PropTypes.object,
     currInterface: PropTypes.object,
     match: PropTypes.object,
-    curUid: PropTypes.number
+    curUid: PropTypes.number,
   };
 
   state = {};
 
   constructor(props) {
-    super(props);
+    super(props)
   }
 
-  componentWillMount() {}
+  UNSAFE_componentWillMount() {}
 
-  componentWillReceiveProps() {}
+  UNSAFE_componentWillReceiveProps() {}
 
   savePostmanRef = postman => {
-    this.postman = postman;
+    this.postman = postman
   };
 
   saveCase = async (colId, caseName) => {
-    const project_id = this.props.match.params.id;
-    const interface_id = this.props.currInterface._id;
+    const project_id = this.props.match.params.id
+    const interface_id = this.props.currInterface._id
     const {
       case_env,
       req_params,
@@ -50,10 +52,10 @@ export default class Run extends Component {
       req_headers,
       req_body_type,
       req_body_form,
-      req_body_other
-    } = this.postman.state;
+      req_body_other,
+    } = this.postman.state
 
-    let params = {
+    const params = {
       interface_id,
       casename: caseName,
       col_id: colId,
@@ -64,30 +66,31 @@ export default class Run extends Component {
       req_headers,
       req_body_type,
       req_body_form,
-      req_body_other
-    };
-
-    if (params.test_res_body && typeof params.test_res_body === 'object') {
-      params.test_res_body = JSON.stringify(params.test_res_body, null, '   ');
+      req_body_other,
     }
 
-    const res = await axios.post('/api/col/add_case', params);
+    if (params.test_res_body && typeof params.test_res_body === 'object') {
+      params.test_res_body = JSON.stringify(params.test_res_body, null, '   ')
+    }
+
+    const res = await axios.post('/api/col/add_case', params)
     if (res.data.errcode) {
-      message.error(res.data.errmsg);
+      message.error(res.data.errmsg)
     } else {
-      message.success('添加成功');
-      this.setState({ saveCaseModalVisible: false });
+      message.success('添加成功')
+      this.setState({ saveCaseModalVisible: false })
     }
   };
 
   render() {
-    const { currInterface, currProject } = this.props;
-    const data = Object.assign({}, currInterface, {
+    const { currInterface, currProject } = this.props
+    const data = {
+      ...currInterface,
       env: currProject.env,
       pre_script: currProject.pre_script,
-      after_script: currProject.after_script
-    });
-    data.path = currProject.basepath + currInterface.path;
+      after_script: currProject.after_script,
+    }
+    data.path = currProject.basepath + currInterface.path
     return (
       <div>
         <Postman
@@ -108,6 +111,6 @@ export default class Run extends Component {
           onOk={this.saveCase}
         />
       </div>
-    );
+    )
   }
 }

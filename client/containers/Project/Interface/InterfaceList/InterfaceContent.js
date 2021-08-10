@@ -1,15 +1,15 @@
+import { Tabs, Modal, Button } from 'antd'
+import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import { Tabs, Modal, Button } from 'antd'
 import { Prompt } from 'react-router'
 import { withRouter } from 'react-router-dom'
 
 import { fetchInterfaceData } from '../../../../reducer/modules/interface.js'
 
 import Edit from './Edit.js'
-import View from './View.js'
 import Run from './Run/Run.js'
+import View from './View.js'
 
 const plugin = require('@/plugin.js')
 
@@ -43,7 +43,7 @@ class Content extends Component {
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const params = this.props.match.params
     this.actionId = params.actionId
     this.handleRequest(this.props)
@@ -53,7 +53,7 @@ class Content extends Component {
     document.getElementsByTagName('title')[0].innerText = this.title
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const params = nextProps.match.params
     if (params.actionId !== this.actionId) {
       this.actionId = params.actionId

@@ -1,8 +1,8 @@
+import { QuestionCircleOutlined } from '@ant-design/icons'
+import { Form, Switch, Button, Tooltip, message } from 'antd'
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import { Form, Switch, Button, Tooltip, message } from 'antd'
-import { QuestionCircleOutlined } from '@ant-design/icons'
 
 import AceEditor from '../../../../components/AceEditor/AceEditor'
 import { updateProjectMock, getProject } from '../../../../reducer/modules/project'
@@ -70,7 +70,7 @@ export default class ProjectMock extends Component {
     }
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({
       is_mock_open: this.props.projectMsg.is_mock_open,
       project_mock_script: this.props.projectMsg.project_mock_script,

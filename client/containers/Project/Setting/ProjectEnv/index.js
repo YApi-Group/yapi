@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { Layout, Tooltip, message, Row, Popconfirm } from 'antd'
 import { DeleteOutlined, QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { Layout, Tooltip, message, Row, Popconfirm } from 'antd'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { updateEnv, getProject, getEnv } from '../../../../reducer/modules/project'
 import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
+import { updateEnv, getProject, getEnv } from '../../../../reducer/modules/project'
 
 import ProjectEnvContent from './ProjectEnvContent.js'
 
@@ -54,7 +54,7 @@ class ProjectEnv extends Component {
     })
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     this._isMounted = true
     await this.props.getProject(this.props.projectId)
     const { env, _id } = this.props.projectMsg

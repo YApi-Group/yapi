@@ -1,11 +1,11 @@
+import { DownOutlined, ExclamationCircleOutlined, QuestionCircleOutlined, UpOutlined } from '@ant-design/icons'
+import { Input, Button, message, Card, Alert, Modal, Switch, Row, Col, Tooltip } from 'antd'
+import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import { Input, Button, message, Card, Alert, Modal, Switch, Row, Col, Tooltip } from 'antd'
-import { DownOutlined, ExclamationCircleOutlined, QuestionCircleOutlined, UpOutlined } from '@ant-design/icons'
 import _ from 'underscore'
 
-import { fetchNewsData } from '../../../reducer/modules/news.js'
+import { trim } from '../../../common.js'
 import {
   changeGroupMsg,
   fetchGroupList,
@@ -14,7 +14,7 @@ import {
   updateGroupList,
   deleteGroup,
 } from '../../../reducer/modules/group.js'
-import { trim } from '../../../common.js'
+import { fetchNewsData } from '../../../reducer/modules/news.js'
 
 import './GroupSetting.scss'
 
@@ -103,7 +103,7 @@ class GroupSetting extends Component {
     })
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     // console.log('custom_field1',this.props.currGroup.custom_field1)
     this.initState(this.props)
   }
@@ -193,7 +193,7 @@ class GroupSetting extends Component {
     })
   };
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // 切换分组时，更新分组信息并关闭删除分组操作
     if (this.props.currGroup._id !== nextProps.currGroup._id) {
       this.initState(nextProps)

@@ -1,7 +1,7 @@
-import React, { PureComponent as Component } from 'react'
 import { Row, Col, Input, Button, Select, message, Upload, Tooltip } from 'antd'
 import axios from 'axios'
 import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
 import { formatTime } from '../../common.js'
@@ -84,7 +84,7 @@ class Profile extends Component {
     this.handleUserinfo(this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (!nextProps.match.params.uid) {
       return
     }
