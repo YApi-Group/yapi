@@ -35,7 +35,7 @@ class ProjectEnvContent extends Component {
     form: PropTypes.object,
     onSubmit: PropTypes.func,
     handleEnvInput: PropTypes.func,
-  };
+  }
 
   initState(curdata) {
     const header = [
@@ -103,7 +103,7 @@ class ProjectEnvContent extends Component {
     const data = { name: '', value: '' }
     newValue[name] = [].concat(this.state[name], data)
     this.setState(newValue)
-  };
+  }
 
   delHeader = (key, name) => {
     const curValue = this.props.form.getFieldValue(name)
@@ -111,7 +111,7 @@ class ProjectEnvContent extends Component {
     newValue[name] = curValue.filter((val, index) => index !== key)
     this.props.form.setFieldsValue(newValue)
     this.setState(newValue)
-  };
+  }
 
   handleInit(data) {
     this.props.form.resetFields()
@@ -152,21 +152,22 @@ class ProjectEnvContent extends Component {
         onSubmit(assignValue)
       }
     })
-  };
+  }
 
   render() {
     const { projectMsg } = this.props
-    const { getFieldDecorator } = this.props.form
+    // const { getFieldDecor111ator } = this.props.form
     const headerTpl = (item, index) => {
       const headerLength = this.state.header.length - 1
       return (
         <Row gutter={2} key={index}>
           <Col span={10}>
-            <FormItem>
-              {getFieldDecorator('header[' + index + '].name', {
-                validateTrigger: ['onChange', 'onBlur'],
-                initialValue: item.name || '',
-              })(<AutoComplete
+            <FormItem
+              name={'header[' + index + '].name'}
+              validateTrigger={['onChange', 'onBlur']}
+              initialValue={item.name || ''}
+            >
+              <AutoComplete
                 style={{ width: '200px' }}
                 allowClear={true}
                 dataSource={constants.HTTP_REQUEST_HEADER}
@@ -174,15 +175,17 @@ class ProjectEnvContent extends Component {
                 onChange={() => this.addHeader(item, index, 'header')}
                 filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                 }
-              />)}
+              />
             </FormItem>
           </Col>
+
           <Col span={12}>
-            <FormItem>
-              {getFieldDecorator('header[' + index + '].value', {
-                validateTrigger: ['onChange', 'onBlur'],
-                initialValue: item.value || '',
-              })(<Input placeholder="请输入参数内容" style={{ width: '90%', marginRight: 8 }} />)}
+            <FormItem
+              name={'header[' + index + '].value'}
+              validateTrigger={['onChange', 'onBlur']}
+              initialValue={item.value || ''}
+            >
+              <Input placeholder="请输入参数内容" style={{ width: '90%', marginRight: 8 }} />
             </FormItem>
           </Col>
           <Col span={2} className={index === headerLength ? ' env-last-row' : null}>
@@ -204,23 +207,25 @@ class ProjectEnvContent extends Component {
       return (
         <Row gutter={2} key={index}>
           <Col span={10}>
-            <FormItem>
-              {getFieldDecorator(`${name}[${index}].name`, {
-                validateTrigger: ['onChange', 'onBlur'],
-                initialValue: item.name || '',
-              })(<Input
+            <FormItem
+              name={`${name}[${index}].name`}
+              validateTrigger={['onChange', 'onBlur']}
+              initialValue={item.name || ''}
+            >
+              <Input
                 placeholder={`请输入 ${name} Name`}
                 style={{ width: '200px' }}
                 onChange={() => this.addHeader(item, index, name)}
-              />)}
+              />
             </FormItem>
           </Col>
           <Col span={12}>
-            <FormItem>
-              {getFieldDecorator(`${name}[${index}].value`, {
-                validateTrigger: ['onChange', 'onBlur'],
-                initialValue: item.value || '',
-              })(<Input placeholder="请输入参数内容" style={{ width: '90%', marginRight: 8 }} />)}
+            <FormItem
+              name={`${name}[${index}].value`}
+              validateTrigger={['onChange', 'onBlur']}
+              initialValue={item.value || ''}
+            >
+              <Input placeholder="请输入参数内容" style={{ width: '90%', marginRight: 8 }} />
             </FormItem>
           </Col>
           <Col span={2} className={index === length ? ' env-last-row' : null}>
@@ -240,75 +245,82 @@ class ProjectEnvContent extends Component {
     const envTpl = data => (
       <div>
         <h3 className="env-label">环境名称</h3>
-        <FormItem required={false}>
-          {getFieldDecorator('env.name', {
-            validateTrigger: ['onChange', 'onBlur'],
-            initialValue: data.name === '新环境' ? '' : data.name || '',
-            rules: [
-              {
-                required: false,
-                whitespace: true,
-                validator(rule, value, callback) {
-                  if (value) {
-                    if (value.length === 0) {
-                      callback('请输入环境名称')
-                    } else if (!/\S/.test(value)) {
-                      callback('请输入环境名称')
-                    } else {
-                      return callback()
-                    }
-                  } else {
+        <FormItem
+          required={false}
+          name="env.name"
+          validateTrigger={['onChange', 'onBlur']}
+          initialValue={data.name === '新环境' ? '' : data.name || ''}
+          rules={[
+            {
+              required: false,
+              whitespace: true,
+              validator(rule, value, callback) {
+                if (value) {
+                  if (value.length === 0) {
                     callback('请输入环境名称')
+                  } else if (!/\S/.test(value)) {
+                    callback('请输入环境名称')
+                  } else {
+                    return callback()
                   }
-                },
+                } else {
+                  callback('请输入环境名称')
+                }
               },
-            ],
-          })(<Input
+            },
+          ]}
+        >
+          <Input
             onChange={e => this.props.handleEnvInput(e.target.value)}
             placeholder="请输入环境名称"
             style={{ width: '90%', marginRight: 8 }}
-          />)}
+          />
         </FormItem>
+
         <h3 className="env-label">环境域名</h3>
-        <FormItem required={false}>
-          {getFieldDecorator('env.domain', {
-            validateTrigger: ['onChange', 'onBlur'],
-            initialValue: data.domain ? data.domain.split('//')[1] : '',
-            rules: [
-              {
-                required: false,
-                whitespace: true,
-                validator(rule, value, callback) {
-                  if (value) {
-                    if (value.length === 0) {
-                      callback('请输入环境域名!')
-                    } else if (/\s/.test(value)) {
-                      callback('环境域名不允许出现空格!')
-                    } else {
-                      return callback()
-                    }
-                  } else {
+        <FormItem
+          required={false}
+          name="env.domain"
+          validateTrigger={['onChange', 'onBlur']}
+          initialValue={data.domain ? data.domain.split('//')[1] : ''}
+          rules={[
+            {
+              required: false,
+              whitespace: true,
+              validator(rule, value, callback) {
+                if (value) {
+                  if (value.length === 0) {
                     callback('请输入环境域名!')
+                  } else if (/\s/.test(value)) {
+                    callback('环境域名不允许出现空格!')
+                  } else {
+                    return callback()
                   }
-                },
+                } else {
+                  callback('请输入环境域名!')
+                }
               },
-            ],
-          })(<Input
+            },
+          ]}
+        >
+          <Input
             placeholder="请输入环境域名"
             style={{ width: '90%', marginRight: 8 }}
-            addonBefore={getFieldDecorator('env.protocol', {
-              initialValue: data.domain ? data.domain.split('//')[0] + '//' : 'http://',
-              rules: [
-                {
-                  required: true,
-                },
-              ],
-            })(<Select>
-              <Option value="http://">{'http://'}</Option>
-              <Option value="https://">{'https://'}</Option>
-            </Select>)}
-          />)}
+            addonBefore={
+              <FormItem
+                name="env.protocol"
+                initialValue={data.domain ? data.domain.split('//')[0] + '//' : 'http://'}
+                rules={[{ required: true }]}
+              >
+                <Select>
+                  <Option value="http://">{'http://'}</Option>
+                  <Option value="https://">{'https://'}</Option>
+                </Select>
+              </FormItem>
+            }
+          />
         </FormItem>
+
         <h3 className="env-label">Header</h3>
         {this.state.header.map((item, index) => headerTpl(item, index))}
 
@@ -316,7 +328,7 @@ class ProjectEnvContent extends Component {
         {this.state.cookie.map((item, index) => commonTpl(item, index, 'cookie'))}
 
         <h3 className="env-label">
-            global
+          global
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -324,7 +336,7 @@ class ProjectEnvContent extends Component {
             style={{ marginLeft: 8 }}
           >
             <Tooltip title="点击查看文档">
-              <QuestionCircleOutlined style={{ fontSize: '13px' }}/>
+              <QuestionCircleOutlined style={{ fontSize: '13px' }} />
             </Tooltip>
           </a>
         </h3>
@@ -336,13 +348,7 @@ class ProjectEnvContent extends Component {
       <div>
         {envTpl(projectMsg)}
         <div className="btnwrap-changeproject">
-          <Button
-            className="m-btn btn-save"
-            icon="save"
-            type="primary"
-            size="large"
-            onClick={this.handleOk}
-          >
+          <Button className="m-btn btn-save" icon="save" type="primary" size="large" onClick={this.handleOk}>
             保 存
           </Button>
         </div>

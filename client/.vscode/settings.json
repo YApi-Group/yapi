@@ -3,8 +3,10 @@
     "Appstore",
     "LDAP",
     "antd",
+    "basepath",
     "errcode",
     "ladp",
+    "mockjs",
     "moox",
     "stylelint",
     "yapi"

@@ -221,16 +221,13 @@ class InterfaceEditForm extends Component {
 
   handleSubmit = e => {
     e.preventDefault()
-    this.setState({
-      submitStatus: true,
-    })
+    this.setState({ submitStatus: true })
+
     try {
       this.props.form.validateFields((err, values) => {
         setTimeout(() => {
           if (this._isMounted) {
-            this.setState({
-              submitStatus: false,
-            })
+            this.setState({ submitStatus: false })
           }
         }, 3000)
         if (!err) {
@@ -261,25 +258,25 @@ class InterfaceEditForm extends Component {
           values.req_params = values.req_params || []
           values.req_headers = values.req_headers || []
           values.req_body_form = values.req_body_form || []
-          let isfile = false,
+          let isFile = false,
             isHaveContentType = false
           if (values.req_body_type === 'form') {
             values.req_body_form.forEach(item => {
               if (item.type === 'file') {
-                isfile = true
+                isFile = true
               }
             })
 
             values.req_headers.map(item => {
               if (item.name === 'Content-Type') {
-                item.value = isfile ? 'multipart/form-data' : 'application/x-www-form-urlencoded'
+                item.value = isFile ? 'multipart/form-data' : 'application/x-www-form-urlencoded'
                 isHaveContentType = true
               }
             })
             if (isHaveContentType === false) {
               values.req_headers.unshift({
                 name: 'Content-Type',
-                value: isfile ? 'multipart/form-data' : 'application/x-www-form-urlencoded',
+                value: isFile ? 'multipart/form-data' : 'application/x-www-form-urlencoded',
               })
             }
           } else if (values.req_body_type === 'json') {
@@ -572,7 +569,6 @@ class InterfaceEditForm extends Component {
   }
 
   render() {
-    const { getFieldDecorator } = this.props.form
     const { custom_field, projectMsg } = this.props
 
     const formItemLayout = {
@@ -594,28 +590,32 @@ class InterfaceEditForm extends Component {
           <BarsOutlined />
         </Col>
         <Col span="4" draggable="false" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_query[' + index + '].name', {
-            initialValue: data.name,
-          })(<Input placeholder="参数名称" />)}
+          <FormItem name={'req_query[' + index + '].name'} initialValue={data.name}>
+            <Input placeholder="参数名称" />
+          </FormItem>
         </Col>
+
         <Col span="3" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_query[' + index + '].required', {
-            initialValue: data.required,
-          })(<Select>
-            <Option value="1">必需</Option>
-            <Option value="0">非必需</Option>
-          </Select>)}
+          <FormItem name={'req_query[' + index + '].required'} initialValue={data.required}>
+            <Select>
+              <Option value="1">必需</Option>
+              <Option value="0">非必需</Option>
+            </Select>
+          </FormItem>
         </Col>
+
         <Col span="6" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_query[' + index + '].example', {
-            initialValue: data.example,
-          })(<TextArea autosize={true} placeholder="参数示例" />)}
+          <FormItem name={'req_query[' + index + '].example'} initialValue={data.example}>
+            <TextArea autosize={true} placeholder="参数示例" />
+          </FormItem>
         </Col>
+
         <Col span="9" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_query[' + index + '].desc', {
-            initialValue: data.desc,
-          })(<TextArea autosize={true} placeholder="备注" />)}
+          <FormItem name={'req_query[' + index + '].desc'} initialValue={data.desc}>
+            <TextArea autosize={true} placeholder="备注" />
+          </FormItem>
         </Col>
+
         <Col span="1" className="interface-edit-item-content-col">
           <DeleteOutlined className="interface-edit-del-icon" onClick={() => this.delParams(index, 'req_query')} />
         </Col>
@@ -631,31 +631,36 @@ class InterfaceEditForm extends Component {
         >
           <BarsOutlined />
         </Col>
+
         <Col span="4" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_headers[' + index + '].name', {
-            initialValue: data.name,
-          })(<AutoComplete
-            dataSource={HTTP_REQUEST_HEADER}
-            filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-            }
-            placeholder="参数名称"
-          />)}
+          <FormItem name={'req_headers[' + index + '].name'} initialValue={data.name}>
+            <AutoComplete
+              dataSource={HTTP_REQUEST_HEADER}
+              filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+              }
+              placeholder="参数名称"
+            />
+          </FormItem>
         </Col>
+
         <Col span="5" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_headers[' + index + '].value', {
-            initialValue: data.value,
-          })(<Input placeholder="参数值" />)}
+          <FormItem name={'req_headers[' + index + '].value'} initialValue={data.value}>
+            <Input placeholder="参数值" />
+          </FormItem>
         </Col>
+
         <Col span="5" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_headers[' + index + '].example', {
-            initialValue: data.example,
-          })(<TextArea autosize={true} placeholder="参数示例" />)}
+          <FormItem name={'req_headers[' + index + '].example'} initialValue={data.example}>
+            <TextArea autosize={true} placeholder="参数示例" />
+          </FormItem>
         </Col>
+
         <Col span="8" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_headers[' + index + '].desc', {
-            initialValue: data.desc,
-          })(<TextArea autosize={true} placeholder="备注" />)}
+          <FormItem name={'req_headers[' + index + '].desc'} initialValue={data.desc}>
+            <TextArea autosize={true} placeholder="备注" />
+          </FormItem>
         </Col>
+
         <Col span="1" className="interface-edit-item-content-col">
           <DeleteOutlined className="interface-edit-del-icon" onClick={() => this.delParams(index, 'req_headers')} />
         </Col>
@@ -671,37 +676,43 @@ class InterfaceEditForm extends Component {
         >
           <BarsOutlined />
         </Col>
+
         <Col span="4" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_body_form[' + index + '].name', {
-            initialValue: data.name,
-          })(<Input placeholder="name" />)}
+          <FormItem name={'req_body_form[' + index + '].name'} initialValue={data.name}>
+            <Input placeholder="name" />
+          </FormItem>
         </Col>
+
         <Col span="3" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_body_form[' + index + '].type', {
-            initialValue: data.type,
-          })(<Select>
-            <Option value="text">text</Option>
-            <Option value="file">file</Option>
-          </Select>)}
+          <FormItem name={'req_body_form[' + index + '].type'} initialValue={data.type}>
+            <Select>
+              <Option value="text">text</Option>
+              <Option value="file">file</Option>
+            </Select>
+          </FormItem>
         </Col>
+
         <Col span="3" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_body_form[' + index + '].required', {
-            initialValue: data.required,
-          })(<Select>
-            <Option value="1">必需</Option>
-            <Option value="0">非必需</Option>
-          </Select>)}
+          <FormItem name={'req_body_form[' + index + '].required'} initialValue={data.required}>
+            <Select>
+              <Option value="1">必需</Option>
+              <Option value="0">非必需</Option>
+            </Select>
+          </FormItem>
         </Col>
+
         <Col span="5" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_body_form[' + index + '].example', {
-            initialValue: data.example,
-          })(<TextArea autosize={true} placeholder="参数示例" />)}
+          <FormItem name={'req_body_form[' + index + '].example'} initialValue={data.example}>
+            <TextArea autosize={true} placeholder="参数示例" />
+          </FormItem>
         </Col>
+
         <Col span="7" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_body_form[' + index + '].desc', {
-            initialValue: data.desc,
-          })(<TextArea autosize={true} placeholder="备注" />)}
+          <FormItem name={'req_body_form[' + index + '].desc'} initialValue={data.desc}>
+            <TextArea autosize={true} placeholder="备注" />
+          </FormItem>
         </Col>
+
         <Col span="1" className="interface-edit-item-content-col">
           <DeleteOutlined className="interface-edit-del-icon" onClick={() => this.delParams(index, 'req_body_form')} />
         </Col>
@@ -711,19 +722,21 @@ class InterfaceEditForm extends Component {
     const paramsTpl = (data, index) => (
       <Row key={index} className="interface-edit-item-content">
         <Col span="6" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_params[' + index + '].name', {
-            initialValue: data.name,
-          })(<Input disabled placeholder="参数名称" />)}
+          <FormItem name={'req_params[' + index + '].name'} initialValue={data.name}>
+            <Input disabled placeholder="参数名称" />
+          </FormItem>
         </Col>
+
         <Col span="7" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_params[' + index + '].example', {
-            initialValue: data.example,
-          })(<TextArea autosize={true} placeholder="参数示例" />)}
+          <FormItem name={'req_params[' + index + '].example'} initialValue={data.example}>
+            <TextArea autosize={true} placeholder="参数示例" />
+          </FormItem>
         </Col>
+
         <Col span="11" className="interface-edit-item-content-col">
-          {getFieldDecorator('req_params[' + index + '].desc', {
-            initialValue: data.desc,
-          })(<TextArea autosize={true} placeholder="备注" />)}
+          <FormItem name={'req_params[' + index + '].desc'} initialValue={data.desc}>
+            <TextArea autosize={true} placeholder="备注" />
+          </FormItem>
         </Col>
       </Row>
     )
@@ -827,10 +840,10 @@ class InterfaceEditForm extends Component {
                 <Tooltip
                   title="接口基本路径，可在 项目设置 里修改"
                   style={{
-                    display: this.props.basepath == '' ? 'block' : 'none',
+                    display: this.props.basepath === '' ? 'block' : 'none',
                   }}
                 >
-                  <Input disabled value={this.props.basepath} readOnly onChange={() => {}} style={{ width: '25%' }} />
+                  <Input disabled value={this.props.basepath} readOnly onChange={() => ({})} style={{ width: '25%' }} />
                 </Tooltip>
                 <Input onChange={this.handlePath} placeholder="/path" style={{ width: '60%' }} />
               </InputGroup>
@@ -840,6 +853,7 @@ class InterfaceEditForm extends Component {
                 </Col>
               </Row>
             </FormItem>
+
             <FormItem
               className="interface-edit-item"
               {...formItemLayout}
@@ -948,15 +962,17 @@ class InterfaceEditForm extends Component {
             </Row>
             {HTTP_METHOD[this.state.method].request_body ? (
               <div>
-                <FormItem className={'interface-edit-item ' + this.state.hideTabs.req.body}>
-                  {getFieldDecorator('req_body_type', {
-                    initialValue: this.state.req_body_type,
-                  })(<RadioGroup>
+                <FormItem
+                  className={'interface-edit-item ' + this.state.hideTabs.req.body}
+                  name="req_body_type"
+                  initialValue={this.state.req_body_type}
+                >
+                  <RadioGroup>
                     <Radio value="form">form</Radio>
                     <Radio value="json">json</Radio>
                     <Radio value="file">file</Radio>
                     <Radio value="raw">raw</Radio>
-                  </RadioGroup>)}
+                  </RadioGroup>
                 </FormItem>
 
                 <Row
@@ -972,12 +988,14 @@ class InterfaceEditForm extends Component {
                           添加form参数
                         </Button>
                       </Col>
+
                       <Col span="12">
                         <div className="bulk-import" onClick={() => this.showBulk('req_body_form')}>
                           批量添加
                         </div>
                       </Col>
                     </Row>
+
                     <EasyDragSort
                       data={() => this.props.form.getFieldValue('req_body_form')}
                       onChange={this.handleDragMove('req_body_form')}
@@ -1004,10 +1022,13 @@ class InterfaceEditForm extends Component {
                   </Tooltip>
                 )}
               </span>
-              {getFieldDecorator('req_body_is_json_schema', {
-                valuePropName: 'checked',
-                initialValue: this.state.req_body_is_json_schema || !projectMsg.is_json5,
-              })(<Switch checkedChildren="开" unCheckedChildren="关" disabled={!projectMsg.is_json5} />)}
+              <FormItem
+                name="req_body_is_json_schema"
+                valuePropName="checked"
+                initialValue={this.state.req_body_is_json_schema || !projectMsg.is_json5}
+              >
+                <Switch checkedChildren="开" unCheckedChildren="关" disabled={!projectMsg.is_json5} />
+              </FormItem>
 
               <Col style={{ marginTop: '5px' }} className="interface-edit-json-info">
                 {!this.props.form.getFieldValue('req_body_is_json_schema') ? (
@@ -1049,18 +1070,18 @@ class InterfaceEditForm extends Component {
             {this.props.form.getFieldValue('req_body_type') === 'file' && this.state.hideTabs.req.body !== 'hide' ? (
               <Row className="interface-edit-item">
                 <Col className="interface-edit-item-other-body">
-                  {getFieldDecorator('req_body_other', {
-                    initialValue: this.state.req_body_other,
-                  })(<TextArea placeholder="" autosize={true} />)}
+                  <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
+                    <TextArea placeholder="" autosize={true} />
+                  </FormItem>
                 </Col>
               </Row>
             ) : null}
             {this.props.form.getFieldValue('req_body_type') === 'raw' && this.state.hideTabs.req.body !== 'hide' ? (
               <Row>
                 <Col>
-                  {getFieldDecorator('req_body_other', {
-                    initialValue: this.state.req_body_other,
-                  })(<TextArea placeholder="" autosize={{ minRows: 8 }} />)}
+                  <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
+                    <TextArea placeholder="" autosize={{ minRows: 8 }} />
+                  </FormItem>
                 </Col>
               </Row>
             ) : null}
@@ -1075,19 +1096,24 @@ class InterfaceEditForm extends Component {
                 <QuestionCircleOutlined className="tooltip" />{' '}
               </Tooltip>
             )}
-            {getFieldDecorator('res_body_is_json_schema', {
-              valuePropName: 'checked',
-              initialValue: this.state.res_body_is_json_schema || !projectMsg.is_json5,
-            })(<Switch checkedChildren="json-schema" unCheckedChildren="json" disabled={!projectMsg.is_json5} />)}
+            <FormItem
+              name="res_body_is_json_schema"
+              valuePropName="checked"
+              initialValue={this.state.res_body_is_json_schema || !projectMsg.is_json5}
+            >
+              <Switch checkedChildren="json-schema" unCheckedChildren="json" disabled={!projectMsg.is_json5} />
+            </FormItem>
           </h2>
+
           <div className="container-radiogroup">
-            {getFieldDecorator('res_body_type', {
-              initialValue: this.state.res_body_type,
-            })(<RadioGroup size="large" className="radioGroup">
-              <RadioButton value="json">JSON</RadioButton>
-              <RadioButton value="raw">RAW</RadioButton>
-            </RadioGroup>)}
+            <FormItem name="res_body_type" initialValue={this.state.res_body_type}>
+              <RadioGroup size="large" className="radioGroup">
+                <RadioButton value="json">JSON</RadioButton>
+                <RadioButton value="raw">RAW</RadioButton>
+              </RadioGroup>
+            </FormItem>
           </div>
+
           <div className="panel-sub">
             <Row
               className="interface-edit-item"
@@ -1164,9 +1190,9 @@ class InterfaceEditForm extends Component {
               }}
             >
               <Col>
-                {getFieldDecorator('res_body', {
-                  initialValue: this.state.res_body,
-                })(<TextArea style={{ minHeight: '150px' }} placeholder="" />)}
+                <FormItem name="res_body" initialValue={this.state.res_body}>
+                  <TextArea style={{ minHeight: '150px' }} placeholder="" />
+                </FormItem>
               </Col>
             </Row>
           </div>
