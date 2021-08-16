@@ -1,6 +1,6 @@
-import React, { PureComponent as Component } from 'react'
-import PropTypes from 'prop-types'
 import { FrownOutlined, MehOutlined } from '@ant-design/icons'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
 import { withRouter } from 'react-router'
 
 import './ErrMsg.scss'
@@ -25,7 +25,6 @@ import './ErrMsg.scss'
  * @description 一般用于描述错误信息名称
  * @returns {object}
  */
-@withRouter
 class ErrMsg extends Component {
   static propTypes = {
     type: PropTypes.string,
@@ -37,7 +36,7 @@ class ErrMsg extends Component {
 
   render() {
     let { type, title, desc, opration } = this.props
-    let icon = FrownOutlined
+    let Icon = FrownOutlined
     if (type) {
       switch (type) {
         case 'noFollow':
@@ -70,7 +69,7 @@ class ErrMsg extends Component {
         case 'noChange':
           title = '没有改动'
           desc = '该操作未改动 Api 数据'
-          icon = MehOutlined
+          Icon = MehOutlined
           break
         default:
           console.log('default')
@@ -79,7 +78,7 @@ class ErrMsg extends Component {
 
     return (
       <div className="err-msg">
-        <icon className="icon" />
+        <Icon className="icon" />
         <p className="title">{title}</p>
         <p className="desc">{desc}</p>
         <p className="opration">{opration}</p>
@@ -88,4 +87,4 @@ class ErrMsg extends Component {
   }
 }
 
-export default ErrMsg
+export default withRouter(ErrMsg)

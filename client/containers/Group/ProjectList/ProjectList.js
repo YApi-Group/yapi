@@ -7,31 +7,27 @@ import { Link } from 'react-router-dom'
 
 import ErrMsg from '../../../components/ErrMsg/ErrMsg.js'
 import ProjectCard from '../../../components/ProjectCard/ProjectCard.js'
-import {
-  addProject,
-  fetchProjectList,
-  delProject,
-} from '../../../reducer/modules/project'
+import { addProject, fetchProjectList, delProject } from '../../../reducer/modules/project'
 import { setBreadcrumb } from '../../../reducer/modules/user'
 
 import './ProjectList.scss'
 
-@connect(
-  state => ({
-    projectList: state.project.projectList,
-    userInfo: state.project.userInfo,
-    tableLoading: state.project.tableLoading,
-    currGroup: state.group.currGroup,
-    currPage: state.project.currPage,
-  }),
-  {
-    fetchProjectList,
-    addProject,
-    delProject,
-    // changeUpdateModal,
-    setBreadcrumb,
-  },
-)
+// @connect(
+//   state => ({
+//     projectList: state.project.projectList,
+//     userInfo: state.project.userInfo,
+//     tableLoading: state.project.tableLoading,
+//     currGroup: state.group.currGroup,
+//     currPage: state.project.currPage,
+//   }),
+//   {
+//     fetchProjectList,
+//     addProject,
+//     delProject,
+//     // changeUpdateModal,
+//     setBreadcrumb,
+//   },
+// )
 class ProjectList extends Component {
   constructor(props) {
     super(props)
@@ -55,7 +51,7 @@ class ProjectList extends Component {
     currPage: PropTypes.number,
     studyTip: PropTypes.number,
     study: PropTypes.bool,
-  };
+  }
 
   // 取消修改
   @autobind
@@ -78,7 +74,7 @@ class ProjectList extends Component {
 
   receiveRes = () => {
     this.props.fetchProjectList(this.props.currGroup._id, this.props.currPage)
-  };
+  }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     this.props.setBreadcrumb([{ name: String(nextProps.currGroup.group_name || '') }])
@@ -180,11 +176,7 @@ class ProjectList extends Component {
           ) : projectData.length ? (
             projectData.map((item, index) => (
               <Col xs={8} lg={6} xxl={4} key={index}>
-                <ProjectCard
-                  projectData={item}
-                  callbackResult={this.receiveRes}
-                  isShow={isShow}
-                />
+                <ProjectCard projectData={item} callbackResult={this.receiveRes} isShow={isShow} />
               </Col>
             ))
           ) : (
@@ -196,4 +188,20 @@ class ProjectList extends Component {
   }
 }
 
-export default ProjectList
+const states = state => ({
+  projectList: state.project.projectList,
+  userInfo: state.project.userInfo,
+  tableLoading: state.project.tableLoading,
+  currGroup: state.group.currGroup,
+  currPage: state.project.currPage,
+})
+
+const actions = {
+  fetchProjectList,
+  addProject,
+  delProject,
+  // changeUpdateModal,
+  setBreadcrumb,
+}
+
+export default connect(states, actions)(ProjectList)

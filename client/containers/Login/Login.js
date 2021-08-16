@@ -41,28 +41,23 @@ class Login extends Component {
     isLDAP: PropTypes.bool,
   }
 
-  handleSubmit = e => {
-    e.preventDefault()
-    const form = this.props.form
-    form.validateFields((err, values) => {
-      if (!err) {
-        if (this.props.isLDAP && this.state.loginType === 'ldap') {
-          this.props.loginLdapActions(values).then(res => {
-            if (res.payload.data.errcode == 0) {
-              this.props.history.replace('/group')
-              message.success('登录成功! ')
-            }
-          })
-        } else {
-          this.props.loginActions(values).then(res => {
-            if (res.payload.data.errcode == 0) {
-              this.props.history.replace('/group')
-              message.success('登录成功! ')
-            }
-          })
+  handleSubmit = values => {
+    // console.log(values)
+    if (this.props.isLDAP && this.state.loginType === 'ldap') {
+      this.props.loginLdapActions(values).then(res => {
+        if (res.payload.data.errcode == 0) {
+          this.props.history.replace('/group')
+          message.success('登录成功! ')
         }
-      }
-    })
+      })
+    } else {
+      this.props.loginActions(values).then(res => {
+        if (res.payload.data.errcode == 0) {
+          this.props.history.replace('/group')
+          message.success('登录成功! ')
+        }
+      })
+    }
   }
 
   componentDidMount() {
@@ -85,7 +80,7 @@ class Login extends Component {
           pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{1,})+$/,
         }
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form onFinish={this.handleSubmit}>
         {/* 登录类型 (普通登录／LDAP登录) */}
         {isLDAP && (
           <FormItem>
