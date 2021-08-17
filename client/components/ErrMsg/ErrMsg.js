@@ -31,20 +31,22 @@ class ErrMsg extends Component {
     history: PropTypes.object,
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     desc: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    opration: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  };
+    operation: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  }
 
   render() {
-    let { type, title, desc, opration } = this.props
+    const { type, operation } = this.props
+    
+    let { title, desc } = this.props
     let Icon = FrownOutlined
+
     if (type) {
       switch (type) {
         case 'noFollow':
           title = '你还没有关注项目呢'
           desc = (
             <span>
-              先去 <a onClick={() => this.props.history.push('/group')}>“项目广场”</a> 逛逛吧,
-              那里可以添加关注。
+              先去 <a onClick={() => this.props.history.push('/group')}>“项目广场”</a> 逛逛吧, 那里可以添加关注。
             </span>
           )
           break
@@ -81,7 +83,7 @@ class ErrMsg extends Component {
         <Icon className="icon" />
         <p className="title">{title}</p>
         <p className="desc">{desc}</p>
-        <p className="opration">{opration}</p>
+        <p className="operation">{operation}</p>
       </div>
     )
   }

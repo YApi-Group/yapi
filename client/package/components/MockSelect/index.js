@@ -1,7 +1,7 @@
-import React from 'react'
-import { Input, AutoComplete } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
+import { Input, AutoComplete } from 'antd'
 import PropTypes from 'prop-types'
+import React from 'react'
 
 import LocaleProvider from '../LocalProvider/index.js'
 

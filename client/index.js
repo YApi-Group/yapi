@@ -12,6 +12,7 @@ import App from './Application'
 import createStore from './reducer/create'
 
 // 由于 antd 组件的默认文案是英文，所以需要修改为中文
+console.log(VERSION_INFO)
 
 const store = createStore()
 

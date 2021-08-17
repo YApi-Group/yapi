@@ -1,6 +1,7 @@
+// import axios from 'axios'
+import { Alert } from 'antd'
 import React, { Component } from 'react'
-import axios from 'axios'
-import { Alert, message } from 'antd'
+
 import data from '@/package.json'
 
 export default class Notify extends Component {
@@ -12,18 +13,22 @@ export default class Notify extends Component {
     }
   }
 
-  componentDidMount() {
-    axios.get('https://www.easy-mock.com/mock/5c2851e3d84c733cb500c3b9/yapi/versions').then(req => {
-      if (req.status === 200) {
-        this.setState({ newVersion: req.data.data[0] })
-      } else {
-        message.error('无法获取新版本信息！')
-      }
-    })
-  }
+  // componentDidMount() {
+  //   /* 开发模式不请求 */
+  //   if (process.env.NODE_ENV === 'development') { return }
+
+  //   axios.get('https://www.easy-mock.com/mock/5c2851e3d84c733cb500c3b9/yapi/versions').then(req => {
+  //     if (req.status === 200) {
+  //       this.setState({ newVersion: req.data.data[0] })
+  //     } else {
+  //       message.error('无法获取新版本信息！')
+  //     }
+  //   })
+  // }
 
   render() {
     const isShow = this.state.newVersion !== this.state.version
+
     return (
       <div>
         {isShow && (

@@ -266,7 +266,7 @@ class ProjectMember extends Component {
             ''
           ),
         key: 'action',
-        className: 'member-opration',
+        className: 'member-operation',
         render: (text, record) => {
           if (this.state.role === 'owner' || this.state.role === 'admin') {
             return (

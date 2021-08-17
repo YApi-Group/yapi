@@ -1,5 +1,4 @@
 import { Row, Col, Button, Tooltip } from 'antd'
-import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
@@ -37,6 +36,7 @@ class ProjectList extends Component {
       projectData: [],
     }
   }
+
   static propTypes = {
     form: PropTypes.object,
     fetchProjectList: PropTypes.func,
@@ -54,24 +54,17 @@ class ProjectList extends Component {
   }
 
   // 取消修改
-  @autobind
-  handleCancel() {
+  handleCancel = () => {
     this.props.form.resetFields()
-    this.setState({
-      visible: false,
-    })
+    this.setState({ visible: false })
   }
 
   // 修改线上域名的协议类型 (http/https)
-  @autobind
-  protocolChange(value) {
-    this.setState({
-      protocol: value,
-    })
+  protocolChange = value => {
+    this.setState({ protocol: value })
   }
 
   // 获取 ProjectCard 组件的关注事件回调，收到后更新数据
-
   receiveRes = () => {
     this.props.fetchProjectList(this.props.currGroup._id, this.props.currPage)
   }

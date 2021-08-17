@@ -11,13 +11,16 @@ import 'webpack-dev-server'
 const localHost = ip.address()
 
 const devConf: Configuration = {
-  entry: path.resolve(__dirname, './index.js'),
+  entry: {
+    main: path.resolve(__dirname, './index.js'),
+  },
 
   output: {
     library: 'MyYapi', // Only for umd/amd
     libraryTarget: 'var', // {'var', 'umd', 'comments', 'this' ...}
     path: path.resolve(__dirname, './dist-devs'), // 没什么用，因为文件默认不会输出
     filename: 'js/[name].[contenthash:8].js',
+    publicPath: '/',
   },
 
   mode: 'development',

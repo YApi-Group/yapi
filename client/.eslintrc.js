@@ -450,6 +450,29 @@ const tsRules = {
   ],
 }
 
+const babelRules = {
+  'no-invalid-this': 'off',
+  '@babel/no-invalid-this': 'warn',
+
+  'no-unused-expressions': 'off',
+  '@babel/no-unused-expressions': [
+    'warn',
+    {
+      allowShortCircuit: true,
+    },
+  ],
+
+  'new-cap': 'off',
+  '@babel/new-cap': 'warn',
+
+  'object-curly-spacing': 'off',
+  '@babel/object-curly-spacing': ['warn', 'always'],
+
+  'semi': 'off',
+  '@babel/semi': ['warn', 'never'],
+
+}
+
 module.exports = {
   root: true, // 表示不再继续向父节点查找了
 
@@ -459,6 +482,10 @@ module.exports = {
     es2020: true, // 启用除了 modules 以外的所有 ECMAScript 6 特性（该选项会自动设置 ecmaVersion 解析器选项为 6）
     commonjs: true, // CommonJS 全局变量和 CommonJS 作用域
     jest: true, // Jest 全局变量
+  },
+
+  globals: {
+    VERSION_INFO: 'readonly',
   },
 
   // 配置文件， 可以继承基础配置中已启用的规则
@@ -484,11 +511,13 @@ module.exports = {
   plugins: [
     'react',
     'import',
+    '@babel',
   ],
 
   // 规则
   rules: {
     ...jsRules,
+    ...babelRules,
   },
 
   overrides: [

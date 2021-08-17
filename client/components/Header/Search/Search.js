@@ -1,33 +1,33 @@
-import React, { PureComponent as Component } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Input, AutoComplete } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
-import { withRouter } from 'react-router'
+import { Input, AutoComplete } from 'antd'
 import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
 import { setCurrGroup, fetchGroupMsg } from '../../../reducer/modules/group'
-import { changeMenuItem } from '../../../reducer/modules/menu'
 import { fetchInterfaceListMenu } from '../../../reducer/modules/interface'
+import { changeMenuItem } from '../../../reducer/modules/menu'
 
 import './Search.scss'
 
 const Option = AutoComplete.Option
 
-@connect(
-  state => ({
-    groupList: state.group.groupList,
-    projectList: state.project.projectList,
-  }),
-  {
-    setCurrGroup,
-    changeMenuItem,
-    fetchGroupMsg,
-    fetchInterfaceListMenu,
-  },
-)
-@withRouter
-export default class Srch extends Component {
+// @connect(
+//   state => ({
+//     groupList: state.group.groupList,
+//     projectList: state.project.projectList,
+//   }),
+//   {
+//     setCurrGroup,
+//     changeMenuItem,
+//     fetchGroupMsg,
+//     fetchInterfaceListMenu,
+//   },
+// )
+// @withRouter
+class Search extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -45,7 +45,7 @@ export default class Srch extends Component {
     changeMenuItem: PropTypes.func,
     fetchInterfaceListMenu: PropTypes.func,
     fetchGroupMsg: PropTypes.func,
-  };
+  }
 
   onSelect = async (value, option) => {
     if (option.props.type === '分组') {
@@ -59,7 +59,7 @@ export default class Srch extends Component {
       await this.props.fetchInterfaceListMenu(option.props.projectId)
       this.props.history.push('/project/' + option.props.projectId + '/interface/api/' + option.props.id)
     }
-  };
+  }
 
   handleSearch = value => {
     axios
@@ -115,7 +115,7 @@ export default class Srch extends Component {
       .catch(err => {
         console.log(err)
       })
-  };
+  }
 
   // getDataSource(groupList){
   //   const groupArr =[];
@@ -151,3 +151,17 @@ export default class Srch extends Component {
     )
   }
 }
+
+const states = state => ({
+  groupList: state.group.groupList,
+  projectList: state.project.projectList,
+})
+
+const actions = {
+  setCurrGroup,
+  changeMenuItem,
+  fetchGroupMsg,
+  fetchInterfaceListMenu,
+}
+
+export default connect(states, actions)(withRouter(Search))

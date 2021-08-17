@@ -18,6 +18,7 @@ const prodConf: Configuration = {
     library: 'MyYapi', // Only for umd/amd
     libraryTarget: 'var', // {'var', 'umd', 'comments', 'this' ...}
     filename: 'js/[name].[contenthash:8].js',
+    publicPath: '/',
   },
 
   stats: { children: false },
