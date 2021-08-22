@@ -8,6 +8,7 @@ import {
   UpOutlined,
   DownOutlined,
   StarOutlined,
+  SaveOutlined,
 } from '@ant-design/icons'
 import {
   Form,
@@ -466,7 +467,7 @@ class ProjectMessage extends Component {
           </Form>
 
           <div className="btnwrap-changeproject">
-            <Button className="m-btn btn-save" icon="save" type="primary" size="large" onClick={this.handleOk}>
+            <Button className="m-btn btn-save" icon={<SaveOutlined />} type="primary" size="large" onClick={this.handleOk}>
               保 存
             </Button>
           </div>

@@ -13,7 +13,7 @@ import Header from './components/Header/Header'
 import Loading from './components/Loading/Loading'
 import MyPopConfirm from './components/MyPopConfirm/MyPopConfirm'
 import Notify from './components/Notify/Notify'
-import User from './containers/User/User.js'
+import User from './containers/User/User.jsx'
 import { Home, Group, Project, Follows, AddProject, Login } from './containers/index'
 import { checkLoginState } from './reducer/modules/user'
 
@@ -88,7 +88,7 @@ export default class App extends Component {
     checkLoginState: PropTypes.func,
     loginState: PropTypes.number,
     curUserRole: PropTypes.string,
-  };
+  }
 
   componentDidMount() {
     this.props.checkLoginState()
@@ -100,7 +100,7 @@ export default class App extends Component {
     const container = document.createElement('div')
     document.body.appendChild(container)
     ReactDOM.render(<MyPopConfirm msg={msg} callback={callback} />, container)
-  };
+  }
 
   route = status => {
     let r
@@ -147,7 +147,7 @@ export default class App extends Component {
     )
 
     return r
-  };
+  }
 
   render() {
     return this.route(this.props.loginState)

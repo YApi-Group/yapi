@@ -1,4 +1,4 @@
-import { EditOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+import { PlusOutlined, LoadingOutlined, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import {
   Button,
   Input,
@@ -110,7 +110,7 @@ export default class Run extends Component {
     curUid: PropTypes.number.isRequired,
     interfaceId: PropTypes.number.isRequired,
     projectId: PropTypes.number.isRequired,
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -168,7 +168,7 @@ export default class Run extends Component {
     })
     req_header = req_header.filter(item => item && typeof item === 'object')
     return req_header
-  };
+  }
 
   selectDomain = value => {
     const headers = this.handleReqHeader(value, this.state.env)
@@ -176,7 +176,7 @@ export default class Run extends Component {
       case_env: value,
       req_headers: headers,
     })
-  };
+  }
 
   async initState(data) {
     if (!this.checkInterfaceData(data)) {
@@ -298,17 +298,17 @@ export default class Run extends Component {
     this.setState({
       test_script: d.text,
     })
-  };
+  }
 
   handleInsertCode = code => {
     this.aceEditor.editor.insertCode(code)
-  };
+  }
 
   handleRequestBody = d => {
     this.setState({
       req_body_other: d.text,
     })
-  };
+  }
 
   reqRealInterface = async () => {
     if (this.state.loading === true) {
@@ -396,7 +396,7 @@ export default class Run extends Component {
       test_res_header: result.header,
       test_res_body: result.body,
     })
-  };
+  }
 
   // 返回数据与定义数据的比较判断
   resBodyValidator = (interfaceData, test_res_body) => {
@@ -410,7 +410,7 @@ export default class Run extends Component {
     }
 
     return validResult
-  };
+  }
 
   changeParam = (name, v, index, key) => {
 
@@ -424,7 +424,7 @@ export default class Run extends Component {
     this.setState({
       [name]: pathParam,
     })
-  };
+  }
 
   changeBody = (v, index, key) => {
     const bodyForm = deepCopyJson(this.state.req_body_form)
@@ -440,7 +440,7 @@ export default class Run extends Component {
       bodyForm[index].enable = v
     }
     this.setState({ req_body_form: bodyForm })
-  };
+  }
 
   // 模态框的相关操作
   showModal = (val, index, type) => {
@@ -467,7 +467,7 @@ export default class Run extends Component {
       cursurPosition,
       modalType: type,
     })
-  };
+  }
 
   // 点击插入
   handleModalOk = val => {
@@ -479,7 +479,7 @@ export default class Run extends Component {
     }
 
     this.setState({ modalVisible: false })
-  };
+  }
 
   // 根据鼠标位置往req_body中动态插入数据
   changeInstallBody = (type, value) => {
@@ -492,7 +492,7 @@ export default class Run extends Component {
     this.setState({
       [type]: `${left}${value}${right}`,
     })
-  };
+  }
 
   // 获取截取的字符串
   getInstallValue = (oldValue, cursurPosition) => {
@@ -515,7 +515,7 @@ export default class Run extends Component {
       right,
       val,
     }
-  };
+  }
 
   // 根据鼠标位置动态插入数据
   changeInstallParam = (name, v, index, key) => {
@@ -529,32 +529,32 @@ export default class Run extends Component {
     this.setState({
       [name]: pathParam,
     })
-  };
+  }
 
   // 取消参数插入
   handleModalCancel = () => {
     this.setState({ modalVisible: false, cursurPosition: -1 })
-  };
+  }
 
   // 环境变量模态框相关操作
   showEnvModal = () => {
     this.setState({
       envModalVisible: true,
     })
-  };
+  }
 
   handleEnvOk = (newEnv, index) => {
     this.setState({
       envModalVisible: false,
       case_env: newEnv[index].name,
     })
-  };
+  }
 
   handleEnvCancel = () => {
     this.setState({
       envModalVisible: false,
     })
-  };
+  }
 
   render() {
     const {
@@ -648,7 +648,7 @@ export default class Run extends Component {
               onClick={this.reqRealInterface}
               type="primary"
               style={{ marginLeft: 10 }}
-              icon={loading ? 'loading' : ''}
+              icon={loading ? <LoadingOutlined /> : ''}
             >
               {loading ? '取消' : '发送'}
             </Button>
@@ -695,7 +695,7 @@ export default class Run extends Component {
             <Button
               style={{ display: 'none' }}
               type="primary"
-              icon="plus"
+              icon={<PlusOutlined />}
               onClick={this.addPathParam}
             >
               添加Path参数
@@ -739,7 +739,7 @@ export default class Run extends Component {
                 />
               </div>
             ))}
-            <Button style={{ display: 'none' }} type="primary" icon="plus" onClick={this.addQuery}>
+            <Button style={{ display: 'none' }} type="primary" icon={<PlusOutlined />} onClick={this.addQuery}>
               添加Query参数
             </Button>
           </Panel>
@@ -769,7 +769,7 @@ export default class Run extends Component {
                 />
               </div>
             ))}
-            <Button style={{ display: 'none' }} type="primary" icon="plus" onClick={this.addHeader}>
+            <Button style={{ display: 'none' }} type="primary" icon={<PlusOutlined />} onClick={this.addHeader}>
               添加Header
             </Button>
           </Panel>
@@ -867,7 +867,7 @@ export default class Run extends Component {
                 <Button
                   style={{ display: 'none' }}
                   type="primary"
-                  icon="plus"
+                  icon={<PlusOutlined />}
                   onClick={this.addBody}
                 >
                     添加Form参数

@@ -1,6 +1,5 @@
 import { LockFilled, QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Tooltip, Select, message, Row, Col, Radio } from 'antd'
-import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
@@ -48,11 +47,15 @@ const formItemLayout = {
 class ProjectList extends Component {
   constructor(props) {
     super(props)
+
     this.state = {
       groupList: [],
       currGroupId: null,
     }
+
+    this.handleOk.bind(this)
   }
+
   static propTypes = {
     groupList: PropTypes.array,
     form: PropTypes.object,
@@ -71,7 +74,6 @@ class ProjectList extends Component {
   }
 
   // 确认添加项目
-  @autobind
   handleOk(e) {
     const { form, addProject } = this.props
     e.preventDefault()
@@ -81,7 +83,7 @@ class ProjectList extends Component {
         values.icon = constants.PROJECT_ICON[0]
         values.color = pickRandomProperty(constants.PROJECT_COLOR)
         addProject(values).then(res => {
-          if (res.payload.data.errcode == 0) {
+          if (res.payload.data.errcode === 0) {
             form.resetFields()
             message.success('创建成功! ')
             this.props.history.push('/project/' + res.payload.data.data._id + '/interface/api')

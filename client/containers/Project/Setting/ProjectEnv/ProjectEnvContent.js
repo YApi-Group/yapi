@@ -1,12 +1,14 @@
+import { DeleteOutlined, QuestionCircleOutlined, SaveOutlined } from '@ant-design/icons'
+import { Row, Col, Form, Input, Select, Button, AutoComplete, Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+
+import constants from '@/constants/variable.js'
+
 import './index.scss'
-import { Row, Col, Form, Input, Select, Button, AutoComplete, Tooltip } from 'antd'
-import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 
 const FormItem = Form.Item
 const Option = Select.Option
-import constants from '@/constants/variable.js'
 
 const initMap = {
   header: [
@@ -348,7 +350,7 @@ class ProjectEnvContent extends Component {
       <div>
         {envTpl(projectMsg)}
         <div className="btnwrap-changeproject">
-          <Button className="m-btn btn-save" icon="save" type="primary" size="large" onClick={this.handleOk}>
+          <Button className="m-btn btn-save" icon={<SaveOutlined />} type="primary" size="large" onClick={this.handleOk}>
             保 存
           </Button>
         </div>

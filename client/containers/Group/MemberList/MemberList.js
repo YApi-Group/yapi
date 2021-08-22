@@ -1,10 +1,10 @@
+import { DeleteOutlined } from '@ant-design/icons'
 import { Table, Select, Button, Modal, Row, Col, message, Popconfirm } from 'antd'
+import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import './MemberList.scss'
-import { autobind } from 'core-decorators'
 
 import ErrMsg from '../../../components/ErrMsg/ErrMsg.js'
 import UsernameAutoComplete from '../../../components/UsernameAutoComplete/UsernameAutoComplete.js'
@@ -15,6 +15,9 @@ import {
   delMember,
   changeMemberRole,
 } from '../../../reducer/modules/group.js'
+
+import './MemberList.scss'
+
 const Option = Select.Option
 
 function arrayAddKey(arr) {
@@ -59,13 +62,13 @@ class MemberList extends Component {
     delMember: PropTypes.func,
     changeMemberRole: PropTypes.func,
     role: PropTypes.string,
-  };
+  }
 
   showAddMemberModal = () => {
     this.setState({
       visible: true,
     })
-  };
+  }
 
   // 重新获取列表
   reFetchList = () => {
@@ -75,7 +78,7 @@ class MemberList extends Component {
         visible: false,
       })
     })
-  };
+  }
 
   // 增 - 添加成员
 
@@ -99,14 +102,14 @@ class MemberList extends Component {
           this.reFetchList() // 添加成功后重新获取分组成员列表
         }
       })
-  };
+  }
   // 添加成员时 选择新增成员权限
 
   changeNewMemberRole = value => {
     this.setState({
       inputRole: value,
     })
-  };
+  }
 
   // 删 - 删除分组成员
 
@@ -118,7 +121,7 @@ class MemberList extends Component {
         this.reFetchList() // 添加成功后重新获取分组成员列表
       }
     })
-  };
+  }
 
   // 改 - 修改成员权限
   changeUserRole = e => {
@@ -131,7 +134,7 @@ class MemberList extends Component {
         this.reFetchList() // 添加成功后重新获取分组成员列表
       }
     })
-  };
+  }
 
   // 关闭模态框
 
@@ -139,7 +142,7 @@ class MemberList extends Component {
     this.setState({
       visible: false,
     })
-  };
+  }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (this._groupId !== this._groupId) {
@@ -236,12 +239,12 @@ class MemberList extends Component {
                   okText="确定"
                   cancelText=""
                 >
-                  <Button type="danger" icon="delete" className="btn-danger" />
+                  <Button type="danger" icon={<DeleteOutlined />} className="btn-danger" />
                   {/* <Icon type="delete" className="btn-danger"/> */}
                 </Popconfirm>
               </div>
             )
-          } 
+          }
           // 非管理员可以看到权限 但无法修改
           if (record.role === 'owner') {
             return '组长'
@@ -249,9 +252,9 @@ class MemberList extends Component {
             return '开发者'
           } else if (record.role === 'guest') {
             return '访客'
-          } 
+          }
           return ''
-          
+
         },
       },
     ]

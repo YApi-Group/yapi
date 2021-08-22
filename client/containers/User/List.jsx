@@ -12,14 +12,15 @@ import { setBreadcrumb } from '../../reducer/modules/user'
 
 const Search = Input.Search
 const limit = 20
-@connect(
-  state => ({
-    curUserRole: state.user.role,
-  }),
-  {
-    setBreadcrumb,
-  },
-)
+
+// @connect(
+//   state => ({
+//     curUserRole: state.user.role,
+//   }),
+//   {
+//     setBreadcrumb,
+//   },
+// )
 class List extends Component {
   constructor(props) {
     super(props)
@@ -34,7 +35,7 @@ class List extends Component {
   static propTypes = {
     setBreadcrumb: PropTypes.func,
     curUserRole: PropTypes.string,
-  };
+  }
   changePage = current => {
     this.setState(
       {
@@ -42,7 +43,7 @@ class List extends Component {
       },
       this.getUserList,
     )
-  };
+  }
 
   getUserList() {
     axios.get('/api/user/list?page=' + this.state.current + '&limit=' + limit).then(res => {
@@ -90,7 +91,7 @@ class List extends Component {
           message.error(err.message)
         },
       )
-  };
+  }
 
   async UNSAFE_componentWillMount() {
     this.props.setBreadcrumb([{ name: '用户管理' }])
@@ -121,7 +122,7 @@ class List extends Component {
         isSearch: false,
       })
     }
-  };
+  }
 
   render() {
     const role = this.props.curUserRole
@@ -170,7 +171,7 @@ class List extends Component {
               cancelText="取消"
             >
               <a style={{ display: 'block', textAlign: 'center' }} href="#">
-                  删除
+                删除
               </a>
             </Popconfirm>
           </span>
@@ -220,4 +221,12 @@ class List extends Component {
   }
 }
 
-export default List
+const states = state => ({
+  curUserRole: state.user.role,
+})
+
+const actions = {
+  setBreadcrumb,
+}
+
+export default connect(states, actions)(List)

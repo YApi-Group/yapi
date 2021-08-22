@@ -1,3 +1,4 @@
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import {
   Table,
   Card,
@@ -29,6 +30,7 @@ import {
   changeMemberRole,
   changeMemberEmailNotice,
 } from '../../../../reducer/modules/project.js'
+
 import '../Setting.scss'
 
 const Option = Select.Option
@@ -87,20 +89,20 @@ class ProjectMember extends Component {
     fetchProjectList: PropTypes.func,
     projectList: PropTypes.array,
     changeMemberEmailNotice: PropTypes.func,
-  };
+  }
 
   showAddMemberModal = () => {
     this.setState({
       visible: true,
     })
-  };
+  }
 
   showImportMemberModal = async () => {
     await this.props.fetchProjectList(this.props.projectMsg.group_id)
     this.setState({
       modalVisible: true,
     })
-  };
+  }
 
   // 重新获取列表
 
@@ -112,11 +114,11 @@ class ProjectMember extends Component {
         modalVisible: false,
       })
     })
-  };
+  }
 
   handleOk = () => {
     this.addMembers(this.state.inputUids)
-  };
+  }
 
   // 增 - 添加成员
   addMembers = memberUids => {
@@ -139,13 +141,13 @@ class ProjectMember extends Component {
           this.reFetchList() // 添加成功后重新获取分组成员列表
         }
       })
-  };
+  }
   // 添加成员时 选择新增成员权限
   changeNewMemberRole = value => {
     this.setState({
       inputRole: value,
     })
-  };
+  }
 
   // 删 - 删除分组成员
   deleteConfirm = member_uid => () => {
@@ -156,7 +158,7 @@ class ProjectMember extends Component {
         this.reFetchList() // 添加成功后重新获取分组成员列表
       }
     })
-  };
+  }
 
   // 改 - 修改成员权限
   changeUserRole = e => {
@@ -169,34 +171,34 @@ class ProjectMember extends Component {
         this.reFetchList() // 添加成功后重新获取分组成员列表
       }
     })
-  };
+  }
 
   // 修改用户是否接收消息通知
   changeEmailNotice = async (notice, member_uid) => {
     const id = this.props.match.params.id
     await this.props.changeMemberEmailNotice({ id, member_uid, notice })
     this.reFetchList() // 添加成功后重新获取项目成员列表
-  };
+  }
 
   // 关闭模态框
   handleCancel = () => {
     this.setState({
       visible: false,
     })
-  };
+  }
   // 关闭批量导入模态框
   handleModalCancel = () => {
     this.setState({
       modalVisible: false,
     })
-  };
+  }
 
   // 处理选择项目
   handleChange = key => {
     this.setState({
       selectProjectId: key,
     })
-  };
+  }
 
   // 确定批量导入模态框
   handleModalOk = async () => {
@@ -204,13 +206,13 @@ class ProjectMember extends Component {
     const menberList = await this.props.getProjectMemberList(this.state.selectProjectId)
     const memberUidList = menberList.payload.data.data.map(item => item.uid)
     this.addMembers(memberUidList)
-  };
+  }
 
   onUserSelect = uids => {
     this.setState({
       inputUids: uids,
     })
-  };
+  }
 
   async UNSAFE_componentWillMount() {
     const groupMemberList = await this.props.fetchGroupMemberList(this.props.projectMsg.group_id)
@@ -255,10 +257,10 @@ class ProjectMember extends Component {
         title:
           this.state.role === 'owner' || this.state.role === 'admin' ? (
             <div className="btn-container">
-              <Button className="btn" type="primary" icon="plus" onClick={this.showAddMemberModal}>
+              <Button className="btn" type="primary" icon={<PlusOutlined/>} onClick={this.showAddMemberModal}>
                 添加成员
               </Button>
-              <Button className="btn" icon="plus" onClick={this.showImportMemberModal}>
+              <Button className="btn" icon={<PlusOutlined/>} onClick={this.showImportMemberModal}>
                 批量导入成员
               </Button>
             </div>
@@ -287,7 +289,7 @@ class ProjectMember extends Component {
                   okText="确定"
                   cancelText=""
                 >
-                  <Button type="danger" icon="delete" className="btn-danger" />
+                  <Button type="danger" icon={<DeleteOutlined />} className="btn-danger" />
                 </Popconfirm>
               </div>
             )

@@ -1,3 +1,4 @@
+import { EditOutlined } from '@ant-design/icons'
 import { Row, Col, Input, Button, Select, message, Upload, Tooltip } from 'antd'
 import axios from 'axios'
 import PropTypes from 'prop-types'
@@ -14,9 +15,10 @@ const EditButton = props => {
     if (admin) {
       return null
     }
+
     return (
       <Button
-        icon="edit"
+        icon={<EditOutlined />}
         onClick={() => {
           onClick(name, true)
         }}
@@ -28,7 +30,7 @@ const EditButton = props => {
     // 管理员
     return (
       <Button
-        icon="edit"
+        icon={<EditOutlined />}
         onClick={() => {
           onClick(name, true)
         }}
@@ -36,9 +38,8 @@ const EditButton = props => {
         修改
       </Button>
     )
-  } 
+  }
   return null
-  
 }
 EditButton.propTypes = {
   isAdmin: PropTypes.bool,
@@ -48,16 +49,16 @@ EditButton.propTypes = {
   admin: PropTypes.bool,
 }
 
-@connect(
-  state => ({
-    curUid: state.user.uid,
-    userType: state.user.type,
-    curRole: state.user.role,
-  }),
-  {
-    setBreadcrumb,
-  },
-)
+// @connect(
+//   state => ({
+//     curUid: state.user.uid,
+//     userType: state.user.type,
+//     curRole: state.user.role,
+//   }),
+//   {
+//     setBreadcrumb,
+//   },
+// )
 class Profile extends Component {
   static propTypes = {
     match: PropTypes.object,
@@ -66,7 +67,7 @@ class Profile extends Component {
     setBreadcrumb: PropTypes.func,
     curRole: PropTypes.string,
     upload: PropTypes.bool,
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -102,7 +103,7 @@ class Profile extends Component {
     const s = {}
     s[key] = val
     this.setState(s)
-  };
+  }
 
   getUserInfo = id => {
     const _this = this
@@ -119,7 +120,7 @@ class Profile extends Component {
         this.props.setBreadcrumb([{ name: '管理: ' + res.data.data.username }])
       }
     })
-  };
+  }
 
   updateUserinfo = name => {
     const state = this.state
@@ -147,7 +148,7 @@ class Profile extends Component {
         message.error(err.message)
       },
     )
-  };
+  }
 
   changeUserinfo = e => {
     const dom = e.target
@@ -160,7 +161,7 @@ class Profile extends Component {
         [name]: value,
       },
     })
-  };
+  }
 
   changeRole = val => {
     const userinfo = this.state.userinfo
@@ -169,13 +170,13 @@ class Profile extends Component {
       _userinfo: userinfo,
     })
     this.updateUserinfo('role')
-  };
+  }
 
   updatePassword = () => {
     const old_password = document.getElementById('old_password').value
     const password = document.getElementById('password').value
     const verify_pass = document.getElementById('verify_pass').value
-    if (password != verify_pass) {
+    if (password !== verify_pass) {
       return message.error('两次输入的密码不一样')
     }
     const params = {
@@ -201,7 +202,7 @@ class Profile extends Component {
         message.error(err.message)
       },
     )
-  };
+  }
 
   render() {
     const ButtonGroup = Button.Group
@@ -243,12 +244,7 @@ class Profile extends Component {
     } else {
       userNameEditHtml = (
         <div>
-          <Input
-            value={_userinfo.username}
-            name="username"
-            onChange={this.changeUserinfo}
-            placeholder="用户名"
-          />
+          <Input value={_userinfo.username} name="username" onChange={this.changeUserinfo} placeholder="用户名" />
           <ButtonGroup className="edit-buttons">
             <Button
               className="edit-button"
@@ -295,12 +291,7 @@ class Profile extends Component {
     } else {
       emailEditHtml = (
         <div>
-          <Input
-            placeholder="Email"
-            value={_userinfo.email}
-            name="email"
-            onChange={this.changeUserinfo}
-          />
+          <Input placeholder="Email" value={_userinfo.email} name="email" onChange={this.changeUserinfo} />
           <ButtonGroup className="edit-buttons">
             <Button
               className="edit-button"
@@ -344,7 +335,7 @@ class Profile extends Component {
       if (userType) {
         btn = (
           <Button
-            icon="edit"
+            icon={<EditOutlined />}
             onClick={() => {
               this.handleEdit('secureEdit', true)
             }}
@@ -359,7 +350,7 @@ class Profile extends Component {
         <div>
           <Input
             style={{
-              display: this.props.curRole === 'admin' && userinfo.role != 'admin' ? 'none' : '',
+              display: this.props.curRole === 'admin' && userinfo.role !== 'admin' ? 'none' : '',
             }}
             placeholder="旧的密码"
             type="password"
@@ -387,11 +378,7 @@ class Profile extends Component {
     return (
       <div className="user-profile">
         <div className="user-item-body">
-          {userinfo.uid === this.props.curUid ? (
-            <h3>个人设置</h3>
-          ) : (
-            <h3>{userinfo.username} 资料设置</h3>
-          )}
+          {userinfo.uid === this.props.curUid ? <h3>个人设置</h3> : <h3>{userinfo.username} 资料设置</h3>}
 
           <Row className="avatarCon" type="flex" justify="start">
             <Col span={24}>
@@ -474,14 +461,12 @@ class Profile extends Component {
   },
 )
 class AvatarUpload extends Component {
-  constructor(props) {
-    super(props)
-  }
   static propTypes = {
     uid: PropTypes.number,
     setImageUrl: PropTypes.func,
     url: PropTypes.any,
-  };
+  }
+
   uploadAvatar(basecode) {
     axios
       .post('/api/user/upload_avatar', { basecode: basecode })
@@ -493,6 +478,7 @@ class AvatarUpload extends Component {
         console.log(e)
       })
   }
+
   handleChange(info) {
     if (info.file.status === 'done') {
       // Get this url from response in real world.
@@ -501,6 +487,7 @@ class AvatarUpload extends Component {
       })
     }
   }
+
   render() {
     const { url } = this.props
     const imageUrl = url ? url : `/api/user/avatar?uid=${this.props.uid}`
@@ -508,10 +495,7 @@ class AvatarUpload extends Component {
     // console.log(this.props.uid);
     return (
       <div className="avatar-box">
-        <Tooltip
-          placement="right"
-          title={<div>点击头像更换 (只支持jpg、png格式且大小不超过200kb的图片)</div>}
-        >
+        <Tooltip placement="right" title={<div>点击头像更换 (只支持jpg、png格式且大小不超过200kb的图片)</div>}>
           <div>
             <Upload
               className="avatar-uploader"
@@ -554,4 +538,14 @@ function getBase64(img, callback) {
   reader.readAsDataURL(img)
 }
 
-export default Profile
+const states = state => ({
+  curUid: state.user.uid,
+  userType: state.user.type,
+  curRole: state.user.role,
+})
+
+const actions = {
+  setBreadcrumb,
+}
+
+export default connect(states, actions)(Profile)

@@ -1,4 +1,10 @@
-import { DownOutlined, ExclamationCircleOutlined, QuestionCircleOutlined, UpOutlined } from '@ant-design/icons'
+import { 
+  DownOutlined,
+  ExclamationCircleOutlined,
+  QuestionCircleOutlined,
+  UpOutlined,
+  SaveOutlined,
+} from '@ant-design/icons'
 import { Input, Button, message, Card, Alert, Modal, Switch, Row, Col, Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
@@ -61,7 +67,7 @@ class GroupSetting extends Component {
     updateGroupList: PropTypes.func,
     deleteGroup: PropTypes.func,
     groupList: PropTypes.array,
-  };
+  }
 
   initState(props) {
     this.setState({
@@ -77,13 +83,13 @@ class GroupSetting extends Component {
     this.setState({
       currGroupName: e.target.value,
     })
-  };
+  }
   // 修改分组描述
   changeDesc = e => {
     this.setState({
       currGroupDesc: e.target.value,
     })
-  };
+  }
 
   // 修改自定义字段名称
   changeCustomName = e => {
@@ -92,7 +98,7 @@ class GroupSetting extends Component {
       custom_field1_name: e.target.value,
       custom_field1_rule,
     })
-  };
+  }
 
   // 修改开启状态
   changeCustomEnable = e => {
@@ -101,7 +107,7 @@ class GroupSetting extends Component {
       custom_field1_enable: e,
       custom_field1_rule,
     })
-  };
+  }
 
   UNSAFE_componentWillMount() {
     // console.log('custom_field1',this.props.currGroup.custom_field1)
@@ -114,7 +120,7 @@ class GroupSetting extends Component {
     this.setState({
       showDangerOptions: !this.state.showDangerOptions,
     })
-  };
+  }
 
   // 编辑分组信息
   editGroup = async () => {
@@ -141,7 +147,7 @@ class GroupSetting extends Component {
       this.props.fetchGroupMsg(this.props.currGroup._id)
       this.props.fetchNewsData(this.props.currGroup._id, 'group', 1, 10)
     }
-  };
+  }
 
   // 删除分组
 
@@ -156,7 +162,7 @@ class GroupSetting extends Component {
       that.setState({ groupList: that.props.groupList })
       that.props.setCurrGroup(currGroup)
     }
-  };
+  }
 
   // 删除分组的二次确认
   showConfirm = () => {
@@ -191,7 +197,7 @@ class GroupSetting extends Component {
       iconType: 'delete',
       onCancel() { },
     })
-  };
+  }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     // 切换分组时，更新分组信息并关闭删除分组操作
@@ -268,7 +274,7 @@ class GroupSetting extends Component {
         </Row>
         <Row type="flex" justify="center" className="row save">
           <Col span={4} className="save-button">
-            <Button className="m-btn btn-save" icon="save" type="primary" onClick={this.editGroup}>
+            <Button className="m-btn btn-save" icon={<SaveOutlined />} type="primary" onClick={this.editGroup}>
               保 存
             </Button>
           </Col>
