@@ -11,7 +11,7 @@
   },
   "scripts-info": {
     "dev": "运行开发服务器",
-    "prod": "执行生产模式构建打包",
+    "prod": "执行生产环境的构建，输出打包文件用于发布",
     "test": "执行测试"
   },
   "author": "",
@@ -133,10 +133,10 @@
     "ts-node": "^10.0.0",
     "typescript": "^4.3.2",
     "url-loader": "^4.1.1",
-    "webpack": "^5.38.1",
+    "webpack": "^5.51.1",
     "webpack-bundle-analyzer": "^4.4.2",
-    "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^4.0.0-beta.3",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.0.0",
     "webpack-merge": "^5.8.0"
   },
   "ava": {

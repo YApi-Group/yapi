@@ -1,4 +1,4 @@
-import { LockFilled, QuestionCircleOutlined } from '@ant-design/icons'
+import { LockFilled, QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Tooltip, Select, message, Row, Col, Radio } from 'antd'
 import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
@@ -12,7 +12,7 @@ import { fetchGroupList } from '../../reducer/modules/group.js'
 import { addProject } from '../../reducer/modules/project.js'
 import { setBreadcrumb } from '../../reducer/modules/user'
 
-import './Addproject.scss'
+import './AddProject.scss'
 
 const { TextArea } = Input
 const FormItem = Form.Item
@@ -186,7 +186,7 @@ class ProjectList extends Component {
 
           <Row>
             <Col sm={{ offset: 6 }} lg={{ offset: 3 }}>
-              <Button className="m-btn" icon="plus" type="primary" onClick={this.handleOk}>
+              <Button className="m-btn" icon={<PlusOutlined/>} type="primary" onClick={this.handleOk}>
                 创建项目
               </Button>
             </Col>

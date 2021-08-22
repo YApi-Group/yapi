@@ -18,7 +18,7 @@ const devConf: Configuration = {
   output: {
     library: 'MyYapi', // Only for umd/amd
     libraryTarget: 'var', // {'var', 'umd', 'comments', 'this' ...}
-    path: path.resolve(__dirname, './dist-devs'), // 没什么用，因为文件默认不会输出
+    path: path.resolve(__dirname, './dist-dev'), // 没什么用，因为文件默认不会输出
     filename: 'js/[name].[contenthash:8].js',
     publicPath: '/',
   },
@@ -45,7 +45,7 @@ const devConf: Configuration = {
     open: true,
     host: localHost,
     // clientLogLevel: 'none',
-    // contentBase: path.resolve(__dirname, './dist-devs'), // 没有静态文件加载的时候，没什么用
+    // contentBase: path.resolve(__dirname, './dist-dev'), // 没有静态文件加载的时候，没什么用
     historyApiFallback: true, // 404的页面会自动跳转到/页面
     // public: '/',
     // writeToDisk: true,

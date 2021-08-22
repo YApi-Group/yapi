@@ -6,7 +6,7 @@ services:
     build:
       context: ./docker/develop/
     image: shuzhong-mongo:4.4
-    hostname: mongo4.4
+    hostname: mongo4
     restart: always
     ports:
       - 27017:27017
@@ -19,7 +19,7 @@ services:
 
   mongo-express:
     image: mongo-express
-    hostname: me1.1
+    hostname: me1
     restart: always
     ports:
       - 9027:8081
