@@ -32,7 +32,7 @@ class StatChart extends Component<unknown, StatChartState> {
 
   // 获取mock 请求次数信息
   async getMockData() {
-    const result = await axios.get('/api/plugin/statismock/get')
+    const result = await axios.get('/api/statismock/get')
     if (result.data.errcode === 0) {
       const mockStatisData = result.data.data
       this.setState({

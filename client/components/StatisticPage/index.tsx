@@ -181,7 +181,7 @@ class StatisticPage extends Component<StatisticPageProps, StatisticPageState> {
 
   // 获取统计数据
   async getStatData() {
-    const result = await axios.get('/api/plugin/statismock/count')
+    const result = await axios.get('/api/statismock/count')
     if (result.data.errcode === 0) {
       const statData = result.data.data
       this.setState({
@@ -192,7 +192,7 @@ class StatisticPage extends Component<StatisticPageProps, StatisticPageState> {
 
   // 获取系统信息
   async getSystemStatusData() {
-    const result = await axios.get('/api/plugin/statismock/get_system_status')
+    const result = await axios.get('/api/statismock/get_system_status')
     if (result.data.errcode === 0) {
       const statusData = result.data.data
       this.setState({ status: { ...statusData } })
@@ -201,7 +201,7 @@ class StatisticPage extends Component<StatisticPageProps, StatisticPageState> {
 
   // 获取分组详细信息
   async getGroupData() {
-    const result = await axios.get('/api/plugin/statismock/group_data_statis')
+    const result = await axios.get('/api/statismock/group_data_statis')
     if (result.data.errcode === 0) {
       const statusData: any[] = result.data.data
       statusData.map(item => (item.key = item.name))
