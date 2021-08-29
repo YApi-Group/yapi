@@ -1,9 +1,8 @@
 import { Alert } from 'antd'
-import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
-import { Route, BrowserRouter as Router } from 'react-router-dom'
+import { Route, BrowserRouter } from 'react-router-dom'
 
 import plugin from '@/plugin.js'
 
@@ -13,6 +12,7 @@ import Header from './components/Header/Header'
 import Loading from './components/Loading/Loading'
 import MyPopConfirm from './components/MyPopConfirm/MyPopConfirm'
 import Notify from './components/Notify/Notify'
+import StatisticPage from './components/StatisticPage'
 import User from './containers/User/User.jsx'
 import { Home, Group, Project, Follows, AddProject, Login } from './containers/index'
 import { checkLoginState } from './reducer/modules/user'
@@ -20,8 +20,8 @@ import { checkLoginState } from './reducer/modules/user'
 const LOADING_STATUS = 0
 
 const alertContent = () => {
-  const ua = window.navigator.userAgent,
-    isChrome = ua.indexOf('Chrome') && window.chrome
+  const ua = window.navigator.userAgent
+  const isChrome = ua.indexOf('Chrome') && (window as any).chrome
   if (!isChrome) {
     return (
       <Alert
@@ -34,7 +34,7 @@ const alertContent = () => {
   }
 }
 
-const AppRoute = {
+const appRoutes: { [K: string]: any } = {
   home: {
     path: '/',
     component: Home,
@@ -63,38 +63,42 @@ const AppRoute = {
     path: '/login',
     component: Login,
   },
-}
-// 增加路由钩子
-plugin.emitHook('app_route', AppRoute)
-
-@connect(
-  state => ({
-    loginState: state.user.loginState,
-    curUserRole: state.user.role,
-  }),
-  {
-    checkLoginState,
+  statistic: {
+    path: '/statistic',
+    component: StatisticPage,
   },
-)
-export default class App extends Component {
-  constructor(props) {
+}
+
+// 增加路由钩子
+plugin.emitHook('app_route', appRoutes)
+
+type AppProps = {
+  checkLoginState: () => any
+  loginState: number
+  curUserRole: string
+}
+
+class App extends Component<AppProps> {
+  constructor(props: AppProps) {
     super(props)
     this.state = {
       login: LOADING_STATUS,
     }
+
+    this.route.bind(this)
   }
 
-  static propTypes = {
-    checkLoginState: PropTypes.func,
-    loginState: PropTypes.number,
-    curUserRole: PropTypes.string,
-  }
+  // static propTypes = {
+  //   checkLoginState: PropTypes.func,
+  //   loginState: PropTypes.number,
+  //   curUserRole: PropTypes.string,
+  // }
 
   componentDidMount() {
     this.props.checkLoginState()
   }
 
-  showConfirm = (msg, callback) => {
+  showConfirm = (msg: any, callback: any) => {
     // 自定义 window.confirm
     // http://reacttraining.cn/web/api/BrowserRouter/getUserConfirmation-func
     const container = document.createElement('div')
@@ -102,21 +106,20 @@ export default class App extends Component {
     ReactDOM.render(<MyPopConfirm msg={msg} callback={callback} />, container)
   }
 
-  route = status => {
-    let r
-    if (status === LOADING_STATUS) {
-      return <Loading visible />
-    }
-    r = (
-      <Router getUserConfirmation={this.showConfirm}>
+  route(status: number) {
+    if (status === LOADING_STATUS) { return <Loading visible /> }
+
+    const r = (
+      <BrowserRouter getUserConfirmation={this.showConfirm}>
         <div className="g-main">
           <div className="router-main">
             {this.props.curUserRole === 'admin' && <Notify />}
             {alertContent()}
             {this.props.loginState !== 1 ? <Header /> : null}
             <div className="router-container">
-              {Object.keys(AppRoute).map(key => {
-                const item = AppRoute[key]
+              {Object.keys(appRoutes).map(key => {
+                const item = appRoutes[key]
+
                 return key === 'login' ? (
                   <Route key={key} path={item.path} component={item.component} />
                 ) : key === 'home' ? (
@@ -143,7 +146,7 @@ export default class App extends Component {
           </div>
           <Footer />
         </div>
-      </Router>
+      </BrowserRouter>
     )
 
     return r
@@ -153,3 +156,14 @@ export default class App extends Component {
     return this.route(this.props.loginState)
   }
 }
+
+const states = (state: any) => ({
+  loginState: state.user.loginState,
+  curUserRole: state.user.role,
+})
+
+const actions = {
+  checkLoginState,
+}
+
+export default connect(states, actions)(App)

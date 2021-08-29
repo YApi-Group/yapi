@@ -84,6 +84,13 @@ function install() {
       followCol.createIndex({ uid: 1 })
       followCol.createIndex({ project_id: 1 })
 
+      const statCol = mongoose.connection.db.collection('statistic')
+      statCol.createIndex({ interface_id: 1 })
+      statCol.createIndex({ project_id: 1 })
+      statCol.createIndex({ group_id: 1 })
+      statCol.createIndex({ time: 1 })
+      statCol.createIndex({ date: 1 })
+
       result.then(
         function () {
           fs.ensureFileSync(path.join(cons.WEB_ROOT, 'init.lock'))

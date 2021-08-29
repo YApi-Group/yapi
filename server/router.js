@@ -1,6 +1,6 @@
 import koaRouter from 'koa-router'
 
-import cons from './cons'
+// import cons from './cons'
 import followController from './controllers/follow.js'
 import groupController from './controllers/group.js'
 import interfaceController from './controllers/interface.js'
@@ -8,6 +8,7 @@ import interfaceColController from './controllers/interfaceCol.js'
 import logController from './controllers/log.js'
 import openController from './controllers/open.js'
 import projectController from './controllers/project.js'
+import StatisticController from './controllers/statistic'
 import testController from './controllers/test.js'
 import userController from './controllers/user.js'
 import { createAction } from './utils/commons.js'
@@ -52,6 +53,10 @@ const INTERFACE_CONFIG = {
     prefix: '/open/',
     controller: openController,
   },
+  statistic: {
+    prefix: '/statismock/',
+    controller: StatisticController,
+  },
 }
 
 const routerConfig = {
@@ -61,7 +66,7 @@ const routerConfig = {
       path: 'get_mygroup',
       method: 'get',
     },
-    
+
     {
       action: 'list',
       path: 'list',
@@ -577,6 +582,28 @@ const routerConfig = {
       action: 'importData',
       path: 'import_data',
       method: 'post',
+    },
+  ],
+  statistic: [
+    {
+      method: 'get',
+      path: 'count',
+      action: 'getStatisCount',
+    },
+    {
+      method: 'get',
+      path: 'get',
+      action: 'getMockDateList',
+    },
+    {
+      method: 'get',
+      path: 'get_system_status',
+      action: 'getSystemStatus',
+    },
+    {
+      method: 'get',
+      path: 'group_data_statis',
+      action: 'groupDataStatis',
     },
   ],
 }

@@ -23,7 +23,7 @@
 
     "moduleResolution": "Node", // 当 module === "es6" 时，必须设置，否则部分自带 typing 的模块无法找到
 
-    // "allowJs": true, // 控制是否可以引入 .js 文件
+    "allowJs": true, // 控制是否可以引入 .js 文件
 
     "resolveJsonModule": true, // 允许导入 json 文件
     "esModuleInterop": true, // 兼容 babel 等其他 ECMAScript 模块的实现

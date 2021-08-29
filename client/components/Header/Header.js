@@ -1,8 +1,3 @@
-import React, { PureComponent as Component } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
-import { Layout, Menu, Dropdown, message, Tooltip, Popover, Tag } from 'antd'
 import {
   StarOutlined,
   PlusCircleOutlined,
@@ -11,23 +6,30 @@ import {
   QuestionCircleOutlined,
   UserOutlined,
   SolutionOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons'
+import { Layout, Menu, Dropdown, message, Tooltip, Popover, Tag } from 'antd'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
+import { Link } from 'react-router-dom'
+
 import plugin from '@/plugin.js'
 
 import { changeMenuItem } from '../../reducer/modules/menu'
 import { checkLoginState, logoutActions, loginTypeAction } from '../../reducer/modules/user'
-import LogoSVG from '../LogoSVG/index.js'
 import Breadcrumb from '../Breadcrumb/Breadcrumb.js'
 import GuideBtns from '../GuideBtns/GuideBtns.js'
+import LogoSVG from '../LogoSVG/index.js'
 
-import Srch from './Search/Search'
+import Search from './Search/Search'
 
 import './Header.scss'
 
 const { Header } = Layout
 
-const HeaderMenu = {
+const headerMenu = {
   user: {
     path: '/user/profile',
     name: '个人中心',
@@ -40,18 +42,24 @@ const HeaderMenu = {
     icon: SolutionOutlined,
     adminFlag: true,
   },
+  statistic: {
+    path: '/statistic',
+    name: '系统信息',
+    icon: BarChartOutlined,
+    adminFlag: true,
+  },
 }
 
-plugin.emitHook('header_menu', HeaderMenu)
+plugin.emitHook('header_menu', headerMenu)
 
 const MenuUser = props => (
   <Menu theme="dark" className="user-menu">
-    {Object.keys(HeaderMenu).map(key => {
-      const item = HeaderMenu[key]
+    {Object.keys(headerMenu).map(key => {
+      const item = headerMenu[key]
+
       const isAdmin = props.role === 'admin'
-      if (item.adminFlag && !isAdmin) {
-        return null
-      }
+      if (item.adminFlag && !isAdmin) { return null }
+
       return (
         <Menu.Item key={key}>
           {item.name === '个人中心' ? (
@@ -68,6 +76,7 @@ const MenuUser = props => (
         </Menu.Item>
       )
     })}
+
     <Menu.Item key="9">
       <a onClick={props.logout}>
         <LogoutOutlined />退出
@@ -121,7 +130,7 @@ const ToolUser = props => {
   return (
     <ul>
       <li className="toolbar-li item-search">
-        <Srch groupList={props.groupList} />
+        <Search groupList={props.groupList} />
       </li>
       <Popover
         overlayClassName="popover-index"
@@ -250,24 +259,24 @@ export default class HeaderCom extends Component {
     study: PropTypes.bool,
     studyTip: PropTypes.number,
     imageUrl: PropTypes.any,
-  };
+  }
   linkTo = e => {
-    if (e.key != '/doc') {
+    if (e.key !== '/doc') {
       this.props.changeMenuItem(e.key)
       if (!this.props.login) {
         message.info('请先登录', 1)
       }
     }
-  };
+  }
   relieveLink = () => {
     this.props.changeMenuItem('')
-  };
+  }
   logout = e => {
     e.preventDefault()
     this.props
       .logoutActions()
       .then(res => {
-        if (res.payload.data.errcode == 0) {
+        if (res.payload.data.errcode === 0) {
           this.props.history.push('/')
           this.props.changeMenuItem('/')
           message.success('退出成功! ')
@@ -278,15 +287,15 @@ export default class HeaderCom extends Component {
       .catch(err => {
         message.error(err)
       })
-  };
+  }
   handleLogin = e => {
     e.preventDefault()
     this.props.loginTypeAction('1')
-  };
+  }
   handleReg = e => {
     e.preventDefault()
     this.props.loginTypeAction('2')
-  };
+  }
   checkLoginState = () => {
     this.props.checkLoginState
       .then(res => {
@@ -297,7 +306,7 @@ export default class HeaderCom extends Component {
       .catch(err => {
         console.log(err)
       })
-  };
+  }
 
   render() {
     const { login, user, msg, uid, role, studyTip, study, imageUrl } = this.props

@@ -9,15 +9,13 @@ module.exports = function () {
       path: '/statistic',
       name: '系统信息',
       icon: 'bar-chart',
-      adminFlag: true
+      adminFlag: true,
     }
   })
   this.bindHook('app_route', function (app) {
     app.statisticsPage = {
       path: '/statistic',
-      component: StatisticsPage
+      component: StatisticsPage,
     }
   })
-
-
 }

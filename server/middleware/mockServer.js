@@ -9,6 +9,7 @@ import variable from '../../variable.js'
 import cons from '../cons'
 import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
+import StatisticModel from '../models/statistic'
 import * as commons from '../utils/commons'
 import yapi from '../yapi.js'
 
@@ -66,7 +67,7 @@ function matchApi(apiPath, apiRule) {
         return false
       }
       pathParams.__weight++
-      
+
     }
   }
   return pathParams
@@ -256,8 +257,7 @@ export default async (ctx, next) => {
         return (ctx.body = commons.resReturn(
           null,
           404,
-          `不存在的api, 当前请求path为 ${newpath}， 请求方法为 ${
-            ctx.method
+          `不存在的api, 当前请求path为 ${newpath}， 请求方法为 ${ctx.method
           } ，请确认是否定义此请求。`,
         ))
       }
@@ -266,7 +266,7 @@ export default async (ctx, next) => {
 
     if (interfaceData.length > 1) {
       return (ctx.body = commons.resReturn(null, 405, '存在多个api，请检查数据库'))
-    } 
+    }
     interfaceData = interfaceData[0]
 
     // 必填字段是否填写好
@@ -338,6 +338,30 @@ export default async (ctx, next) => {
 
       await yapi.emitHook('mock_after', context)
 
+      // MockServer生成mock数据后触发
+      // this.bindHook('mock_after', function(context) {
+      const interfaceId = context.interfaceData._id
+      const projectId = context.projectData._id
+      const groupId = context.projectData.group_id
+      // let ip = context.ctx.originalUrl;
+      const ip = commons.getIp(context.ctx)
+      const data = {
+        interface_id: interfaceId,
+        project_id: projectId,
+        group_id: groupId,
+        time: commons.time(),
+        ip: ip,
+        date: commons.formatYMD(new Date()),
+      }
+      const inst = cons.getInst(StatisticModel)
+
+      try {
+        inst.save(data).then()
+      } catch (e) {
+        commons.log('mockStatisError', e)
+      }
+      // });
+
       const handleMock = new Promise(resolve => {
         setTimeout(() => {
           resolve(true)
@@ -375,7 +399,7 @@ export default async (ctx, next) => {
 
       ctx.status = context.httpCode
       ctx.body = context.mockJson
-      return  
+      return
     } catch (e) {
       commons.log(e, 'error')
       return (ctx.body = {

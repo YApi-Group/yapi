@@ -1,14 +1,18 @@
 {
   "cSpell.words": [
     "Appstore",
+    "Btns",
     "LDAP",
     "antd",
     "basepath",
     "breakline",
     "errcode",
+    "errmsg",
     "ladp",
     "mockjs",
     "moox",
+    "noopener",
+    "noreferrer",
     "stylelint",
     "yapi"
   ],

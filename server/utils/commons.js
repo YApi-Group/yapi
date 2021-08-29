@@ -12,6 +12,8 @@ import _ from 'underscore'
 
 import cons from '../cons'
 
+export * from './time'
+
 jsf.extend('mock', function () {
   return {
     mock: function (xx) {
@@ -25,12 +27,15 @@ const defaultOptions = {
   failOnInvalidFormat: false,
 }
 
-export function time() { 
-  return Math.floor(new Date().getTime() / 1000) 
-}
-
 export function rand(min, max) {
   return Math.floor(Math.random() * (max - min) + min) 
+}
+
+/**
+ * 将内存单位从字节(b)变成GB
+ */
+export function transformBytesToGB(bytes) {
+  return (bytes / 1024 / 1024 / 1024).toFixed(2)
 }
 
 // formats.forEach(item => {
