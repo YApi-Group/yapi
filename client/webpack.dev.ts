@@ -25,7 +25,7 @@ const devConf: Configuration = {
 
   mode: 'development',
   /* 用于标记编译文件与源文件对应位置，便于调试，该模式 eval 比 inline-source-map 快 */
-  devtool: false,
+  devtool: 'inline-source-map',
   /* 开发模式下仍然打开 treeshake */
   optimization: {
     usedExports: true,

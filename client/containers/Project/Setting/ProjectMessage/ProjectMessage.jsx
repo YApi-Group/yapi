@@ -39,7 +39,7 @@ import { fetchGroupList } from '../../../../reducer/modules/group.js'
 import { updateProject, delProject, getProject, upsetProject } from '../../../../reducer/modules/project'
 import { setBreadcrumb } from '../../../../reducer/modules/user'
 
-import ProjectTag from './ProjectTag.js'
+import ProjectTag from './ProjectTag.jsx'
 
 const { TextArea } = Input
 const FormItem = Form.Item
@@ -318,7 +318,7 @@ class ProjectMessage extends Component {
               initialValue={initFormValues.name}
               rules={nameLengthLimit('项目')}
             >
-              <Input />
+              <Input placeholder="请输入" />
             </FormItem>
             <FormItem
               {...formItemLayout}
@@ -327,7 +327,7 @@ class ProjectMessage extends Component {
               initialValue={String(initFormValues.group_id)}
               rules={[{ required: true, message: '请选择项目所属的分组!' }]}
             >
-              <Select disabled={!selectDisbaled}>
+              <Select disabled={!selectDisbaled} placeholder="请选择">
                 {this.props.groupList.map((item, index) => (
                   <Option value={item._id.toString()} key={index}>
                     {item.group_name}

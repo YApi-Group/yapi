@@ -1,13 +1,13 @@
-import React, { PureComponent as Component } from 'react'
 import { Tabs } from 'antd'
 import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
-import ProjectMessage from './ProjectMessage/ProjectMessage.js'
 import ProjectEnv from './ProjectEnv/index.js'
+import ProjectMessage from './ProjectMessage/ProjectMessage.jsx'
+import ProjectMock from './ProjectMock/index.js'
 import ProjectRequest from './ProjectRequest/ProjectRequest'
 import ProjectToken from './ProjectToken/ProjectToken'
-import ProjectMock from './ProjectMock/index.js'
 
 const TabPane = Tabs.TabPane
 const plugin = require('@/plugin.js')
@@ -23,7 +23,7 @@ class Setting extends Component {
   static propTypes = {
     match: PropTypes.object,
     curProjectRole: PropTypes.string,
-  };
+  }
   render() {
     const id = this.props.match.params.id
     plugin.emitHook('sub_setting_nav', routers)

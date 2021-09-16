@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { Row, Col, Input } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
+import { Row, Col, Input } from 'antd'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 
 import './ProjectTag.scss'
 
@@ -9,7 +9,7 @@ class ProjectTag extends Component {
   static propTypes = {
     tagMsg: PropTypes.array,
     tagSubmit: PropTypes.func,
-  };
+  }
   constructor(props) {
     super(props)
     this.state = {
@@ -51,20 +51,20 @@ class ProjectTag extends Component {
       newValue[name] = [].concat(this.state[name], data)
     }
     this.setState(newValue)
-  };
+  }
 
   delHeader = (key, name) => {
     const curValue = this.state[name]
     const newValue = {}
     newValue[name] = curValue.filter((val, index) => index !== key)
     this.setState(newValue)
-  };
+  }
 
   handleChange = (val, index, name, label) => {
     const newValue = this.state
     newValue[name][index][label] = val
     this.setState(newValue)
-  };
+  }
 
   render() {
     const commonTpl = (item, index, name) => {

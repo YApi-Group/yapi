@@ -45,6 +45,8 @@ const formItemLayout = {
 // )
 // @withRouter
 class ProjectList extends Component {
+  formRef = React.createRef()
+
   constructor(props) {
     super(props)
 
@@ -58,7 +60,6 @@ class ProjectList extends Component {
 
   static propTypes = {
     groupList: PropTypes.array,
-    form: PropTypes.object,
     currGroup: PropTypes.object,
     addProject: PropTypes.func,
     history: PropTypes.object,
@@ -68,23 +69,23 @@ class ProjectList extends Component {
 
   handlePath = e => {
     const val = e.target.value
-    this.props.form.setFieldsValue({
+    this.formRef.current.setFieldsValue({
       basepath: handlePath(val),
     })
   }
 
   // 确认添加项目
   handleOk(e) {
-    const { form, addProject } = this.props
+    const { addProject } = this.props
     e.preventDefault()
-    form.validateFields((err, values) => {
+    this.formRef.current.validateFields((err, values) => {
       if (!err) {
         values.group_id = values.group
         values.icon = constants.PROJECT_ICON[0]
         values.color = pickRandomProperty(constants.PROJECT_COLOR)
         addProject(values).then(res => {
           if (res.payload.data.errcode === 0) {
-            form.resetFields()
+            this.formRef.current.resetFields()
             message.success('创建成功! ')
             this.props.history.push('/project/' + res.payload.data.data._id + '/interface/api')
           }
@@ -111,9 +112,9 @@ class ProjectList extends Component {
     return (
       <div className="g-row">
         <div className="g-row m-container">
-          <Form>
+          <Form ref={this.formRef}>
             <FormItem {...formItemLayout} label="项目名称" name="name" rules={nameLengthLimit('项目')}>
-              <Input />
+              <Input placeholder="请输入" />
             </FormItem>
 
             <FormItem
@@ -123,7 +124,7 @@ class ProjectList extends Component {
               initialValue={String(this.state.currGroupId)}
               rules={[{ required: true, message: '请选择项目所属的分组!' }]}
             >
-              <Select>
+              <Select placeholder="请选择">
                 {this.state.groupList.map((item, index) => (
                   <Option
                     disabled={!(item.role === 'dev' || item.role === 'owner' || item.role === 'admin')}
@@ -151,7 +152,7 @@ class ProjectList extends Component {
               name="basepath"
               rules={[{ required: false, message: '请输入项目基本路径' }]}
             >
-              <Input onBlur={this.handlePath} />
+              <Input onBlur={this.handlePath} placeholder="请输入" />
             </FormItem>
 
             <FormItem
