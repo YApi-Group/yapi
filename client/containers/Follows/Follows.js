@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { Row, Col } from 'antd'
 
 import ErrMsg from '../../components/ErrMsg/ErrMsg.js'
-import ProjectCard from '../../components/ProjectCard/ProjectCard.js'
+import ProjectCard from '../../components/ProjectCard/ProjectCard.tsx'
 import { getFollowList } from '../../reducer/modules/follow'
 import { setBreadcrumb } from '../../reducer/modules/user'
 
@@ -30,7 +30,7 @@ class Follows extends Component {
     getFollowList: PropTypes.func,
     setBreadcrumb: PropTypes.func,
     uid: PropTypes.number,
-  };
+  }
 
   receiveRes = () => {
     this.props.getFollowList(this.props.uid).then(res => {
@@ -40,7 +40,7 @@ class Follows extends Component {
         })
       }
     })
-  };
+  }
 
   async UNSAFE_componentWillMount() {
     this.props.setBreadcrumb([{ name: '我的关注' }])

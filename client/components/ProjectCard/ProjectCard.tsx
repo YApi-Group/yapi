@@ -1,63 +1,52 @@
-import React, { PureComponent as Component } from 'react'
-import { Card, Tooltip, Modal, Alert, Input, message } from 'antd'
 import { StarOutlined, CopyOutlined, StarFilled } from '@ant-design/icons'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import { withRouter } from 'react-router'
+import { Card, Tooltip, Modal, Alert, Input, message } from 'antd'
 import produce from 'immer'
+import React, { PureComponent as Component } from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
-import { delFollow, addFollow } from '../../reducer/modules/follow'
+import { AnyFunc } from '@/types'
+
 import { debounce } from '../../common'
-import constants from '../../constants/variable.js'
-import { getProject, checkProjectName, copyProjectMsg } from '../../reducer/modules/project'
 import { trim } from '../../common.js'
+import constants from '../../constants/variable.js'
+import { delFollow, addFollow } from '../../reducer/modules/follow'
+import { getProject, checkProjectName, copyProjectMsg } from '../../reducer/modules/project'
 
 import './ProjectCard.scss'
 
-const confirm = Modal.confirm
+type PropTypes = {
+  projectData: any
+  uid: number
+  inFollowPage: boolean
+  callbackResult: AnyFunc
+  history: any
+  delFollow: AnyFunc
+  addFollow: AnyFunc
+  isShow: boolean
+  getProject: AnyFunc
+  checkProjectName: AnyFunc
+  copyProjectMsg: AnyFunc
+  currPage: number
+}
 
-@connect(
-  state => ({
-    uid: state.user.uid,
-    currPage: state.project.currPage,
-  }),
-  {
-    delFollow,
-    addFollow,
-    getProject,
-    checkProjectName,
-    copyProjectMsg,
-  },
-)
-@withRouter
-class ProjectCard extends Component {
-  constructor(props) {
+class ProjectCard extends Component<PropTypes> {
+  constructor(props: PropTypes) {
     super(props)
-    this.add = debounce(this.add, 400)
-    this.del = debounce(this.del, 400)
+
+    this.add = debounce(this.add.bind(this), 400)
+    this.del = debounce(this.del.bind(this), 400)
+
+    this.copy = this.copy.bind(this)
+    this.showConfirm = this.showConfirm.bind(this)
   }
 
-  static propTypes = {
-    projectData: PropTypes.object,
-    uid: PropTypes.number,
-    inFollowPage: PropTypes.bool,
-    callbackResult: PropTypes.func,
-    history: PropTypes.object,
-    delFollow: PropTypes.func,
-    addFollow: PropTypes.func,
-    isShow: PropTypes.bool,
-    getProject: PropTypes.func,
-    checkProjectName: PropTypes.func,
-    copyProjectMsg: PropTypes.func,
-    currPage: PropTypes.number,
-  };
-
-  copy = async projectName => {
+  async copy(projectName: string) {
     const id = this.props.projectData._id
 
     const projectData = await this.props.getProject(id)
     const data = projectData.payload.data.data
-    const newData = produce(data, draftData => {
+    const newData = produce(data, (draftData: any) => {
       draftData.preName = draftData.name
       draftData.name = projectName
     })
@@ -65,13 +54,14 @@ class ProjectCard extends Component {
     await this.props.copyProjectMsg(newData)
     message.success('项目复制成功')
     this.props.callbackResult()
-  };
+  }
 
   // 复制项目的二次确认
-  showConfirm = () => {
+  showConfirm() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
 
-    confirm({
+    Modal.confirm({
       title: '确认复制 ' + that.props.projectData.name + ' 项目吗？',
       okText: '确认',
       cancelText: '取消',
@@ -91,29 +81,29 @@ class ProjectCard extends Component {
         </div>
       ),
       async onOk() {
-        const projectName = trim(document.getElementById('project_name').value)
+        const elem = document.getElementById('project_name') as HTMLInputElement
+        const projectName = trim(elem.value)
 
         // 查询项目名称是否重复
         const group_id = that.props.projectData.group_id
         await that.props.checkProjectName(projectName, group_id)
         that.copy(projectName)
       },
-      iconType: 'copy',
-      onCancel() { },
+      icon: <CopyOutlined />,
     })
-  };
+  }
 
-  del = () => {
+  del() {
     const id = this.props.projectData.projectid || this.props.projectData._id
-    this.props.delFollow(id).then(res => {
+    this.props.delFollow(id).then((res: any) => {
       if (res.payload.data.errcode === 0) {
         this.props.callbackResult()
         // message.success('已取消关注！');  // 星号已做出反馈 无需重复提醒用户
       }
     })
-  };
+  }
 
-  add = () => {
+  add() {
     const { uid, projectData } = this.props
     const param = {
       uid,
@@ -122,13 +112,14 @@ class ProjectCard extends Component {
       icon: projectData.icon || constants.PROJECT_ICON[0],
       color: projectData.color || constants.PROJECT_COLOR.blue,
     }
-    this.props.addFollow(param).then(res => {
+
+    this.props.addFollow(param).then((res: any) => {
       if (res.payload.data.errcode === 0) {
         this.props.callbackResult()
         // message.success('已添加关注！');  // 星号已做出反馈 无需重复提醒用户
       }
     })
-  };
+  }
 
   render() {
     const { projectData, inFollowPage, isShow } = this.props
@@ -152,7 +143,7 @@ class ProjectCard extends Component {
             className="ui-logo"
             style={{
               backgroundColor:
-                constants.PROJECT_COLOR[projectData.color] || constants.PROJECT_COLOR.blue,
+                (constants.PROJECT_COLOR as any)[projectData.color] || constants.PROJECT_COLOR.blue,
             }}
           />
           <h4 className="ui-title">{projectData.name || projectData.projectname}</h4>
@@ -184,4 +175,17 @@ class ProjectCard extends Component {
   }
 }
 
-export default ProjectCard
+const states = (state: any) => ({
+  uid: state.user.uid,
+  currPage: state.project.currPage,
+})
+
+const actions = {
+  delFollow,
+  addFollow,
+  getProject,
+  checkProjectName,
+  copyProjectMsg,
+}
+
+export default withRouter(connect(states, actions)(ProjectCard))

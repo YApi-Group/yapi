@@ -1,9 +1,11 @@
 import { LockFilled, QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Tooltip, Select, message, Row, Col, Radio } from 'antd'
+import { Button, Form, Input, Tooltip, Select, message, Row, Col, Radio, FormInstance } from 'antd'
 import PropTypes from 'prop-types'
-import React, { PureComponent as Component } from 'react'
+import React, { PureComponent as Component, RefObject } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
+
+import { DispatchCommonFunc, DispatchPromiseFunc } from '@/types'
 
 import { pickRandomProperty, handlePath, nameLengthLimit } from '../../common'
 import constants from '../../constants/variable.js'
@@ -32,22 +34,24 @@ const formItemLayout = {
   className: 'form-item',
 }
 
-// @connect(
-//   state => ({
-//     groupList: state.group.groupList,
-//     currGroup: state.group.currGroup,
-//   }),
-//   {
-//     fetchGroupList,
-//     addProject,
-//     setBreadcrumb,
-//   },
-// )
-// @withRouter
-class ProjectList extends Component {
-  formRef = React.createRef()
+type PropTypes = {
+  groupList: any[]
+  currGroup: Record<string, any>
+  addProject: DispatchPromiseFunc<typeof addProject>
+  history: Record<string, any>
+  setBreadcrumb: DispatchCommonFunc<typeof setBreadcrumb>
+  fetchGroupList: DispatchPromiseFunc<typeof fetchGroupList>
+}
 
-  constructor(props) {
+type StateTypes = {
+  groupList: any[]
+  currGroupId: number
+}
+
+class ProjectList extends Component<PropTypes, StateTypes> {
+  formRef: RefObject<FormInstance> = React.createRef()
+
+  constructor(props: PropTypes) {
     super(props)
 
     this.state = {
@@ -55,19 +59,11 @@ class ProjectList extends Component {
       currGroupId: null,
     }
 
-    this.handleOk.bind(this)
+    this.handlePath = this.handlePath.bind(this)
+    this.handleOk = this.handleOk.bind(this)
   }
 
-  static propTypes = {
-    groupList: PropTypes.array,
-    currGroup: PropTypes.object,
-    addProject: PropTypes.func,
-    history: PropTypes.object,
-    setBreadcrumb: PropTypes.func,
-    fetchGroupList: PropTypes.func,
-  }
-
-  handlePath = e => {
+  handlePath(e: any) {
     const val = e.target.value
     this.formRef.current.setFieldsValue({
       basepath: handlePath(val),
@@ -75,26 +71,29 @@ class ProjectList extends Component {
   }
 
   // 确认添加项目
-  handleOk(e) {
-    const { addProject } = this.props
+  handleOk(e: any) {
     e.preventDefault()
-    this.formRef.current.validateFields((err, values) => {
-      if (!err) {
+
+    const { addProject } = this.props
+    this.formRef.current.validateFields()
+      .then(values => {
         values.group_id = values.group
         values.icon = constants.PROJECT_ICON[0]
         values.color = pickRandomProperty(constants.PROJECT_COLOR)
-        addProject(values).then(res => {
-          if (res.payload.data.errcode === 0) {
-            this.formRef.current.resetFields()
-            message.success('创建成功! ')
-            this.props.history.push('/project/' + res.payload.data.data._id + '/interface/api')
-          }
-        })
-      }
-    })
+
+        return addProject(values)
+      })
+      .then((res: any) => {
+        if (res.payload.data.errcode === 0) {
+          this.formRef.current.resetFields()
+          message.success('创建成功! ')
+          this.props.history.push('/project/' + res.payload.data.data._id + '/interface/api')
+        }
+      })
+      .catch(err => { console.error(err) })
   }
 
-  async UNSAFE_componentWillMount() {
+  async UNSAFE_componentWillMount(): Promise<any> {
     this.props.setBreadcrumb([{ name: '新建项目' }])
     if (!this.props.currGroup._id) {
       await this.props.fetchGroupList()
@@ -189,7 +188,7 @@ class ProjectList extends Component {
 
           <Row>
             <Col sm={{ offset: 6 }} lg={{ offset: 3 }}>
-              <Button className="m-btn" icon={<PlusOutlined/>} type="primary" onClick={this.handleOk}>
+              <Button className="m-btn" icon={<PlusOutlined />} type="primary" onClick={this.handleOk}>
                 创建项目
               </Button>
             </Col>
@@ -200,7 +199,7 @@ class ProjectList extends Component {
   }
 }
 
-const states = state => ({
+const states = (state: any) => ({
   groupList: state.group.groupList,
   currGroup: state.group.currGroup,
 })
@@ -211,4 +210,4 @@ const actions = {
   setBreadcrumb,
 }
 
-export default connect(states, actions)(withRouter(ProjectList))
+export default withRouter(connect(states, actions)(ProjectList as any))

@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import ErrMsg from '../../../components/ErrMsg/ErrMsg.js'
-import ProjectCard from '../../../components/ProjectCard/ProjectCard.js'
+import ProjectCard from '../../../components/ProjectCard/ProjectCard.tsx'
 import { addProject, fetchProjectList, delProject } from '../../../reducer/modules/project'
 import { setBreadcrumb } from '../../../reducer/modules/user'
 

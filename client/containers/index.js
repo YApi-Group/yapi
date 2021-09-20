@@ -1,6 +1,6 @@
 import Header from '../components/Header/Header.js'
 
-import AddProject from './AddProject/AddProject.jsx'
+import AddProject from './AddProject/AddProject.tsx'
 import Follows from './Follows/Follows.js'
 import Group from './Group/Group.js'
 import Home from './Home/Home.js'
