@@ -4,53 +4,46 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
+import { AnyFunc } from '@/types.js'
+
 import ErrMsg from '../../../components/ErrMsg/ErrMsg.js'
-import ProjectCard from '../../../components/ProjectCard/ProjectCard.tsx'
+import ProjectCard from '../../../components/ProjectCard/ProjectCard'
 import { addProject, fetchProjectList, delProject } from '../../../reducer/modules/project'
 import { setBreadcrumb } from '../../../reducer/modules/user'
 
 import './ProjectList.scss'
 
-// @connect(
-//   state => ({
-//     projectList: state.project.projectList,
-//     userInfo: state.project.userInfo,
-//     tableLoading: state.project.tableLoading,
-//     currGroup: state.group.currGroup,
-//     currPage: state.project.currPage,
-//   }),
-//   {
-//     fetchProjectList,
-//     addProject,
-//     delProject,
-//     // changeUpdateModal,
-//     setBreadcrumb,
-//   },
-// )
-class ProjectList extends Component {
-  constructor(props) {
+type PropTypes = {
+  form: any
+  fetchProjectList: AnyFunc
+  addProject: AnyFunc
+  delProject: AnyFunc
+  // changeUpdateModal: AnyFunc,
+  projectList: any[]
+  userInfo: any
+  tableLoading: boolean
+  currGroup: any
+  setBreadcrumb: AnyFunc
+  currPage: number
+  studyTip: number
+  study: boolean
+}
+
+type StateTypes = {
+  visible: boolean
+  protocol: string
+  projectData: any[]
+}
+
+class ProjectList extends Component<PropTypes, StateTypes> {
+  constructor(props: PropTypes) {
     super(props)
+
     this.state = {
       visible: false,
       protocol: 'http://',
       projectData: [],
     }
-  }
-
-  static propTypes = {
-    form: PropTypes.object,
-    fetchProjectList: PropTypes.func,
-    addProject: PropTypes.func,
-    delProject: PropTypes.func,
-    // changeUpdateModal: PropTypes.func,
-    projectList: PropTypes.array,
-    userInfo: PropTypes.object,
-    tableLoading: PropTypes.bool,
-    currGroup: PropTypes.object,
-    setBreadcrumb: PropTypes.func,
-    currPage: PropTypes.number,
-    studyTip: PropTypes.number,
-    study: PropTypes.bool,
   }
 
   // 取消修改
@@ -60,7 +53,7 @@ class ProjectList extends Component {
   }
 
   // 修改线上域名的协议类型 (http/https)
-  protocolChange = value => {
+  protocolChange = (value: string) => {
     this.setState({ protocol: value })
   }
 
@@ -69,7 +62,7 @@ class ProjectList extends Component {
     this.props.fetchProjectList(this.props.currGroup._id, this.props.currPage)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: any) {
     this.props.setBreadcrumb([{ name: String(nextProps.currGroup.group_name || '') }])
 
     // 切换分组
@@ -80,7 +73,7 @@ class ProjectList extends Component {
     // 切换项目列表
     if (this.props.projectList !== nextProps.projectList) {
       // console.log(nextProps.projectList);
-      const data = nextProps.projectList.map((item, index) => {
+      const data = nextProps.projectList.map((item: any, index: number) => {
         item.key = index
         return item
       })
@@ -92,8 +85,8 @@ class ProjectList extends Component {
 
   render() {
     let projectData = this.state.projectData
-    let noFollow = []
-    let followProject = []
+    let noFollow: any[] = []
+    let followProject: any[] = []
     for (const i in projectData) {
       if (projectData[i].follow) {
         followProject.push(projectData[i])
@@ -181,7 +174,7 @@ class ProjectList extends Component {
   }
 }
 
-const states = state => ({
+const states = (state: any) => ({
   projectList: state.project.projectList,
   userInfo: state.project.userInfo,
   tableLoading: state.project.tableLoading,

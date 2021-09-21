@@ -9,14 +9,6 @@ import Profile from './Profile.jsx'
 
 import './index.scss'
 
-// @connect(
-//   state => ({
-//     curUid: state.user.uid,
-//     userType: state.user.type,
-//     role: state.user.role,
-//   }),
-//   {},
-// )
 class User extends Component {
   static propTypes = {
     match: PropTypes.object,

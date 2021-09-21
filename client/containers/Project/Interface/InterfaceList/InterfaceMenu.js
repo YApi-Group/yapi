@@ -36,24 +36,6 @@ const confirm = Modal.confirm
 const TreeNode = Tree.TreeNode
 const headHeight = 240 // menu顶部到网页顶部部分的高度
 
-@connect(
-  state => ({
-    list: state.inter.list,
-    inter: state.inter.curdata,
-    curProject: state.project.currProject,
-    expands: [],
-  }),
-  {
-    fetchInterfaceListMenu,
-    fetchInterfaceData,
-    deleteInterfaceCatData,
-    deleteInterfaceData,
-    initInterface,
-    getProject,
-    fetchInterfaceCatList,
-    fetchInterfaceList,
-  },
-)
 class InterfaceMenu extends Component {
   static propTypes = {
     match: PropTypes.object,
@@ -71,7 +53,7 @@ class InterfaceMenu extends Component {
     getProject: PropTypes.func,
     fetchInterfaceCatList: PropTypes.func,
     fetchInterfaceList: PropTypes.func,
-  };
+  }
 
   /**
    * @param {String} key
@@ -81,13 +63,13 @@ class InterfaceMenu extends Component {
     const newState = {}
     newState[key] = status
     this.setState(newState)
-  };
+  }
 
   handleCancel = () => {
     this.setState({
       visible: false,
     })
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -146,13 +128,13 @@ class InterfaceMenu extends Component {
     this.setState({
       expands: null,
     })
-  };
+  }
 
   changeExpands = () => {
     this.setState({
       expands: null,
     })
-  };
+  }
 
   handleAddInterface = (data, cb) => {
     data.project_id = this.props.projectId
@@ -171,7 +153,7 @@ class InterfaceMenu extends Component {
         cb()
       }
     })
-  };
+  }
 
   handleAddInterfaceCat = data => {
     data.project_id = this.props.projectId
@@ -186,7 +168,7 @@ class InterfaceMenu extends Component {
         add_cat_modal_visible: false,
       })
     })
-  };
+  }
 
   handleChangeInterfaceCat = data => {
     data.project_id = this.props.projectId
@@ -208,7 +190,7 @@ class InterfaceMenu extends Component {
         change_cat_modal_visible: false,
       })
     })
-  };
+  }
 
   showConfirm = data => {
     const that = this
@@ -230,7 +212,7 @@ class InterfaceMenu extends Component {
         ref.destroy()
       },
     })
-  };
+  }
 
   showDelCatConfirm = catid => {
     const that = this
@@ -249,7 +231,7 @@ class InterfaceMenu extends Component {
       },
       onCancel() { },
     })
-  };
+  }
 
   copyInterface = async id => {
     const interfaceData = await this.props.fetchInterfaceData(id)
@@ -274,28 +256,28 @@ class InterfaceMenu extends Component {
         visible: false,
       })
     })
-  };
+  }
 
   enterItem = id => {
     this.setState({ delIcon: id })
-  };
+  }
 
   leaveItem = () => {
     this.setState({ delIcon: null })
-  };
+  }
 
   onFilter = e => {
     this.setState({
       filter: e.target.value,
       list: JSON.parse(JSON.stringify(this.props.list)),
     })
-  };
+  }
 
   onExpand = e => {
     this.setState({
       expands: e,
     })
-  };
+  }
 
   onDrop = async e => {
     const dropCatIndex = e.node.props.pos.split('-')[1] - 1
@@ -336,7 +318,8 @@ class InterfaceMenu extends Component {
       axios.post('/api/interface/up_cat_index', changes).then()
       this.props.fetchInterfaceListMenu(this.props.projectId)
     }
-  };
+  }
+
   // 数据过滤
   filterList = list => {
     const that = this
@@ -366,7 +349,7 @@ class InterfaceMenu extends Component {
     })
 
     return { menuList, arr }
-  };
+  }
 
   render() {
     const matchParams = this.props.match.params
@@ -634,4 +617,22 @@ class InterfaceMenu extends Component {
   }
 }
 
-export default withRouter(InterfaceMenu)
+const states = state => ({
+  list: state.inter.list,
+  inter: state.inter.curdata,
+  curProject: state.project.currProject,
+  expands: [],
+})
+
+const actions = {
+  fetchInterfaceListMenu,
+  fetchInterfaceData,
+  deleteInterfaceCatData,
+  deleteInterfaceData,
+  initInterface,
+  getProject,
+  fetchInterfaceCatList,
+  fetchInterfaceList,
+}
+
+export default connect(states, actions)(withRouter(InterfaceMenu))

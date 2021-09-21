@@ -188,4 +188,4 @@ const actions = {
   copyProjectMsg,
 }
 
-export default withRouter(connect(states, actions)(ProjectCard))
+export default withRouter(connect(states, actions)(ProjectCard)) as any

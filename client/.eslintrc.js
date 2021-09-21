@@ -414,6 +414,8 @@ const jsRules = {
 }
 
 const tsRules = {
+  'no-invalid-this': 'off',
+
   // 这两个强制写返回类型的关掉
   '@typescript-eslint/explicit-function-return-type': 'off',
   '@typescript-eslint/explicit-module-boundary-types': 'off',
