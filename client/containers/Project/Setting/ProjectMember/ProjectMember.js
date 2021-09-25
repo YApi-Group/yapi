@@ -17,7 +17,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
-import ErrMsg from '../../../../components/ErrMsg/ErrMsg.js'
+import ErrMsg from '../../../../components/ErrMsg/ErrMsg'
 import UsernameAutoComplete from '../../../../components/UsernameAutoComplete/UsernameAutoComplete.js'
 import { fetchGroupMsg } from '../../../../reducer/modules/group'
 import { fetchGroupMemberList } from '../../../../reducer/modules/group.js'

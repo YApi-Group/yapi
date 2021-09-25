@@ -6,7 +6,7 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import ErrMsg from '../../../components/ErrMsg/ErrMsg.js'
+import ErrMsg from '../../../components/ErrMsg/ErrMsg'
 import UsernameAutoComplete from '../../../components/UsernameAutoComplete/UsernameAutoComplete.js'
 import {
   fetchGroupMemberList,

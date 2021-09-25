@@ -1,8 +1,8 @@
 import Header from '../components/Header/Header.js'
 
-import AddProject from './AddProject/AddProject.tsx'
+import AddProject from './AddProject/AddProject'
 import Follows from './Follows/Follows.js'
-import Group from './Group/Group.js'
+import Group from './Group/Group'
 import Home from './Home/Home.js'
 import Login from './Login/LoginContainer.js'
 import Project from './Project/Project.js'

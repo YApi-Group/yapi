@@ -1,17 +1,18 @@
+import { FileOutlined, CopyOutlined } from '@ant-design/icons'
+import { Table, Row, Col, Tooltip, message } from 'antd'
+import copy from 'copy-to-clipboard'
+import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import { Table, Row, Col, Tooltip, message } from 'antd'
-import { FileOutlined, CopyOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
+
 import AceEditor from '@/components/AceEditor/AceEditor'
-import copy from 'copy-to-clipboard'
 
 import { formatTime, safeArray } from '../../../../common.js'
-import ErrMsg from '../../../../components/ErrMsg/ErrMsg.js'
+import ErrMsg from '../../../../components/ErrMsg/ErrMsg'
+import SchemaTable from '../../../../components/SchemaTable/SchemaTable.js'
 import variable from '../../../../constants/variable'
 import constants from '../../../../constants/variable.js'
-import SchemaTable from '../../../../components/SchemaTable/SchemaTable.js'
 
 import './View.scss'
 
@@ -34,7 +35,7 @@ class View extends Component {
     curData: PropTypes.object,
     currProject: PropTypes.object,
     custom_field: PropTypes.object,
-  };
+  }
 
   req_body_form(req_body_type, req_body_form) {
     if (req_body_type === 'form') {
@@ -229,18 +230,18 @@ class View extends Component {
     this.setState({
       enter: true,
     })
-  };
+  }
 
   leaveItem = () => {
     this.setState({
       enter: false,
     })
-  };
+  }
 
   copyUrl = url => {
     copy(url)
     message.success('已经成功复制到剪切板')
-  };
+  }
 
   flagMsg = (mock, strice) => {
     if (mock && strice) {
@@ -251,7 +252,7 @@ class View extends Component {
       return <span>( 全局mock )</span>
     }
 
-  };
+  }
 
   render() {
     const dataSource = []

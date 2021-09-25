@@ -10,7 +10,7 @@ import { formatTime } from '../../common.js'
 import variable from '../../constants/variable'
 import { fetchInterfaceList } from '../../reducer/modules/interface.js'
 import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news.js'
-import ErrMsg from '../ErrMsg/ErrMsg.js'
+import ErrMsg from '../ErrMsg/ErrMsg'
 
 import 'jsondiffpatch/dist/formatters-styles/annotated.css'
 import 'jsondiffpatch/dist/formatters-styles/html.css'
@@ -70,7 +70,7 @@ class TimeTree extends Component {
     curUid: PropTypes.number,
     type: PropTypes.string,
     fetchInterfaceList: PropTypes.func,
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -110,7 +110,7 @@ class TimeTree extends Component {
     this.setState({
       visible: false,
     })
-  };
+  }
 
   UNSAFE_componentWillMount() {
     this.props.fetchNewsData(this.props.typeid, this.props.type, 1, 10)
@@ -124,7 +124,7 @@ class TimeTree extends Component {
       curDiffData: data,
       visible: true,
     })
-  };
+  }
 
   async getApiList() {
     const result = await this.props.fetchInterfaceList({
@@ -139,7 +139,7 @@ class TimeTree extends Component {
   handleSelectApi = selectValue => {
     this.curSelectValue = selectValue
     this.props.fetchNewsData(this.props.typeid, this.props.type, 1, 10, selectValue)
-  };
+  }
 
   render() {
     let data = this.props.newsData ? this.props.newsData.list : []

@@ -16,18 +16,18 @@ import { getProject, checkProjectName, copyProjectMsg } from '../../reducer/modu
 import './ProjectCard.scss'
 
 type PropTypes = {
-  projectData: any
-  uid: number
-  inFollowPage: boolean
-  callbackResult: AnyFunc
-  history: any
-  delFollow: AnyFunc
-  addFollow: AnyFunc
-  isShow: boolean
-  getProject: AnyFunc
-  checkProjectName: AnyFunc
-  copyProjectMsg: AnyFunc
-  currPage: number
+  projectData?: any
+  uid?: number
+  inFollowPage?: boolean
+  callbackResult?: AnyFunc
+  history?: any
+  delFollow?: AnyFunc
+  addFollow?: AnyFunc
+  isShow?: boolean
+  getProject?: AnyFunc
+  checkProjectName?: AnyFunc
+  copyProjectMsg?: AnyFunc
+  currPage?: number
 }
 
 class ProjectCard extends Component<PropTypes> {
@@ -188,4 +188,4 @@ const actions = {
   copyProjectMsg,
 }
 
-export default withRouter(connect(states, actions)(ProjectCard)) as any
+export default connect(states, actions)(withRouter(ProjectCard as any)) as typeof ProjectCard

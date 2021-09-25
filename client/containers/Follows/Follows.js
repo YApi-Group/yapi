@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Row, Col } from 'antd'
 
-import ErrMsg from '../../components/ErrMsg/ErrMsg.js'
+import ErrMsg from '../../components/ErrMsg/ErrMsg'
 import ProjectCard from '../../components/ProjectCard/ProjectCard.tsx'
 import { getFollowList } from '../../reducer/modules/follow'
 import { setBreadcrumb } from '../../reducer/modules/user'

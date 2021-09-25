@@ -1,9 +1,17 @@
 import { FrownOutlined, MehOutlined } from '@ant-design/icons'
 import PropTypes from 'prop-types'
-import React, { PureComponent as Component } from 'react'
+import React, { PureComponent as Component, ReactElement } from 'react'
 import { withRouter } from 'react-router'
 
 import './ErrMsg.scss'
+
+type PropTypes = {
+  type?: string
+  history?: any
+  title?: string
+  desc?: string | ReactElement
+  operation?: string
+}
 
 /**
  * 错误信息提示
@@ -25,18 +33,10 @@ import './ErrMsg.scss'
  * @description 一般用于描述错误信息名称
  * @returns {object}
  */
-class ErrMsg extends Component {
-  static propTypes = {
-    type: PropTypes.string,
-    history: PropTypes.object,
-    title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    desc: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    operation: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  }
-
+class ErrMsg extends Component<PropTypes> {
   render() {
     const { type, operation } = this.props
-    
+
     let { title, desc } = this.props
     let Icon = FrownOutlined
 
@@ -46,7 +46,9 @@ class ErrMsg extends Component {
           title = '你还没有关注项目呢'
           desc = (
             <span>
-              先去 <a onClick={() => this.props.history.push('/group')}>“项目广场”</a> 逛逛吧, 那里可以添加关注。
+              先去
+              <a onClick={() => this.props.history.push('/group')}>“项目广场”</a>
+              逛逛吧, 那里可以添加关注。
             </span>
           )
           break
@@ -89,4 +91,4 @@ class ErrMsg extends Component {
   }
 }
 
-export default withRouter(ErrMsg)
+export default withRouter(ErrMsg as any) as typeof ErrMsg

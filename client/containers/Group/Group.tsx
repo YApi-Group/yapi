@@ -5,6 +5,8 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Route, Switch, Redirect } from 'react-router-dom'
 
+import { AnyFunc } from '@/types'
+
 import { setCurrGroup } from '../../reducer/modules/group'
 import { fetchNewsData } from '../../reducer/modules/news.js'
 
@@ -12,27 +14,28 @@ import GroupList from './GroupList/GroupList.js'
 import GroupLog from './GroupLog/GroupLog.js'
 import GroupSetting from './GroupSetting/GroupSetting.js'
 import MemberList from './MemberList/MemberList.js'
-import ProjectList from './ProjectList/ProjectList.tsx'
+import ProjectList from './ProjectList/ProjectList'
 
 import './Group.scss'
 
 const { Content, Sider } = Layout
 const TabPane = Tabs.TabPane
 
-@connect(
-  state => ({
-    curGroupId: state.group.currGroup._id,
-    curUserRole: state.user.role,
-    curUserRoleInGroup: state.group.currGroup.role || state.group.role,
-    currGroup: state.group.currGroup,
-  }),
-  {
-    fetchNewsData: fetchNewsData,
-    setCurrGroup,
-  },
-)
-export default class Group extends Component {
-  constructor(props) {
+type PropTypes = {
+  fetchNewsData: AnyFunc
+  curGroupId: number
+  curUserRole: string
+  currGroup: any
+  curUserRoleInGroup: string
+  setCurrGroup: AnyFunc
+}
+
+type StateTypes = {
+  groupId: number
+}
+
+class Group extends Component<PropTypes, StateTypes> {
+  constructor(props: PropTypes) {
     super(props)
 
     this.state = {
@@ -53,14 +56,6 @@ export default class Group extends Component {
     }
   }
 
-  static propTypes = {
-    fetchNewsData: PropTypes.func,
-    curGroupId: PropTypes.number,
-    curUserRole: PropTypes.string,
-    currGroup: PropTypes.object,
-    curUserRoleInGroup: PropTypes.string,
-    setCurrGroup: PropTypes.func,
-  }
   // onTabClick=(key)=> {
   //   // if (key == 3) {
   //   //   this.props.fetchNewsData(this.props.curGroupId, "group", 1, 10)
@@ -68,6 +63,7 @@ export default class Group extends Component {
   // }
   render() {
     if (this.state.groupId === -1) { return <Spin /> }
+
     const GroupContent = (
       <Layout style={{ minHeight: 'calc(100vh - 100px)', marginLeft: '24px', marginTop: '24px' }}>
         <Sider style={{ height: '100%' }} width={300}>
@@ -93,7 +89,7 @@ export default class Group extends Component {
                 </TabPane>
               ) : null}
               {['admin', 'owner', 'guest', 'dev'].indexOf(this.props.curUserRoleInGroup) > -1
-              || this.props.curUserRole === 'admin' ? (
+                || this.props.curUserRole === 'admin' ? (
                   <TabPane tab="分组动态" key="3">
                     <GroupLog />
                   </TabPane>
@@ -101,7 +97,7 @@ export default class Group extends Component {
                   ''
                 )}
               {(this.props.curUserRole === 'admin' || this.props.curUserRoleInGroup === 'owner')
-              && this.props.currGroup.type !== 'private' ? (
+                && this.props.currGroup.type !== 'private' ? (
                   <TabPane tab="分组设置" key="4">
                     <GroupSetting />
                   </TabPane>
@@ -111,6 +107,7 @@ export default class Group extends Component {
         </Layout>
       </Layout>
     )
+
     return (
       <div className="projectGround">
         <Switch>
@@ -121,3 +118,17 @@ export default class Group extends Component {
     )
   }
 }
+
+const states = (state: any) => ({
+  curGroupId: state.group.currGroup._id,
+  curUserRole: state.user.role,
+  curUserRoleInGroup: state.group.currGroup.role || state.group.role,
+  currGroup: state.group.currGroup,
+})
+
+const actions = {
+  fetchNewsData,
+  setCurrGroup,
+}
+
+export default connect(states, actions)(Group)

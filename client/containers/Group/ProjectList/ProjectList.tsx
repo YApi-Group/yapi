@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 import { AnyFunc } from '@/types.js'
 
-import ErrMsg from '../../../components/ErrMsg/ErrMsg.js'
+import ErrMsg from '../../../components/ErrMsg/ErrMsg'
 import ProjectCard from '../../../components/ProjectCard/ProjectCard'
 import { addProject, fetchProjectList, delProject } from '../../../reducer/modules/project'
 import { setBreadcrumb } from '../../../reducer/modules/user'
@@ -101,31 +101,36 @@ class ProjectList extends Component<PropTypes, StateTypes> {
     const isShow = /(admin)|(owner)|(dev)/.test(this.props.currGroup.role)
 
     const Follow = () => followProject.length ? (
-      <Row>
+      <>
         <h3 className="owner-type">我的关注</h3>
-        {followProject.map((item, index) => (
-          <Col xs={8} lg={6} xxl={4} key={index}>
-            <ProjectCard projectData={item} callbackResult={this.receiveRes} />
-          </Col>
-        ))}
-      </Row>
+        <Row>
+          {followProject.map((item, index) => (
+            <Col xs={8} lg={6} xxl={4} key={index}>
+              <ProjectCard projectData={item} callbackResult={this.receiveRes} />
+            </Col>
+          ))}
+        </Row>
+      </>
     ) : null
+
     const NoFollow = () => noFollow.length ? (
-      <Row style={{ borderBottom: '1px solid #eee', marginBottom: '15px' }}>
+      <>
         <h3 className="owner-type">我的项目</h3>
-        {noFollow.map((item, index) => (
-          <Col xs={8} lg={6} xxl={4} key={index}>
-            <ProjectCard projectData={item} callbackResult={this.receiveRes} isShow={isShow} />
-          </Col>
-        ))}
-      </Row>
+        <Row style={{ borderBottom: '1px solid #eee', marginBottom: '15px' }}>
+          {noFollow.map((item, index) => (
+            <Col xs={8} lg={6} xxl={4} key={index}>
+              <ProjectCard projectData={item} callbackResult={this.receiveRes} isShow={isShow} />
+            </Col>
+          ))}
+        </Row>
+      </>
     ) : null
 
     const OwnerSpace = () => projectData.length ? (
-      <div>
+      <>
         <NoFollow />
         <Follow />
-      </div>
+      </>
     ) : (
       <ErrMsg type="noProject" />
     )
@@ -136,6 +141,7 @@ class ProjectList extends Component<PropTypes, StateTypes> {
           <Col span={16} style={{ textAlign: 'left' }}>
             {this.props.currGroup.group_name} 分组共 ({projectData.length}) 个项目
           </Col>
+
           <Col span={8}>
             {isShow ? (
               <Link to="/add-project">
@@ -150,25 +156,28 @@ class ProjectList extends Component<PropTypes, StateTypes> {
             )}
           </Col>
         </Row>
-        <Row>
-          {/* {projectData.length ? projectData.map((item, index) => {
+
+        {/* {projectData.length ? projectData.map((item, index) => {
             return (
               <Col xs={8} md={6} xl={4} key={index}>
-                <ProjectCard projectData={item} callbackResult={this.receiveRes} />
+              <ProjectCard projectData={item} callbackResult={this.receiveRes} />
               </Col>);
-          }) : <ErrMsg type="noProject" />} */}
-          {this.props.currGroup.type === 'private' ? (
-            <OwnerSpace />
-          ) : projectData.length ? (
-            projectData.map((item, index) => (
+            }) : <ErrMsg type="noProject" />} */}
+        {this.props.currGroup.type === 'private' ? (
+          <OwnerSpace />
+        ) : projectData.length ? (
+          <Row>
+            {projectData.map((item, index) => (
               <Col xs={8} lg={6} xxl={4} key={index}>
                 <ProjectCard projectData={item} callbackResult={this.receiveRes} isShow={isShow} />
               </Col>
-            ))
-          ) : (
+            ))}
+          </Row>
+        ) : (
+          <Row>
             <ErrMsg type="noProject" />
-          )}
-        </Row>
+          </Row>
+        )}
       </div>
     )
   }
