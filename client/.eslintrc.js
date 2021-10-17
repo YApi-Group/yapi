@@ -472,7 +472,6 @@ const babelRules = {
 
   'semi': 'off',
   '@babel/semi': ['warn', 'never'],
-
 }
 
 module.exports = {

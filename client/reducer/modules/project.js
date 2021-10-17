@@ -1,7 +1,8 @@
 import axios from 'axios'
 
+import variable from '@/cons'
+
 import { htmlFilter } from '../../common'
-import variable from '../../constants/variable'
 
 // Actions
 const FETCH_PROJECT_LIST = 'yapi/project/FETCH_PROJECT_LIST'

@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { Table, Button, message, Popconfirm, Tooltip, Icon } from 'antd';
 import { fetchMockCol } from 'client/reducer/modules/mockCol';
 import { formatTime } from 'client/common.js';
-import constants from 'client/constants/variable.js';
+import constants from 'client/cons';
 import CaseDesModal from './CaseDesModal';
 import { json5_parse } from '../../../client/common';
 import _ from 'underscore';

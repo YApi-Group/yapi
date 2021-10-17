@@ -7,12 +7,12 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import AceEditor from '@/components/AceEditor/AceEditor'
+import variable from '@/cons'
+import constants from '@/cons'
 
 import { formatTime, safeArray } from '../../../../common.js'
 import ErrMsg from '../../../../components/ErrMsg/ErrMsg'
 import SchemaTable from '../../../../components/SchemaTable/SchemaTable.js'
-import variable from '../../../../constants/variable'
-import constants from '../../../../constants/variable.js'
 
 import './View.scss'
 

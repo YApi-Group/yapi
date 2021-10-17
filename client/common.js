@@ -2,9 +2,9 @@ import json5 from 'json5'
 import Mock from 'mockjs'
 import moment from 'moment'
 
-import MockExtra from '../common/mock-extra.js'
+import constants from '@/cons'
 
-import constants from './constants/variable'
+import MockExtra from '../common/mock-extra.js'
 
 const Roles = {
   0: 'admin',

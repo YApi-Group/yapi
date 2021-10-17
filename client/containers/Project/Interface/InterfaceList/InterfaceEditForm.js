@@ -24,6 +24,7 @@ import _ from 'underscore'
 
 import AceEditor from '@/components/AceEditor/AceEditor'
 import mockEditor from '@/components/AceEditor/mockEditor'
+import constants from '@/cons'
 import jSchema from '@/package'
 import Editor from '@common/tui-editor/dist/tui-editor-Editor-all.min.js'
 
@@ -31,7 +32,6 @@ import Editor from '@common/tui-editor/dist/tui-editor-Editor-all.min.js'
 
 import { handlePath, nameLengthLimit } from '../../../../common.js'
 import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
-import constants from '../../../../constants/variable.js'
 import { changeEditStatus } from '../../../../reducer/modules/interface.js'
 
 import '@common/tui-editor/dist/tui-editor.min.css' // editor ui

@@ -4,10 +4,11 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
+import variable from '@/cons'
+
 import showDiffMsg from '../../../common/diff-view.js'
 import { timeago } from '../../../common/utils.js'
 import { formatTime } from '../../common.js'
-import variable from '../../constants/variable'
 import { fetchInterfaceList } from '../../reducer/modules/interface.js'
 import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news.js'
 import ErrMsg from '../ErrMsg/ErrMsg'

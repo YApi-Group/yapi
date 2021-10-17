@@ -1,7 +1,7 @@
 import Mock from 'mockjs'
 import _ from 'underscore'
 
-// import variable from '../../client/constants/variable.js'
+// import variable from '../../client/cons'
 // eslint-disable-next-line
 import mockExtra from '../../common/mock-extra.js'
 import { schemaValidator } from '../../common/utils.js'

@@ -5,10 +5,10 @@ import React, { PureComponent as Component, RefObject } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 
+import constants from '@/cons'
 import { DispatchCommonFunc, DispatchPromiseFunc } from '@/types'
 
 import { pickRandomProperty, handlePath, nameLengthLimit } from '../../common'
-import constants from '../../constants/variable.js'
 import { fetchGroupList } from '../../reducer/modules/group.js'
 import { addProject } from '../../reducer/modules/project.js'
 import { setBreadcrumb } from '../../reducer/modules/user'

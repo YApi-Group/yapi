@@ -32,8 +32,9 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import _ from 'underscore'
 
+import constants from '@/cons'
+
 import { nameLengthLimit, entries, trim, htmlFilter } from '../../../../common'
-import constants from '../../../../constants/variable.js'
 import { fetchGroupMsg } from '../../../../reducer/modules/group'
 import { fetchGroupList } from '../../../../reducer/modules/group.js'
 import { updateProject, delProject, getProject, upsetProject } from '../../../../reducer/modules/project'

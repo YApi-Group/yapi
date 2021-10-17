@@ -3,7 +3,7 @@ import { Row, Col, Form, Input, Select, Button, AutoComplete, Tooltip } from 'an
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import constants from '@/constants/variable.js'
+import constants from '@/cons'
 
 import './index.scss'
 

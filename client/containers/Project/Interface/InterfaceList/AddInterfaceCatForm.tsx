@@ -1,32 +1,31 @@
-import { Form, Input, Button } from 'antd'
+import { Form, Input, Button, FormInstance } from 'antd'
 import PropTypes from 'prop-types'
-import React, { PureComponent as Component } from 'react'
+import React, { createRef, PureComponent as Component, RefObject } from 'react'
+
+import { AnyFunc } from '@/types'
 
 const FormItem = Form.Item
 
-function hasErrors(fieldsError) {
-  return Object.keys(fieldsError).some(field => fieldsError[field])
+type PropTypes = {
+  onSubmit?: AnyFunc
+  onCancel?: AnyFunc
+  catdata?: any
 }
 
-class AddInterfaceForm extends Component {
-  static propTypes = {
-    form: PropTypes.object,
-    onSubmit: PropTypes.func,
-    onCancel: PropTypes.func,
-    catdata: PropTypes.object,
+class AddInterfaceCatForm extends Component<PropTypes> {
+  formRef: RefObject<FormInstance>
+
+  constructor(props: PropTypes) {
+    super(props)
+
+    this.formRef = createRef()
   }
 
-  handleSubmit = e => {
-    e.preventDefault()
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        this.props.onSubmit(values)
-      }
-    })
+  handleSubmit = (values: any[]) => {
+    this.props.onSubmit(values)
   }
 
   render() {
-    const { getFieldsError } = this.props.form
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -39,7 +38,7 @@ class AddInterfaceForm extends Component {
     }
 
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form ref={this.formRef} onFinish={this.handleSubmit}>
         <FormItem
           {...formItemLayout}
           label="分类名"
@@ -49,6 +48,7 @@ class AddInterfaceForm extends Component {
         >
           <Input placeholder="分类名称" />
         </FormItem>
+
         <FormItem
           {...formItemLayout}
           label="备注"
@@ -58,11 +58,11 @@ class AddInterfaceForm extends Component {
           <Input placeholder="备注" />
         </FormItem>
 
-        <FormItem className="catModalfoot" wrapperCol={{ span: 24, offset: 8 }}>
+        <FormItem className="catModalFoot" wrapperCol={{ span: 24, offset: 8 }}>
           <Button onClick={this.props.onCancel} style={{ marginRight: '10px' }}>
             取消
           </Button>
-          <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
+          <Button type="primary" htmlType="submit">
             提交
           </Button>
         </FormItem>
@@ -71,4 +71,4 @@ class AddInterfaceForm extends Component {
   }
 }
 
-export default AddInterfaceForm
+export default AddInterfaceCatForm

@@ -14,8 +14,8 @@ import InterfaceCaseContent from './InterfaceCol/InterfaceCaseContent.js'
 import InterfaceColContent from './InterfaceCol/InterfaceColContent.js'
 import InterfaceColMenu from './InterfaceCol/InterfaceColMenu.js'
 import InterfaceContent from './InterfaceList/InterfaceContent.js'
-import InterfaceList from './InterfaceList/InterfaceList.js'
-import InterfaceMenu from './InterfaceList/InterfaceMenu.js'
+import InterfaceList from './InterfaceList/InterfaceList'
+import InterfaceMenu from './InterfaceList/InterfaceMenu'
 
 const contentRouter = {
   path: '/project/:id/interface/:action/:actionId',
@@ -67,7 +67,7 @@ class Interface extends Component {
     getProject: PropTypes.func,
     setColData: PropTypes.func,
     // fetchInterfaceColList: PropTypes.func
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -82,7 +82,7 @@ class Interface extends Component {
       action = this.props.isShowCol ? 'col' : 'case'
     }
     this.props.history.push('/project/' + params.id + '/interface/' + action)
-  };
+  }
   async UNSAFE_componentWillMount() {
     this.props.setColData({
       isShowCol: true,

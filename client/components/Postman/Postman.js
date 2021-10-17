@@ -21,13 +21,13 @@ import React, { PureComponent as Component } from 'react'
 import _ from 'underscore'
 
 import AceEditor from '@/components/AceEditor/AceEditor'
+import constants from '@/cons'
 import plugin from '@/plugin.js'
 import createContext from '@common/createContext'
 import { handleParams, checkRequestBodyIsRaw, handleContentType, crossRequest, checkNameIsExistInArray } from '@common/postmanLib.js'
 import { handleParamsValue, changeArrayToObject, schemaValidator } from '@common/utils.js'
 
 import { isJson, deepCopyJson, json5_parse } from '../../common.js'
-import constants from '../../constants/variable.js'
 import ProjectEnv from '../../containers/Project/Setting/ProjectEnv/index.js'
 import ModalPostman from '../ModalPostman/index.js'
 

@@ -6,8 +6,10 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
+import variable from '@/cons'
+import { AnyFunc } from '@/types.js'
+
 import Label from '../../../../components/Label/Label.js'
-import variable from '../../../../constants/variable'
 import {
   fetchInterfaceListMenu,
   fetchInterfaceList,
@@ -22,26 +24,37 @@ import './Edit.scss'
 const Option = Select.Option
 const limit = 20
 
-@connect(
-  state => ({
-    curData: state.inter.curdata,
-    curProject: state.project.currProject,
-    catList: state.inter.list,
-    totalTableList: state.inter.totalTableList,
-    catTableList: state.inter.catTableList,
-    totalCount: state.inter.totalCount,
-    count: state.inter.count,
-  }),
-  {
-    fetchInterfaceListMenu,
-    fetchInterfaceList,
-    fetchInterfaceCatList,
-    getProject,
-  },
-)
-class InterfaceList extends Component {
-  constructor(props) {
+type PropTypes = {
+  curData: any
+  catList: any[]
+  match: any
+  curProject: any
+  history: any
+  fetchInterfaceListMenu: AnyFunc
+  fetchInterfaceList: AnyFunc
+  fetchInterfaceCatList: AnyFunc
+  totalTableList: any[]
+  catTableList: any[]
+  totalCount: number
+  count: number
+  getProject: AnyFunc
+}
+
+type StateTypes = {
+  visible: boolean
+  data: any[]
+  filteredInfo: any
+  catid: number
+  total: number
+  current: number
+}
+
+class InterfaceList extends Component<PropTypes, StateTypes> {
+  actionId: string
+
+  constructor(props: PropTypes) {
     super(props)
+
     this.state = {
       visible: false,
       data: [],
@@ -52,23 +65,7 @@ class InterfaceList extends Component {
     }
   }
 
-  static propTypes = {
-    curData: PropTypes.object,
-    catList: PropTypes.array,
-    match: PropTypes.object,
-    curProject: PropTypes.object,
-    history: PropTypes.object,
-    fetchInterfaceListMenu: PropTypes.func,
-    fetchInterfaceList: PropTypes.func,
-    fetchInterfaceCatList: PropTypes.func,
-    totalTableList: PropTypes.array,
-    catTableList: PropTypes.array,
-    totalCount: PropTypes.number,
-    count: PropTypes.number,
-    getProject: PropTypes.func,
-  };
-
-  handleRequest = async props => {
+  handleRequest = async (props: PropTypes) => {
     const { params } = props.match
     if (!params.actionId) {
       const projectId = params.id
@@ -95,10 +92,10 @@ class InterfaceList extends Component {
       }
       await this.props.fetchInterfaceCatList(option)
     }
-  };
+  }
 
   // 更新分类简介
-  handleChangeInterfaceCat = (desc, name) => {
+  handleChangeInterfaceCat = (desc: string, name: string) => {
     const params = {
       catid: this.state.catid,
       name: name,
@@ -114,22 +111,21 @@ class InterfaceList extends Component {
       await this.props.fetchInterfaceListMenu(project_id)
       message.success('接口集合简介更新成功')
     })
-  };
+  }
 
-  handleChange = (pagination, filters, sorter) => {
+  handleChange = (pagination: any, filters: any) => {
     this.setState({
       current: pagination.current || 1,
-      sortedInfo: sorter,
       filteredInfo: filters,
     }, () => this.handleRequest(this.props))
-  };
+  }
 
   UNSAFE_componentWillMount() {
     this.actionId = this.props.match.params.actionId
     this.handleRequest(this.props)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
     const _actionId = nextProps.match.params.actionId
 
     if (this.actionId !== _actionId) {
@@ -143,7 +139,7 @@ class InterfaceList extends Component {
     }
   }
 
-  handleAddInterface = data => {
+  handleAddInterface = (data: any) => {
     data.project_id = this.props.curProject._id
     axios.post('/api/interface/add', data).then(res => {
       if (res.data.errcode !== 0) {
@@ -154,9 +150,9 @@ class InterfaceList extends Component {
       this.props.history.push('/project/' + data.project_id + '/interface/api/' + interfaceId)
       this.props.fetchInterfaceListMenu(data.project_id)
     })
-  };
+  }
 
-  changeInterfaceCat = async (id, catid) => {
+  changeInterfaceCat = async (id: string, catid: string) => {
     const params = {
       id: id,
       catid,
@@ -169,9 +165,9 @@ class InterfaceList extends Component {
     } else {
       message.error(result.data.errmsg)
     }
-  };
+  }
 
-  changeInterfaceStatus = async value => {
+  changeInterfaceStatus = async (value: string) => {
     const params = {
       id: value.split('-')[0],
       status: value.split('-')[1],
@@ -183,7 +179,7 @@ class InterfaceList extends Component {
     } else {
       message.error(result.data.errmsg)
     }
-  };
+  }
 
   // page change will be processed in handleChange by pagination
   // changePage = current => {
@@ -198,7 +194,7 @@ class InterfaceList extends Component {
   // };
 
   render() {
-    const tag = this.props.curProject.tag
+    const tag: any[] = this.props.curProject.tag
     const tagFilter = tag.map(item => ({ text: item.name, value: item.name }))
 
     const columns = [
@@ -207,7 +203,7 @@ class InterfaceList extends Component {
         dataIndex: 'title',
         key: 'title',
         width: 30,
-        render: (text, item) => (
+        render: (text: string, item: any) => (
           <Link to={'/project/' + item.project_id + '/interface/api/' + item._id}>
             <span className="path">{text}</span>
           </Link>
@@ -218,11 +214,11 @@ class InterfaceList extends Component {
         dataIndex: 'path',
         key: 'path',
         width: 50,
-        render: (item, record) => {
+        render: (item: string, record: any) => {
           const path = this.props.curProject.basepath + item
-          const methodColor
-            = variable.METHOD_COLOR[record.method ? record.method.toLowerCase() : 'get']
-            || variable.METHOD_COLOR.get
+          const rMethod: any = record.method ? record.method.toLowerCase() : 'get'
+          const methodColor = (variable.METHOD_COLOR as any)[rMethod] || variable.METHOD_COLOR.get
+
           return (
             <div>
               <span
@@ -246,7 +242,7 @@ class InterfaceList extends Component {
         dataIndex: 'catid',
         key: 'catid',
         width: 28,
-        render: (item, record) => (
+        render: (item: string, record: any) => (
           <Select
             value={String(item)}
             className="select path"
@@ -265,7 +261,7 @@ class InterfaceList extends Component {
         dataIndex: 'status',
         key: 'status',
         width: 24,
-        render: (text, record) => {
+        render: (text: string, record: any) => {
           const key = record.key
           return (
             <Select
@@ -292,23 +288,23 @@ class InterfaceList extends Component {
             value: 'undone',
           },
         ],
-        onFilter: (value, record) => record.status.indexOf(value) === 0,
+        onFilter: (value: string, record: any) => record.status.indexOf(value) === 0,
       },
       {
         title: 'tag',
         dataIndex: 'tag',
         key: 'tag',
         width: 14,
-        render: text => {
+        render: (text: string[]) => {
           const textMsg = text.length > 0 ? text.join('\n') : '未设置'
           return <div className="table-desc">{textMsg}</div>
         },
         filters: tagFilter,
-        onFilter: (value, record) => record.tag.indexOf(value) >= 0,
+        onFilter: (value: string, record: any) => record.tag.indexOf(value) >= 0,
       },
     ]
-    let intername = '',
-      desc = ''
+
+    let intername = '', desc = ''
     const cat = this.props.curProject ? this.props.curProject.cat : []
 
     if (cat) {
@@ -366,7 +362,7 @@ class InterfaceList extends Component {
           添加接口
         </Button>
         <div style={{ marginTop: '10px' }}>
-          <Label onChange={value => this.handleChangeInterfaceCat(value, intername)} desc={desc} />
+          <Label onChange={(value: string) => this.handleChangeInterfaceCat(value, intername)} desc={desc} />
         </div>
         <Table
           className="table-interfacelist"
@@ -381,7 +377,7 @@ class InterfaceList extends Component {
             visible={this.state.visible}
             onCancel={() => this.setState({ visible: false })}
             footer={null}
-            className="addcatmodal"
+            className="addCatModal"
           >
             <AddInterfaceForm
               catid={this.state.catid}
@@ -396,4 +392,21 @@ class InterfaceList extends Component {
   }
 }
 
-export default InterfaceList
+const states = (state: any) => ({
+  curData: state.inter.curdata,
+  curProject: state.project.currProject,
+  catList: state.inter.list,
+  totalTableList: state.inter.totalTableList,
+  catTableList: state.inter.catTableList,
+  totalCount: state.inter.totalCount,
+  count: state.inter.count,
+})
+
+const actions = {
+  fetchInterfaceListMenu,
+  fetchInterfaceList,
+  fetchInterfaceCatList,
+  getProject,
+}
+
+export default connect(states, actions)(InterfaceList) as typeof InterfaceList

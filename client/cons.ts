@@ -1,6 +1,8 @@
 export default {
   PAGE_LIMIT: 10, // 默认每页展示10条数据
+
   NAME_LIMIT: 100, // 限制名称的字符长度(中文算两个长度)
+
   HTTP_METHOD: {
     GET: {
       request_body: false,
@@ -31,6 +33,7 @@ export default {
       default_tab: 'body',
     },
   },
+
   PROJECT_COLOR: {
     blue: '#2395f1',
     green: '#00a854',
@@ -88,6 +91,7 @@ export default {
   ],
 
   HTTP_REQUEST_HEADER: ['Accept', 'Accept-Charset', 'Accept-Encoding', 'Accept-Language', 'Accept-Datetime', 'Authorization', 'Cache-Control', 'Connection', 'Cookie', 'Content-Disposition', 'Content-Length', 'Content-MD5', 'Content-Type', 'Date', 'Expect', 'From', 'Host', 'If-Match', 'If-Modified-Since', 'If-None-Match', 'If-Range', 'If-Unmodified-Since', 'Max-Forwards', 'Origin', 'Pragma', 'Proxy-Authorization', 'Range', 'Referer', 'TE', 'User-Agent', 'Upgrade', 'Via', 'Warning', 'X-Requested-With', 'DNT', 'X-Forwarded-For', 'X-Forwarded-Host', 'X-Forwarded-Proto', 'Front-End-Https', 'X-Http-Method-Override', 'X-ATT-DeviceId', 'X-Wap-Profile', 'Proxy-Connection', 'X-UIDH', 'X-Csrf-Token'],
+
   METHOD_COLOR: {
     post: {
       bac: '#d2eafb',
@@ -118,6 +122,7 @@ export default {
       color: '#ffbf00',
     },
   },
+
   MOCK_SOURCE: [
     { name: '字符串', mock: '@string' },
     { name: '自然数', mock: '@natural' },
@@ -167,7 +172,9 @@ export default {
     { name: '打乱数组', mock: '@shuffle' },
     { name: '协议', mock: '@protocol' },
   ],
+
   IP_REGEXP: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}$/,
+
   docHref: {
     adv_mock_case: 'https://hellosean1025.github.io/yapi/documents/mock.html',
     adv_mock_script: 'https://hellosean1025.github.io/yapi/documents/adv_mock.html',

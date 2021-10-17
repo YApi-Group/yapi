@@ -1,10 +1,11 @@
-import React, { PureComponent as Component } from 'react'
-import PropTypes from 'prop-types'
-import { Table, Select, Tooltip } from 'antd'
 import { QuestionCircleOutlined } from '@ant-design/icons'
+import { Table, Select, Tooltip } from 'antd'
+import PropTypes from 'prop-types'
+import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
-import variable from '../../../../constants/variable'
+import variable from '@/cons'
+
 import { fetchInterfaceListMenu } from '../../../../reducer/modules/interface.js'
 
 const Option = Select.Option
@@ -23,7 +24,7 @@ export default class ImportInterface extends Component {
     selectedRowKeys: [],
     categoryCount: {},
     project: this.props.currProjectId,
-  };
+  }
 
   static propTypes = {
     list: PropTypes.array,
@@ -31,7 +32,7 @@ export default class ImportInterface extends Component {
     projectList: PropTypes.array,
     currProjectId: PropTypes.string,
     fetchInterfaceListMenu: PropTypes.func,
-  };
+  }
 
   async componentDidMount() {
     // console.log(this.props.currProjectId)
@@ -46,7 +47,7 @@ export default class ImportInterface extends Component {
       categoryCount: {},
     })
     await this.props.fetchInterfaceListMenu(val)
-  };
+  }
 
   render() {
     const { list, projectList } = this.props

@@ -18,7 +18,7 @@ const Option = Select.Option;
 const FormItem = Form.Item;
 import { safeAssign } from 'client/common.js';
 import AceEditor from 'client/components/AceEditor/AceEditor';
-import constants from 'client/constants/variable.js';
+import constants from 'client/cons';
 import { httpCodes } from '../index.js';
 import './CaseDesModal.scss';
 import { connect } from 'react-redux';
