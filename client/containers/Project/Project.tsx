@@ -1,47 +1,33 @@
-import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Route, Switch, Redirect, matchPath } from 'react-router-dom'
 
+import plugin from '@/plugin'
+import { AnyFunc } from '@/types'
+
+import { SubNav } from '../../components'
 import Loading from '../../components/Loading/Loading'
-import { Subnav } from '../../components/index'
 import { fetchGroupMsg } from '../../reducer/modules/group'
 import { getProject } from '../../reducer/modules/project'
 import { setBreadcrumb } from '../../reducer/modules/user'
 
-import Activity from './Activity/Activity.js'
-import Interface from './Interface/Interface.js'
-import ProjectData from './Setting/ProjectData/ProjectData.js'
-import ProjectMember from './Setting/ProjectMember/ProjectMember.js'
-import Setting from './Setting/Setting.js'
+import Activity from './Activity/Activity'
+import Interface from './Interface/Interface'
+import ProjectData from './Setting/ProjectData/ProjectData'
+import ProjectMember from './Setting/ProjectMember/ProjectMember'
+import Setting from './Setting/Setting'
 
-const plugin = require('@/plugin.js')
-@connect(
-  state => ({
-    curProject: state.project.currProject,
-    currGroup: state.group.currGroup,
-  }),
-  {
-    getProject,
-    fetchGroupMsg,
-    setBreadcrumb,
-  },
-)
-export default class Project extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    curProject: PropTypes.object,
-    getProject: PropTypes.func,
-    location: PropTypes.object,
-    fetchGroupMsg: PropTypes.func,
-    setBreadcrumb: PropTypes.func,
-    currGroup: PropTypes.object,
-  };
+type PropTypes = {
+  match?: any
+  curProject?: any
+  getProject?: AnyFunc
+  location?: any
+  fetchGroupMsg?: AnyFunc
+  setBreadcrumb?: AnyFunc
+  currGroup?: any
+}
 
-  constructor(props) {
-    super(props)
-  }
-
+class Project extends Component<PropTypes> {
   async UNSAFE_componentWillMount() {
     await this.props.getProject(this.props.match.params.id)
     await this.props.fetchGroupMsg(this.props.curProject.group_id)
@@ -57,7 +43,7 @@ export default class Project extends Component {
     ])
   }
 
-  async UNSAFE_componentWillReceiveProps(nextProps) {
+  async UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
     const currProjectId = this.props.match.params.id
     const nextProjectId = nextProps.match.params.id
     if (currProjectId !== nextProjectId) {
@@ -87,19 +73,15 @@ export default class Project extends Component {
 
     plugin.emitHook('sub_nav', routers)
 
-    let key, defaultName
-    for (key in routers) {
-      if (
-        matchPath(location.pathname, {
-          path: routers[key].path,
-        }) !== null
-      ) {
-        defaultName = routers[key].name
+    let defaultName
+    for (const ro of Object.values(routers)) {
+      if (matchPath(location.pathname, { path: ro.path }) !== null) {
+        defaultName = ro.name
         break
       }
     }
 
-    // let subnavData = [{
+    // let subData = [{
     //   name: routers.interface.name,
     //   path: `/project/${match.params.id}/interface/api`
     // }, {
@@ -116,26 +98,23 @@ export default class Project extends Component {
     //   path: `/project/${match.params.id}/setting`
     // }];
 
-    let subnavData = []
-    Object.keys(routers).forEach(key => {
-      const item = routers[key]
-      let value = {}
+    let subData: { path: string, name: string }[] = []
+    for (const [key, item] of Object.entries(routers)) {
       if (key === 'interface') {
-        value = {
+        subData.push({
           name: item.name,
           path: `/project/${match.params.id}/interface/api`,
-        }
+        })
       } else {
-        value = {
+        subData.push({
           name: item.name,
-          path: item.path.replace(/\:id/gi, match.params.id),
-        }
+          path: item.path.replace(/:id/gi, match.params.id),
+        })
       }
-      subnavData.push(value)
-    })
+    }
 
     if (this.props.currGroup.type === 'private') {
-      subnavData = subnavData.filter(item => item.name != '成员管理')
+      subData = subData.filter(item => item.name !== '成员管理')
     }
 
     if (Object.keys(this.props.curProject).length === 0) {
@@ -144,7 +123,7 @@ export default class Project extends Component {
 
     return (
       <div>
-        <Subnav default={defaultName} data={subnavData} />
+        <SubNav default={defaultName} data={subData} />
         <Switch>
           <Redirect exact from="/project/:id" to={`/project/${match.params.id}/interface/api`} />
           {/* <Route path={routers.activity.path} component={Activity} />
@@ -156,19 +135,30 @@ export default class Project extends Component {
           }
 
           <Route path={routers.data.path} component={ProjectData} /> */}
-          {Object.keys(routers).map(key => {
-            const item = routers[key]
-
-            return key === 'members' ? (
+          {
+            Object.entries(routers).map(([key, item]) => key === 'members' ? (
               this.props.currGroup.type !== 'private' ? (
                 <Route path={item.path} component={item.component} key={key} />
               ) : null
             ) : (
               <Route path={item.path} component={item.component} key={key} />
-            )
-          })}
+            ))
+          }
         </Switch>
       </div>
     )
   }
 }
+
+const states = (state: any) => ({
+  curProject: state.project.currProject,
+  currGroup: state.group.currGroup,
+})
+
+const actions = {
+  getProject,
+  fetchGroupMsg,
+  setBreadcrumb,
+}
+
+export default connect(states, actions)(Project) as typeof Project

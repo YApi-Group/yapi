@@ -11,7 +11,7 @@ import { setCurrGroup } from '../../reducer/modules/group'
 import { fetchNewsData } from '../../reducer/modules/news.js'
 
 import GroupList from './GroupList/GroupList.js'
-import GroupLog from './GroupLog/GroupLog.js'
+import GroupLog from './GroupLog/GroupLog'
 import GroupSetting from './GroupSetting/GroupSetting.js'
 import MemberList from './MemberList/MemberList.js'
 import ProjectList from './ProjectList/ProjectList'

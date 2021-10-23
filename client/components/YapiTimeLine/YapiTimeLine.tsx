@@ -1,13 +1,16 @@
 import { Timeline, Spin, Row, Col, Tag, Avatar, Button, Modal, AutoComplete } from 'antd'
+import * as jsondiffpatch from 'jsondiffpatch'
+import { formatters } from 'jsondiffpatch'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import variable from '@/cons'
+import { AnyFunc } from '@/types.js'
 
 import showDiffMsg from '../../../common/diff-view.js'
-import { timeago } from '../../../common/utils.js'
+import { timeago } from '../../../common/utils'
 import { formatTime } from '../../common.js'
 import { fetchInterfaceList } from '../../reducer/modules/interface.js'
 import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news.js'
@@ -15,16 +18,20 @@ import ErrMsg from '../ErrMsg/ErrMsg'
 
 import 'jsondiffpatch/dist/formatters-styles/annotated.css'
 import 'jsondiffpatch/dist/formatters-styles/html.css'
-import './TimeLine.scss'
+import './YapiTimeLine.scss'
 
-const jsondiffpatch = require('jsondiffpatch/dist/jsondiffpatch.umd.js')
-
-const formattersHtml = jsondiffpatch.formatters.html
+const formattersHtml = formatters.html
 
 // const Option = AutoComplete.Option;
-const { Option, OptGroup } = AutoComplete
+const { Option } = AutoComplete
 
-const AddDiffView = props => {
+type PropTypes1 = {
+  title: string
+  content: string
+  className: string
+}
+
+const AddDiffView = (props: PropTypes1) => {
   const { title, content, className } = props
 
   if (!content) {
@@ -39,41 +46,40 @@ const AddDiffView = props => {
   )
 }
 
-AddDiffView.propTypes = {
-  title: PropTypes.string,
-  content: PropTypes.string,
-  className: PropTypes.string,
-}
-
 // timeago(new Date().getTime() - 40);
 
-@connect(
-  state => ({
-    newsData: state.news.newsData,
-    curpage: state.news.curpage,
-    curUid: state.user.uid,
-  }),
-  {
-    fetchNewsData,
-    fetchMoreNews,
-    fetchInterfaceList,
-  },
-)
-class TimeTree extends Component {
-  static propTypes = {
-    newsData: PropTypes.object,
-    fetchNewsData: PropTypes.func,
-    fetchMoreNews: PropTypes.func,
-    setLoading: PropTypes.func,
-    loading: PropTypes.bool,
-    curpage: PropTypes.number,
-    typeid: PropTypes.number,
-    curUid: PropTypes.number,
-    type: PropTypes.string,
-    fetchInterfaceList: PropTypes.func,
-  }
+type ApiPartType = {
+  method: string
+  _id: number
+  path: string
+  title: string
+}
 
-  constructor(props) {
+type PropTypes = {
+  newsData?: any
+  fetchNewsData?: AnyFunc
+  fetchMoreNews?: AnyFunc
+  setLoading?: AnyFunc
+  loading?: boolean
+  curpage?: number
+  typeid?: number
+  curUid?: number
+  type?: string
+  fetchInterfaceList?: AnyFunc
+}
+
+type StateTypes = {
+  bidden: string
+  loading: boolean
+  visible: boolean
+  curDiffData: any
+  apiList: ApiPartType[]
+}
+
+class YapiTimeLine extends Component<PropTypes, StateTypes> {
+  curSelectValue = ''
+
+  constructor(props: PropTypes) {
     super(props)
     this.state = {
       bidden: '',
@@ -82,12 +88,11 @@ class TimeTree extends Component {
       curDiffData: {},
       apiList: [],
     }
+
     this.curSelectValue = ''
   }
 
   getMore() {
-    const that = this
-
     if (this.props.curpage <= this.props.newsData.total) {
       this.setState({ loading: true })
       this.props
@@ -98,10 +103,10 @@ class TimeTree extends Component {
           10,
           this.curSelectValue,
         )
-        .then(function () {
-          that.setState({ loading: false })
-          if (that.props.newsData.total === that.props.curpage) {
-            that.setState({ bidden: 'logbidden' })
+        .then(() => {
+          this.setState({ loading: false })
+          if (this.props.newsData.total === this.props.curpage) {
+            this.setState({ bidden: 'logbidden' })
           }
         })
     }
@@ -120,7 +125,7 @@ class TimeTree extends Component {
     }
   }
 
-  openDiff = data => {
+  openDiff = (data: any) => {
     this.setState({
       curDiffData: data,
       visible: true,
@@ -137,16 +142,16 @@ class TimeTree extends Component {
     })
   }
 
-  handleSelectApi = selectValue => {
+  handleSelectApi = (selectValue: string) => {
     this.curSelectValue = selectValue
     this.props.fetchNewsData(this.props.typeid, this.props.type, 1, 10, selectValue)
   }
 
   render() {
-    let data = this.props.newsData ? this.props.newsData.list : []
+    let data: any = this.props.newsData ? this.props.newsData.list : []
 
     const curDiffData = this.state.curDiffData
-    const logType = {
+    const logType: any = {
       project: '项目',
       group: '分组',
       interface: '接口',
@@ -156,7 +161,7 @@ class TimeTree extends Component {
     }
 
     const children = this.state.apiList.map(item => {
-      const methodColor = variable.METHOD_COLOR[item.method ? item.method.toLowerCase() : 'get']
+      const methodColor = (variable.METHOD_COLOR as any)[item.method ? item.method.toLowerCase() : 'get']
       return (
         <Option title={item.title} value={String(item._id)} path={item.path} key={item._id}>
           {item.title}{' '}
@@ -170,11 +175,11 @@ class TimeTree extends Component {
     })
 
     children.unshift(<Option value="" key="all">
-        选择全部
+      选择全部
     </Option>)
 
     if (data && data.length) {
-      data = data.map((item, i) => {
+      data = data.map((item: any, i: number) => {
         let interfaceDiff = false
         // 去掉了 && item.data.interface_id
         if (item.data && typeof item.data === 'object') {
@@ -189,9 +194,8 @@ class TimeTree extends Component {
             }
             key={i}
           >
-            <div className="logMesHeade">
-              <span className="logoTimeago">{timeago(item.add_time)}</span>
-              {/* <span className="logusername"><Link to={`/user/profile/${item.uid}`}><Icon type="user" />{item.username}</Link></span>*/}
+            <div className="logMesHead">
+              <span className="logTimeAgo">{timeago(item.add_time)}</span>
               <span className="logtype">{logType[item.type]}动态</span>
               <span className="logtime">{formatTime(item.add_time)}</span>
             </div>
@@ -248,25 +252,23 @@ class TimeTree extends Component {
                 onSelect={this.handleSelectApi}
                 style={{ width: '100%' }}
                 placeholder="Select Api"
-                optionLabelProp="title"
-                filterOption={(inputValue, options) => {
-                  if (options.props.value == '') { return true }
-                  if (
-                    options.props.path.indexOf(inputValue) !== -1
-                    || options.props.title.indexOf(inputValue) !== -1
-                  ) {
+                filterOption={(inputValue, option) => {
+                  if (option.value === '') { return true }
+                  if (option.path.indexOf(inputValue) !== -1 || option.title.indexOf(inputValue) !== -1) {
                     return true
                   }
+
                   return false
                 }}
               >
                 {/* {children} */}
-                <OptGroup label="other">
-                  <Option value="wiki" path="" title="wiki">
-                    wiki
-                  </Option>
-                </OptGroup>
-                <OptGroup label="api">{children}</OptGroup>
+                {/* <OptGroup label="other"> */}
+                <Option value="wiki" path="" title="wiki">
+                  wiki
+                </Option>
+                {/* </OptGroup> */}
+                {/* <OptGroup label="api">{children}</OptGroup> */}
+                {children}
               </AutoComplete>
             </Col>
           </Row>
@@ -283,4 +285,16 @@ class TimeTree extends Component {
   }
 }
 
-export default TimeTree
+const states = (state: any) => ({
+  newsData: state.news.newsData,
+  curpage: state.news.curpage,
+  curUid: state.user.uid,
+})
+
+const actions = {
+  fetchNewsData,
+  fetchMoreNews,
+  fetchInterfaceList,
+}
+
+export default connect(states, actions)(YapiTimeLine) as typeof YapiTimeLine

@@ -5,6 +5,6 @@ import Intro from './Intro/Intro.js'
 import Loading from './Loading/Loading.js'
 import Postman from './Postman/Postman'
 import ProjectCard from './ProjectCard/ProjectCard.tsx'
-import Subnav from './Subnav/Subnav.js'
+import SubNav from './SubNav/SubNav.js'
 
-export { Breadcrumb, Footer, Header, Intro, Loading, ProjectCard, Subnav, Postman }
+export { Breadcrumb, Footer, Header, Intro, Loading, ProjectCard, SubNav, Postman }

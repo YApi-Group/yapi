@@ -5,7 +5,7 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
-import Subnav from '../../components/Subnav/Subnav.js'
+import SubNav from '../../components/SubNav/SubNav.js'
 import { getMockUrl } from '../../reducer/modules/news.js'
 
 import NewsTimeline from './NewsTimeline/NewsTimeline'
@@ -28,7 +28,7 @@ class News extends Component {
   static propTypes = {
     uid: PropTypes.string,
     getMockUrl: PropTypes.func,
-  };
+  }
   UNSAFE_componentWillMount() {
     // const that = this;
     // this.props.getMockUrl(2724).then(function(data){
@@ -42,7 +42,7 @@ class News extends Component {
   render() {
     return (
       <div>
-        <Subnav
+        <SubNav
           default={'动态'}
           data={[
             {

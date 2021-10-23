@@ -25,7 +25,7 @@ class NewsTimeline extends Component {
     setLoading: PropTypes.func,
     loading: PropTypes.bool,
     curpage: PropTypes.number,
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -56,7 +56,7 @@ class NewsTimeline extends Component {
       data = data.map(function (item, i) {
         return (
           <Timeline.Item key={i}>
-            <span className="logoTimeago">{timeago(item.add_time)}</span>
+            <span className="logTimeAgo">{timeago(item.add_time)}</span>
             <span className="logusername">{item.username}</span>
             <span className="logtype">{item.type}</span>
             <span className="logtime">{formatTime(item.add_time)}</span>
