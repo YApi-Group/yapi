@@ -1,6 +1,6 @@
 import URL from 'url'
 
-import { QuestionCircleOutlined, InboxOutlined } from '@ant-design/icons'
+import { QuestionCircleOutlined, InboxOutlined, ExclamationCircleFilled } from '@ant-design/icons'
 import {
   Upload,
   message,
@@ -13,13 +13,17 @@ import {
   Radio,
   Input,
   Checkbox,
+  RadioChangeEvent,
 } from 'antd'
+import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 import axios from 'axios'
-import PropTypes from 'prop-types'
+import PropsType from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
-import HandleImportData from '@common/HandleImportData'
+import plugin from '@/plugin'
+import { AnyFunc } from '@/types'
+import handleImportData from '@common/HandleImportData'
 
 import { saveImportData } from '../../../../reducer/modules/interface'
 import { fetchUpdateLogData } from '../../../../reducer/modules/news.js'
@@ -30,22 +34,43 @@ import './ProjectData.scss'
 const Dragger = Upload.Dragger
 const Option = Select.Option
 const confirm = Modal.confirm
-const plugin = require('@/plugin.js')
 const RadioGroup = Radio.Group
-const importDataModule = {}
-const exportDataModule = {}
+const importDataModule: { [K: string]: any } = {}
+const exportDataModule: { [K: string]: any } = {}
 
-function handleExportRouteParams(url, status, isWiki) {
-  if (!url) {
-    return
-  }
-  let urlObj = URL.parse(url, true),
-    query = {}
-  query = Object.assign(query, urlObj.query, { status, isWiki })
+function handleExportRouteParams(url: string, status: string, isWiki: boolean) {
+  if (!url) { return }
+
+  const urlObj = URL.parse(url, true)
+  const query = { ...urlObj.query, status, isWiki }
   return URL.format({
     pathname: urlObj.pathname,
     query,
   })
+}
+
+type PropsType = {
+  match?: any
+  curCatid?: number
+  basePath?: string
+  saveImportData?: AnyFunc
+  fetchUpdateLogData?: AnyFunc
+  updateLogList?: any[]
+  handleSwaggerUrlData?: AnyFunc
+  swaggerUrlData?: string
+}
+
+type StateTyPe = {
+  selectCatid: string | number
+  menuList: any[]
+  curImportType: string
+  curExportType: any
+  showLoading: boolean
+  dataSync: string
+  exportContent: string
+  isSwaggerUrl: boolean
+  swaggerUrl: string
+  isWiki: boolean
 }
 
 // exportDataModule.pdf = {
@@ -53,22 +78,10 @@ function handleExportRouteParams(url, status, isWiki) {
 //   route: '/api/interface/download_crx',
 //   desc: '导出项目接口文档为 pdf 文件'
 // }
-@connect(
-  state => ({
-    curCatid: -(-state.inter.curdata.catid),
-    basePath: state.project.currProject.basepath,
-    updateLogList: state.news.updateLogList,
-    swaggerUrlData: state.project.swaggerUrlData,
-  }),
-  {
-    saveImportData,
-    fetchUpdateLogData,
-    handleSwaggerUrlData,
-  },
-)
-class ProjectData extends Component {
-  constructor(props) {
+class ProjectData extends Component<PropsType, StateTyPe> {
+  constructor(props: PropsType) {
     super(props)
+
     this.state = {
       selectCatid: '',
       menuList: [],
@@ -82,16 +95,6 @@ class ProjectData extends Component {
       isWiki: false,
     }
   }
-  static propTypes = {
-    match: PropTypes.object,
-    curCatid: PropTypes.number,
-    basePath: PropTypes.string,
-    saveImportData: PropTypes.func,
-    fetchUpdateLogData: PropTypes.func,
-    updateLogList: PropTypes.array,
-    handleSwaggerUrlData: PropTypes.func,
-    swaggerUrlData: PropTypes.string,
-  };
 
   UNSAFE_componentWillMount() {
     axios.get(`/api/interface/getCatMenu?project_id=${this.props.match.params.id}`).then(data => {
@@ -107,13 +110,13 @@ class ProjectData extends Component {
     plugin.emitHook('export_data', exportDataModule, this.props.match.params.id)
   }
 
-  selectChange(value) {
+  selectChange(value: number) {
     this.setState({
       selectCatid: Number(value),
     })
   }
 
-  uploadChange = info => {
+  uploadChange = (info: any) => {
     const status = info.file.status
     if (status !== 'uploading') {
       console.log(info.file, info.fileList)
@@ -123,9 +126,9 @@ class ProjectData extends Component {
     } else if (status === 'error') {
       message.error(`${info.file.name} 文件上传失败`)
     }
-  };
+  }
 
-  handleAddInterface = async res => await HandleImportData(
+  handleAddInterface = (res: any) => handleImportData(
     res,
     this.props.match.params.id,
     this.state.selectCatid,
@@ -135,10 +138,10 @@ class ProjectData extends Component {
     message.error,
     message.success,
     () => this.setState({ showLoading: false }),
-  );
+  )
 
   // 本地文件上传
-  handleFile = info => {
+  handleFile = (info: any) => {
     if (!this.state.curImportType) {
       return message.error('请选择导入数据的方式')
     }
@@ -159,12 +162,11 @@ class ProjectData extends Component {
     } else {
       message.error('请选择上传的默认分类')
     }
-  };
+  }
 
-  showConfirm = async res => {
-    const that = this
+  showConfirm = async (res: any) => {
     const typeid = this.props.match.params.id
-    const apiCollections = res.apis.map(item => ({
+    const apiCollections = res.apis.map((item:any) => ({
       method: item.method,
       path: item.path,
     }))
@@ -176,16 +178,16 @@ class ProjectData extends Component {
     const domainData = result.payload.data.data
     const ref = confirm({
       title: '您确认要进行数据同步????',
+      icon: <ExclamationCircleFilled />,
       width: 600,
       okType: 'danger',
-      iconType: 'exclamation-circle',
       className: 'dataImport-confirm',
       okText: '确认',
       cancelText: '取消',
       content: (
         <div className="postman-dataImport-modal">
           <div className="postman-dataImport-modal-content">
-            {domainData.map((item, index) => (
+            {domainData.map((item: any, index: number) => (
               <div key={index} className="postman-dataImport-show-diff">
                 <span className="logcontent" dangerouslySetInnerHTML={{ __html: item.content }} />
               </div>
@@ -194,50 +196,50 @@ class ProjectData extends Component {
           <p className="info">温馨提示： 数据同步后，可能会造成原本的修改数据丢失</p>
         </div>
       ),
-      async onOk() {
-        await that.handleAddInterface(res)
+      onOk: async () => {
+        await this.handleAddInterface(res)
       },
-      onCancel() {
-        that.setState({ showLoading: false, dataSync: 'normal' })
+      onCancel: () => {
+        this.setState({ showLoading: false, dataSync: 'normal' })
         ref.destroy()
       },
     })
-  };
+  }
 
-  handleImportType = val => {
+  handleImportType = (val: string) => {
     this.setState({
       curImportType: val,
       isSwaggerUrl: false,
     })
-  };
+  }
 
-  handleExportType = val => {
+  handleExportType = (val: string) => {
     this.setState({
       curExportType: val,
       isWiki: false,
     })
-  };
+  }
 
   // 处理导入信息同步
-  onChange = checked => {
+  onChange = (checked: string) => {
     this.setState({
       dataSync: checked,
     })
-  };
+  }
 
   // 处理swagger URL 导入
-  handleUrlChange = checked => {
+  handleUrlChange = (checked: boolean) => {
     this.setState({
       isSwaggerUrl: checked,
     })
-  };
+  }
 
   // 记录输入的url
-  swaggerUrlInput = url => {
+  swaggerUrlInput = (url: string) => {
     this.setState({
       swaggerUrl: url,
     })
-  };
+  }
 
   // url导入上传
   onUrlUpload = async () => {
@@ -269,19 +271,19 @@ class ProjectData extends Component {
     } else {
       message.error('请选择上传的默认分类')
     }
-  };
+  }
 
   // 处理导出接口是全部还是公开
-  handleChange = e => {
+  handleChange = (e: RadioChangeEvent) => {
     this.setState({ exportContent: e.target.value })
-  };
+  }
 
   //  处理是否开启wiki导出
-  handleWikiChange = e => {
+  handleWikiChange = (e: CheckboxChangeEvent) => {
     this.setState({
       isWiki: e.target.checked,
     })
-  };
+  }
 
   /**
    *
@@ -335,11 +337,13 @@ class ProjectData extends Component {
                   value={this.state.curImportType}
                   onChange={this.handleImportType}
                 >
-                  {Object.keys(importDataModule).map(name => (
-                    <Option key={name} value={name}>
-                      {importDataModule[name].name}
-                    </Option>
-                  ))}
+                  {
+                    Object.keys(importDataModule).map(key => (
+                      <Option key={key} value={key}>
+                        {importDataModule[key].name}
+                      </Option>
+                    ))
+                  }
                 </Select>
               </div>
               <div className="catidSelect">
@@ -434,7 +438,7 @@ class ProjectData extends Component {
                         }}
                         dangerouslySetInnerHTML={{
                           __html: this.state.curImportType
-                            ? importDataModule[this.state.curImportType].desc
+                            ? importDataModule[this.state.curImportType]?.desc
                             : null,
                         }}
                       />
@@ -474,7 +478,7 @@ class ProjectData extends Component {
                 {this.state.curExportType ? (
                   <div>
                     <p className="export-desc">{exportDataModule[this.state.curExportType].desc}</p>
-                    <a 
+                    <a
                       target="_blank"
                       rel="noopener noreferrer"
                       href={exportHref}>
@@ -510,4 +514,17 @@ class ProjectData extends Component {
   }
 }
 
-export default ProjectData
+const states = (state: any) => ({
+  curCatid: -(-state.inter.curdata.catid),
+  basePath: state.project.currProject.basepath,
+  updateLogList: state.news.updateLogList,
+  swaggerUrlData: state.project.swaggerUrlData,
+})
+
+const actions = {
+  saveImportData,
+  fetchUpdateLogData,
+  handleSwaggerUrlData,
+}
+
+export default connect(states, actions)(ProjectData) as typeof ProjectData
