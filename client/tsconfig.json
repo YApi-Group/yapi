@@ -1,6 +1,10 @@
 //https://tslang.cn/docs/handbook/compiler-options.html
 {
   "compilerOptions": {
+    /* 要想插件生效，注意 vscode 需要使用 WorkSpace Version */
+    /* https://github.com/mrmckeb/typescript-plugin-css-modules#visual-studio-code */
+    "plugins": [{ "name": "typescript-plugin-css-modules" }],
+
     "outDir": "./dist/js",
     "target": "ES2015",
 

@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import AceEditor from '@/components/AceEditor/AceEditor'
-import variable from '@/cons'
 import constants from '@/cons'
 
 import { formatTime, safeArray } from '../../../../common.js'
@@ -16,28 +15,31 @@ import SchemaTable from '../../../../components/SchemaTable/SchemaTable.js'
 
 import './View.scss'
 
-const HTTP_METHOD = constants.HTTP_METHOD
+const HTTP_METHOD: any = constants.HTTP_METHOD
+const METHOD_COLOR: any = constants.METHOD_COLOR
 
-@connect(state => ({
-  curData: state.inter.curdata,
-  custom_field: state.group.field,
-  currProject: state.project.currProject,
-}))
-class View extends Component {
-  constructor(props) {
+type PropTypes = {
+  curData?: any
+  currProject?: any
+  custom_field?: any
+}
+
+type StateTypes = {
+  init: boolean
+  enter: boolean
+}
+
+class View extends Component<PropTypes, StateTypes> {
+  constructor(props: PropTypes) {
     super(props)
+
     this.state = {
       init: true,
       enter: false,
     }
   }
-  static propTypes = {
-    curData: PropTypes.object,
-    currProject: PropTypes.object,
-    custom_field: PropTypes.object,
-  }
 
-  req_body_form(req_body_type, req_body_form) {
+  req_body_form(req_body_type: string, req_body_form: any) {
     if (req_body_type === 'form') {
       const columns = [
         {
@@ -51,7 +53,7 @@ class View extends Component {
           dataIndex: 'type',
           key: 'type',
           width: 100,
-          render: text => {
+          render: (text: string) => {
             text = text || ''
             return text.toLowerCase() === 'text' ? (
               <span>
@@ -75,7 +77,7 @@ class View extends Component {
           dataIndex: 'example',
           key: 'example',
           width: 80,
-          render(_, item) {
+          render(_: any, item: any) {
             return <p style={{ whiteSpace: 'pre-wrap' }}>{item.example}</p>
           },
         },
@@ -83,21 +85,21 @@ class View extends Component {
           title: '备注',
           dataIndex: 'value',
           key: 'value',
-          render(_, item) {
+          render(_: any, item: any) {
             return <p style={{ whiteSpace: 'pre-wrap' }}>{item.value}</p>
           },
         },
       ]
 
-      const dataSource = []
+      const dataSource: any[] = []
       if (req_body_form && req_body_form.length) {
-        req_body_form.map((item, i) => {
+        req_body_form.map((item: any, i: number) => {
           dataSource.push({
             key: i,
             name: item.name,
             value: item.desc,
             example: item.example,
-            required: item.required == 0 ? '否' : '是',
+            required: item.required === 0 ? '否' : '是',
             type: item.type,
           })
         })
@@ -116,7 +118,7 @@ class View extends Component {
       )
     }
   }
-  res_body(res_body_type, res_body, res_body_is_json_schema) {
+  res_body(res_body_type: string, res_body: any, res_body_is_json_schema: boolean) {
     if (res_body_type === 'json') {
       if (res_body_is_json_schema) {
         return <SchemaTable dataSource={res_body} />
@@ -137,7 +139,7 @@ class View extends Component {
     }
   }
 
-  req_body(req_body_type, req_body_other, req_body_is_json_schema) {
+  req_body(req_body_type: string, req_body_other: any, req_body_is_json_schema: boolean) {
     if (req_body_other) {
       if (req_body_is_json_schema && req_body_type === 'json') {
         return <SchemaTable dataSource={req_body_other} />
@@ -156,7 +158,7 @@ class View extends Component {
     }
   }
 
-  req_query(query) {
+  req_query(query: any[]) {
     const columns = [
       {
         title: '参数名称',
@@ -175,7 +177,7 @@ class View extends Component {
         dataIndex: 'example',
         key: 'example',
         width: 80,
-        render(_, item) {
+        render(_: any, item: any) {
           return <p style={{ whiteSpace: 'pre-wrap' }}>{item.example}</p>
         },
       },
@@ -183,13 +185,13 @@ class View extends Component {
         title: '备注',
         dataIndex: 'value',
         key: 'value',
-        render(_, item) {
+        render(_: any, item: any) {
           return <p style={{ whiteSpace: 'pre-wrap' }}>{item.value}</p>
         },
       },
     ]
 
-    const dataSource = []
+    const dataSource: any[] = []
     if (query && query.length) {
       query.map((item, i) => {
         dataSource.push({
@@ -197,7 +199,7 @@ class View extends Component {
           name: item.name,
           value: item.desc,
           example: item.example,
-          required: item.required == 0 ? '否' : '是',
+          required: item.required === 0 ? '否' : '是',
         })
       })
     }
@@ -207,7 +209,7 @@ class View extends Component {
     )
   }
 
-  countEnter(str) {
+  countEnter(str: string) {
     let i = 0
     let c = 0
     if (!str || !str.indexOf) {
@@ -215,7 +217,7 @@ class View extends Component {
     }
     while (str.indexOf('\n', i) > -1) {
       i = str.indexOf('\n', i) + 2
-      c++
+      c += 1
     }
     return c
   }
@@ -238,12 +240,12 @@ class View extends Component {
     })
   }
 
-  copyUrl = url => {
+  copyUrl = (url: string) => {
     copy(url)
     message.success('已经成功复制到剪切板')
   }
 
-  flagMsg = (mock, strice) => {
+  flagMsg = (mock: boolean, strice: boolean) => {
     if (mock && strice) {
       return <span>( 全局mock & 严格模式 )</span>
     } else if (!mock && strice) {
@@ -255,13 +257,13 @@ class View extends Component {
   }
 
   render() {
-    const dataSource = []
+    const dataSource: any[] = []
     if (this.props.curData.req_headers && this.props.curData.req_headers.length) {
-      this.props.curData.req_headers.map((item, i) => {
+      this.props.curData.req_headers.map((item: any, i: number) => {
         dataSource.push({
           key: i,
           name: item.name,
-          required: item.required == 0 ? '否' : '是',
+          required: item.required === 0 ? '否' : '是',
           value: item.value,
           example: item.example,
           desc: item.desc,
@@ -269,9 +271,9 @@ class View extends Component {
       })
     }
 
-    const req_dataSource = []
+    const req_dataSource: any[] = []
     if (this.props.curData.req_params && this.props.curData.req_params.length) {
-      this.props.curData.req_params.map((item, i) => {
+      this.props.curData.req_params.map((item: any, i: number) => {
         req_dataSource.push({
           key: i,
           name: item.name,
@@ -292,7 +294,7 @@ class View extends Component {
         dataIndex: 'example',
         key: 'example',
         width: 80,
-        render(_, item) {
+        render(_: any, item: any) {
           return <p style={{ whiteSpace: 'pre-wrap' }}>{item.example}</p>
         },
       },
@@ -300,7 +302,7 @@ class View extends Component {
         title: '备注',
         dataIndex: 'desc',
         key: 'desc',
-        render(_, item) {
+        render(_: any, item: any) {
           return <p style={{ whiteSpace: 'pre-wrap' }}>{item.desc}</p>
         },
       },
@@ -330,7 +332,7 @@ class View extends Component {
         dataIndex: 'example',
         key: 'example',
         width: '80px',
-        render(_, item) {
+        render(_: any, item: any) {
           return <p style={{ whiteSpace: 'pre-wrap' }}>{item.example}</p>
         },
       },
@@ -338,7 +340,7 @@ class View extends Component {
         title: '备注',
         dataIndex: 'desc',
         key: 'desc',
-        render(_, item) {
+        render(_: any, item: any) {
           return <p style={{ whiteSpace: 'pre-wrap' }}>{item.desc}</p>
         },
       },
@@ -361,13 +363,16 @@ class View extends Component {
       || bodyShow
 
     let methodColor
-      = variable.METHOD_COLOR[
+      = METHOD_COLOR[
         this.props.curData.method ? this.props.curData.method.toLowerCase() : 'get'
       ]
 
     // statusColor = statusColor[this.props.curData.status?this.props.curData.status.toLowerCase():"undone"];
-    // const aceEditor = <div style={{ display: this.props.curData.req_body_other && (this.props.curData.req_body_type !== "form") ? "block" : "none" }} className="colBody">
-    //   <AceEditor data={this.props.curData.req_body_other} readOnly={true} style={{ minHeight: 300 }} mode={this.props.curData.req_body_type === 'json' ? 'javascript' : 'text'} />
+    // const aceEditor = <div style={{ display: this.props.curData.req_body_other 
+    // && (this.props.curData.req_body_type !== "form") ? "block" : "none" }} className="colBody">
+    //   <AceEditor data={this.props.curData.req_body_other} readOnly={true} 
+    // style={{ minHeight: 300 }} mode={this.props.curData.req_body_type === 'json' ?
+    //  'javascript' : 'text'} />
     // </div>
     if (!methodColor) {
       methodColor = 'get'
@@ -403,7 +408,7 @@ class View extends Component {
               状&emsp;&emsp;态：
             </Col>
             <Col span={8} className={'tag-status ' + this.props.curData.status}>
-              {status[this.props.curData.status]}
+              {(status as any)[this.props.curData.status]}
             </Col>
             <Col span={4} className="colKey">
               更新时间：
@@ -579,4 +584,10 @@ class View extends Component {
   }
 }
 
-export default View
+const states = (state: any) => ({
+  curData: state.inter.curdata,
+  currProject: state.project.currProject,
+  custom_field: state.group.field,
+})
+
+export default connect(states)(View) as typeof View

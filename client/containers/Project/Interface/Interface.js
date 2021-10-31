@@ -7,13 +7,13 @@ const { Content, Sider } = Layout
 
 import './interface.scss'
 
-import { setColData } from '../../../reducer/modules/interfaceCol.js'
+import { setColData } from '../../../reducer/modules/interfaceCol'
 import { getProject } from '../../../reducer/modules/project'
 
-import InterfaceCaseContent from './InterfaceCol/InterfaceCaseContent.js'
-import InterfaceColContent from './InterfaceCol/InterfaceColContent.js'
-import InterfaceColMenu from './InterfaceCol/InterfaceColMenu.js'
-import InterfaceContent from './InterfaceList/InterfaceContent.js'
+import InterfaceCaseContent from './InterfaceCol/InterfaceCaseContent'
+import InterfaceColContent from './InterfaceCol/InterfaceColContent'
+import InterfaceColMenu from './InterfaceCol/InterfaceColMenu'
+import InterfaceContent from './InterfaceList/InterfaceContent'
 import InterfaceList from './InterfaceList/InterfaceList'
 import InterfaceMenu from './InterfaceList/InterfaceMenu'
 
