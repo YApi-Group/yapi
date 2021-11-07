@@ -166,7 +166,7 @@ class ProjectData extends Component<PropsType, StateTyPe> {
 
   showConfirm = async (res: any) => {
     const typeid = this.props.match.params.id
-    const apiCollections = res.apis.map((item:any) => ({
+    const apiCollections = res.apis.map((item: any) => ({
       method: item.method,
       path: item.path,
     }))

@@ -1,10 +1,13 @@
 {
   "cSpell.words": [
+    "addor",
     "antd",
     "Appstore",
     "basepath",
     "breakline",
     "Btns",
+    "caseid",
+    "casename",
     "catdata",
     "catid",
     "curdata",
@@ -28,6 +31,7 @@
     "Popconfirm",
     "projectid",
     "projectname",
+    "Rander",
     "stylelint",
     "timeago",
     "Uids",
