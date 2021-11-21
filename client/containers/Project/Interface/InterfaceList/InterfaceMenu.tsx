@@ -38,23 +38,23 @@ const confirm = Modal.confirm
 const headHeight = 240 // menu顶部到网页顶部部分的高度
 
 type PropTypes = {
-  match: any
-  inter: any
-  projectId: string
-  list: any[]
-  curProject: any
-  addInterfaceData: AnyFunc
-  history: any
-  router: any
+  match?: any
+  inter?: any
+  projectId?: string
+  list?: any[]
+  curProject?: any
+  addInterfaceData?: AnyFunc
+  history?: any
+  router?: any
 
-  fetchInterfaceListMenu: AnyFunc
-  fetchInterfaceData: AnyFunc
-  deleteInterfaceCatData: AnyFunc
-  deleteInterfaceData: AnyFunc
-  initInterface: AnyFunc
-  getProject: AnyFunc
-  fetchInterfaceCatList: AnyFunc
-  fetchInterfaceList: AnyFunc
+  fetchInterfaceListMenu?: AnyFunc
+  fetchInterfaceData?: AnyFunc
+  deleteInterfaceCatData?: AnyFunc
+  deleteInterfaceData?: AnyFunc
+  initInterface?: AnyFunc
+  getProject?: AnyFunc
+  fetchInterfaceCatList?: AnyFunc
+  fetchInterfaceList?: AnyFunc
 }
 
 type StateTypes = {

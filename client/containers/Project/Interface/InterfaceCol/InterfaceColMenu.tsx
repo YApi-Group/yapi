@@ -1,11 +1,11 @@
 import { DeleteOutlined, CopyOutlined, FolderOpenOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
-import { Input, Button, Modal, message, Tooltip, Tree, Form, FormInstance } from 'antd'
+import { Input, Button, Modal, message, Tooltip, Tree, Form, FormInstance, TreeDataNode } from 'antd'
 import axios from 'axios'
+import { debounce } from 'lodash-es'
 import PropTypes from 'prop-types'
 import React, { ChangeEvent, createRef, PureComponent as Component, RefObject } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
-import _ from 'underscore'
 
 import { AnyFunc } from '@/types.js'
 
@@ -19,13 +19,14 @@ import {
 import { fetchProjectList } from '../../../../reducer/modules/project'
 
 import ImportInterface from './ImportInterface'
+import styles from './icm.module.less'
+
+import './InterfaceColMenu.scss'
 
 const TreeNode = Tree.TreeNode
 const FormItem = Form.Item
 const confirm = Modal.confirm
 const headHeight = 240 // menu顶部到网页顶部部分的高度
-
-import './InterfaceColMenu.scss'
 
 type PropTypes1 = {
   formRef: RefObject<FormInstance>
@@ -70,8 +71,10 @@ type PropTypes = {
   // projectList?: any[]
 }
 
+type PanelType = 'add' | 'edit'
+
 type StateTypes = {
-  colModalType: string
+  colModalType: PanelType
   colModalVisible: boolean
   editColId: number
   filterValue: string
@@ -95,7 +98,7 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
     this.formRef = createRef()
 
     this.state = {
-      colModalType: '',
+      colModalType: 'add',
       colModalVisible: false,
       editColId: 0,
       filterValue: '',
@@ -155,7 +158,7 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
     this.setState({ expands: keys })
   }
 
-  onSelect = _.debounce((keys: string[]) => {
+  onSelect = debounce((keys: string[]) => {
     if (keys.length) {
       const type = keys[0].split('_')[0]
       const id = keys[0].split('_')[1]
@@ -289,14 +292,17 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
       },
     })
   }
-  showColModal = (type: string, col?: any) => {
+
+  showColModal = (type: PanelType, col?: any) => {
     const editCol = type === 'edit' ? { colName: col.name, colDesc: col.desc } : { colName: '', colDesc: '' }
     this.setState({
       colModalVisible: true,
-      colModalType: type || 'add',
+      colModalType: type,
       editColId: col && col._id,
     })
-    this.formRef.current.setFieldsValue(editCol)
+
+    /* use setTimeout wait <ColModalForm/> loaded */
+    setTimeout(() => { this.formRef.current.setFieldsValue(editCol) }, 300)
   }
 
   selectInterface = (importInterIds: any, selectedProject: any) => {
@@ -391,23 +397,6 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
     // const { currColId, currCaseId, isShowCol } = this.props;
     const { colModalType, colModalVisible, importInterVisible } = this.state
     const currProjectId = this.props.match.params.id
-    // const menu = (col) => {
-    //   return (
-    //     <Menu>
-    //       <Menu.Item>
-    //         <span onClick={() => this.showColModal('edit', col)}>修改集合</span>
-    //       </Menu.Item>
-    //       <Menu.Item>
-    //         <span onClick={() => {
-    //           this.showDelColConfirm(col._id)
-    //         }}>删除集合</span>
-    //       </Menu.Item>
-    //       <Menu.Item>
-    //         <span onClick={() => this.showImportInterface(col._id)}>导入接口</span>
-    //       </Menu.Item>
-    //     </Menu>
-    //   )
-    // };
 
     const defaultExpandedKeys = () => {
       const { router, currCase, interfaceColList } = this.props,
@@ -437,7 +426,7 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
       }
     }
 
-    const itemInterfaceColCreate = (interfaceCase:any) => (
+    const itemInterfaceColCreate = (interfaceCase: any) => (
       <TreeNode
         style={{ width: '100%' }}
         key={'case_' + interfaceCase._id}
@@ -480,9 +469,8 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
     // console.log('currentKey', currentKes)
 
     let list = this.state.list
-
     if (this.state.filterValue) {
-      const arr:any[] = []
+      const arr: any[] = []
       list = list.filter(item => {
         item.caseList = item.caseList.filter((inter: any) => {
           if (
@@ -502,6 +490,57 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
         currentKes.expands = arr
       }
     }
+
+    const treeData: TreeDataNode[] = list.map(col => ({
+      key: 'col_' + col._id,
+      title: (
+        <div className={styles.itemDiv}>
+          <span>
+            <FolderOpenOutlined className={styles.folder} />
+            <span>{col.name}</span>
+          </span>
+          <div className={styles.btns}>
+            <Tooltip title="删除集合">
+              <DeleteOutlined
+                style={{ display: list.length > 1 ? '' : 'none' }}
+                className="interface-delete-icon"
+                onClick={() => {
+                  this.showDelColConfirm(col._id)
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="编辑集合">
+              <EditOutlined
+                className="interface-delete-icon"
+                onClick={e => {
+                  e.stopPropagation()
+                  this.showColModal('edit', col)
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="导入接口">
+              <PlusOutlined
+                className="interface-delete-icon"
+                onClick={e => {
+                  e.stopPropagation()
+                  this.showImportInterfaceModal(col._id)
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="克隆集合">
+              <CopyOutlined
+                className="interface-delete-icon"
+                onClick={e => {
+                  e.stopPropagation()
+                  this.copyInterface(col)
+                }}
+              />
+            </Tooltip>
+          </div>
+        </div>
+      ),
+      children: col.caseList.map(itemInterfaceColCreate),
+    }))
 
     // console.log('list', list);
     // console.log('currentKey', currentKes)
@@ -523,7 +562,8 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
         </div>
         <div className="tree-wrapper" style={{ maxHeight: parseInt(document.body.clientHeight as any) - headHeight + 'px' }}>
           <Tree
-            className="col-list-tree"
+            className={styles.treeMain}
+            treeData={treeData}
             defaultExpandedKeys={currentKes.expands}
             defaultSelectedKeys={currentKes.selects}
             expandedKeys={currentKes.expands}
@@ -533,70 +573,12 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
             draggable
             onExpand={this.onExpand}
             onDrop={this.onDrop}
-          >
-            {list.map(col => (
-              <TreeNode
-                key={'col_' + col._id}
-                title={
-                  <div className="menu-title">
-                    <span>
-                      <FolderOpenOutlined style={{ marginRight: 5 }} />
-                      <span>{col.name}</span>
-                    </span>
-                    <div className="btns">
-                      <Tooltip title="删除集合">
-                        <DeleteOutlined
-                          style={{ display: list.length > 1 ? '' : 'none' }}
-                          className="interface-delete-icon"
-                          onClick={() => {
-                            this.showDelColConfirm(col._id)
-                          }}
-                        />
-                      </Tooltip>
-                      <Tooltip title="编辑集合">
-                        <EditOutlined
-                          className="interface-delete-icon"
-                          onClick={e => {
-                            e.stopPropagation()
-                            this.showColModal('edit', col)
-                          }}
-                        />
-                      </Tooltip>
-                      <Tooltip title="导入接口">
-                        <PlusOutlined
-                          className="interface-delete-icon"
-                          onClick={e => {
-                            e.stopPropagation()
-                            this.showImportInterfaceModal(col._id)
-                          }}
-                        />
-                      </Tooltip>
-                      <Tooltip title="克隆集合">
-                        <CopyOutlined
-                          className="interface-delete-icon"
-                          onClick={e => {
-                            e.stopPropagation()
-                            this.copyInterface(col)
-                          }}
-                        />
-                      </Tooltip>
-                    </div>
-                    {/* <Dropdown overlay={menu(col)} trigger={['click']} onClick={e => e.stopPropagation()}>
-                      <EllipsisOutlined className="opts-icon" />
-                    </Dropdown>*/}
-                  </div>
-                }
-              >
-                {col.caseList.map(itemInterfaceColCreate)}
-              </TreeNode>
-            ))}
-          </Tree>
+          />
         </div>
 
         <ColModalForm
           formRef={this.formRef}
-          // type={colModalType}
-          title={colModalType}
+          title={colModalType === 'add' ? '添加集合' : '修改集合'}
           visible={colModalVisible}
           onCancel={() => { this.setState({ colModalVisible: false }) }}
           onCreate={this.addorEditCol}
@@ -617,7 +599,7 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
   }
 }
 
-const states = (state:any) => ({
+const states = (state: any) => ({
   interfaceColList: state.interfaceCol.interfaceColList,
   currCase: state.interfaceCol.currCase,
   isRander: state.interfaceCol.isRander,

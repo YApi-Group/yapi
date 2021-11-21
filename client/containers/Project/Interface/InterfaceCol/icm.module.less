@@ -1,0 +1,41 @@
+.treeMain {
+  line-height: 25px;
+}
+
+.treeMain :global {
+  .ant-tree-treenode {
+    width: 100%;
+  }
+
+  .ant-tree-node-content-wrapper {
+    width: calc(100% - 28px);
+  }
+
+  .opts-icon:hover,
+  .case-delete-icon:hover {
+    color: #2395f1;
+  }
+}
+
+.itemDiv {
+  display: flex;
+  overflow: hidden;
+  height: 26px;
+  align-items: center;
+  justify-content: space-between;
+
+  .btns {
+    display: none;
+  }
+
+  .folder {
+    margin: 0 5px 2px 0;
+    vertical-align: middle;
+  }
+
+  &:hover {
+    .btns {
+      display: block;
+    }
+  }
+}

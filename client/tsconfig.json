@@ -35,7 +35,7 @@
     // "sourceMap": true, // webpack 下会默认关闭, 所以看起来无效
     "lib": ["DOM", "ES2020"], // 仅仅使用 ts 进行语法检查
 
-    "jsx": "preserve", // 保留 JSX 语法, 后续使用 babel 转换
+    "jsx": "react", // 保留 JSX 语法, 后续使用 babel 转换
     // "jsxFactory": "h", // h 对 vue 无效, 语法不兼容
 
     "newLine": "LF",

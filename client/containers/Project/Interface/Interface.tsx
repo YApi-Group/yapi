@@ -1,11 +1,10 @@
 import { Tabs, Layout } from 'antd'
-import PropTypes from 'prop-types'
+import { ReactComponentLike } from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Route, Switch, matchPath } from 'react-router-dom'
-const { Content, Sider } = Layout
 
-import './interface.scss'
+import { AnyFunc } from '@/types'
 
 import { setColData } from '../../../reducer/modules/interfaceCol'
 import { getProject } from '../../../reducer/modules/project'
@@ -17,15 +16,25 @@ import InterfaceContent from './InterfaceList/InterfaceContent'
 import InterfaceList from './InterfaceList/InterfaceList'
 import InterfaceMenu from './InterfaceList/InterfaceMenu'
 
+import './interface.scss'
+
+const { Content, Sider } = Layout
+
 const contentRouter = {
   path: '/project/:id/interface/:action/:actionId',
   exact: true,
 }
 
-const InterfaceRoute = props => {
-  let C
+type PropTypes1 = {
+  match: any
+  history: any
+}
+
+const InterfaceRoute = (props: PropTypes1) => {
+  let C: ReactComponentLike
   if (props.match.params.action === 'api') {
     if (!props.match.params.actionId) {
+      // C = <InterfaceList {...props} />
       C = InterfaceList
     } else if (!isNaN(props.match.params.actionId)) {
       C = InterfaceContent
@@ -41,54 +50,37 @@ const InterfaceRoute = props => {
     props.history.replace('/project/' + params.id + '/interface/api')
     return null
   }
+
   return <C {...props} />
 }
 
-InterfaceRoute.propTypes = {
-  match: PropTypes.object,
-  history: PropTypes.object,
+type PropTypes = {
+  match?: any
+  history?: any
+  location?: any
+  isShowCol?: boolean
+  getProject?: AnyFunc
+  setColData?: AnyFunc
+  // fetchInterfaceColList: PropTypes.func
 }
 
-@connect(
-  state => ({
-    isShowCol: state.interfaceCol.isShowCol,
-  }),
-  {
-    setColData,
-    getProject,
-  },
-)
-class Interface extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object,
-    location: PropTypes.object,
-    isShowCol: PropTypes.bool,
-    getProject: PropTypes.func,
-    setColData: PropTypes.func,
-    // fetchInterfaceColList: PropTypes.func
-  }
-
-  constructor(props) {
-    super(props)
-    // this.state = {
-    //   curkey: this.props.match.params.action === 'api' ? 'api' : 'colOrCase'
-    // }
-  }
-
-  onChange = action => {
+class Interface extends Component<PropTypes> {
+  onChange = (action: string) => {
     const params = this.props.match.params
     if (action === 'colOrCase') {
       action = this.props.isShowCol ? 'col' : 'case'
     }
     this.props.history.push('/project/' + params.id + '/interface/' + action)
   }
-  async UNSAFE_componentWillMount() {
+
+  // async UNSAFE_componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.setColData({
       isShowCol: true,
     })
     // await this.props.fetchInterfaceColList(this.props.match.params.id)
   }
+
   render() {
     const { action } = this.props.match.params
     // const activeKey = this.state.curkey;
@@ -110,8 +102,8 @@ class Interface extends Component {
             ) : (
               <InterfaceColMenu
                 router={matchPath(this.props.location.pathname, contentRouter)}
-                projectId={this.props.match.params.id}
               />
+            // projectId={this.props.match.params.id}
             )}
           </div>
         </Sider>
@@ -137,4 +129,13 @@ class Interface extends Component {
   }
 }
 
-export default Interface
+const states = (state: any) => ({
+  isShowCol: state.interfaceCol.isShowCol,
+})
+
+const actions = {
+  setColData,
+  getProject,
+}
+
+export default connect(states, actions)(Interface) as typeof Interface

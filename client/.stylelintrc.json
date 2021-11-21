@@ -1,0 +1,15 @@
+{
+  "extends": ["stylelint-config-standard", "stylelint-config-idiomatic-order"],
+
+  "syntax": "less",
+
+  "rules": {
+    "indentation": 2,
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        "ignorePseudoClasses": ["global", "local"]
+      }
+    ]
+  }
+}
