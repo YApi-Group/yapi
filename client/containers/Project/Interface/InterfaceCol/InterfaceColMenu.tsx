@@ -23,7 +23,6 @@ import styles from './icm.module.less'
 
 import './InterfaceColMenu.scss'
 
-const TreeNode = Tree.TreeNode
 const FormItem = Form.Item
 const confirm = Modal.confirm
 const headHeight = 240 // menu顶部到网页顶部部分的高度
@@ -426,44 +425,41 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
       }
     }
 
-    const itemInterfaceColCreate = (interfaceCase: any) => (
-      <TreeNode
-        style={{ width: '100%' }}
-        key={'case_' + interfaceCase._id}
-        title={
-          <div
-            className="menu-title"
-            onMouseEnter={() => this.enterItem(interfaceCase._id)}
-            onMouseLeave={this.leaveItem}
-            title={interfaceCase.casename}
-          >
-            <span className="casename">{interfaceCase.casename}</span>
-            <div className="btns">
-              <Tooltip title="删除用例">
-                <DeleteOutlined
-                  className="interface-delete-icon"
-                  onClick={e => {
-                    e.stopPropagation()
-                    this.showDelCaseConfirm(interfaceCase._id)
-                  }}
-                  style={{ display: this.state.delIcon === interfaceCase._id ? 'block' : 'none' }}
-                />
-              </Tooltip>
-              <Tooltip title="克隆用例">
-                <CopyOutlined
-                  className="interface-delete-icon"
-                  onClick={e => {
-                    e.stopPropagation()
-                    this.caseCopy(interfaceCase._id)
-                  }}
-                  style={{ display: this.state.delIcon === interfaceCase._id ? 'block' : 'none' }}
-                />
-              </Tooltip>
-            </div>
+    const itemInterfaceColCreate = (interfaceCase: any) => ({
+      key: 'case_' + interfaceCase._id,
+      title: (
+        <div
+          className="menu-title"
+          onMouseEnter={() => this.enterItem(interfaceCase._id)}
+          onMouseLeave={this.leaveItem}
+          title={interfaceCase.casename}
+        >
+          <span className="casename">{interfaceCase.casename} 1111</span>
+          <div className="btns">
+            <Tooltip title="删除用例">
+              <DeleteOutlined
+                className="interface-delete-icon"
+                onClick={e => {
+                  e.stopPropagation()
+                  this.showDelCaseConfirm(interfaceCase._id)
+                }}
+                style={{ display: this.state.delIcon === interfaceCase._id ? 'block' : 'none' }}
+              />
+            </Tooltip>
+            <Tooltip title="克隆用例">
+              <CopyOutlined
+                className="interface-delete-icon"
+                onClick={e => {
+                  e.stopPropagation()
+                  this.caseCopy(interfaceCase._id)
+                }}
+                style={{ display: this.state.delIcon === interfaceCase._id ? 'block' : 'none' }}
+              />
+            </Tooltip>
           </div>
-        }
-      />
-    )
+        </div>
+      ),
+    })
 
     const currentKes = defaultExpandedKeys()
     // console.log('currentKey', currentKes)

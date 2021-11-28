@@ -2,21 +2,26 @@ import {
   CheckCircleOutlined,
   ExclamationCircleFilled,
   InfoCircleOutlined,
-  QuestionCircleOutlined, 
+  QuestionCircleOutlined,
 } from '@ant-design/icons'
 import { Tooltip, Input, Button, Row, Col, Spin, Modal, message, Select, Switch } from 'antd'
 import axios from 'axios'
 import copy from 'copy-to-clipboard'
 import produce from 'immer'
 import PropTypes from 'prop-types'
-import React, { PureComponent as Component } from 'react'
+import React, { createRef, PureComponent as Component, RefObject } from 'react'
+// @ts-ignore
 import { DragDropContext } from 'react-dnd'
+// @ts-ignore
 import HTML5Backend from 'react-dnd-html5-backend'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { Link } from 'react-router-dom'
+// @ts-ignore
 import * as dnd from 'reactabular-dnd'
+// @ts-ignore
 import * as Table from 'reactabular-table'
+// @ts-ignore
 import * as resolve from 'table-resolver'
 import _ from 'underscore'
 
@@ -25,6 +30,7 @@ import CaseEnv from '@/components/CaseEnv'
 import { initCrossRequest } from '@/components/Postman/CheckCrossInstall.js'
 import { InsertCodeMap } from '@/components/Postman/Postman.js'
 import plugin from '@/plugin.js'
+import { AnyFunc } from '@/types.js'
 import createContext from '@common/createContext'
 import { handleParams, crossRequest, handleCurrDomain, checkNameIsExistInArray } from '@common/postmanLib.js'
 import { handleParamsValue, json_parse, changeArrayToObject } from '@common/utils.js'
@@ -46,65 +52,71 @@ const defaultModalStyle = {
   top: 10,
 }
 
-function handleReport(json) {
-  try {
-    return JSON.parse(json)
-  } catch (e) {
-    return {}
+type PropTypes = {
+  match?: any
+  interfaceColList?: any[]
+  fetchInterfaceColList?: AnyFunc
+  fetchCaseList?: AnyFunc
+  setColData?: AnyFunc
+  history?: any
+  currCaseList?: any[]
+  currColId?: number
+  currCaseId?: number
+  isShowCol?: boolean
+  isRander?: boolean
+  currProject?: any
+  getToken?: AnyFunc
+  token?: string
+  curProjectRole?: string
+  getEnv?: AnyFunc
+  projectEnv?: any
+  fetchCaseEnvList?: AnyFunc
+  envList?: any[]
+  curUid?: number
+}
+
+type StateTypes = {
+  rows: any[]
+  reports: { [K: string]: any }
+  visible: boolean
+  curCaseid: any
+  hasPlugin: boolean
+  advVisible: boolean
+  curScript: string
+  enableScript: boolean
+  autoVisible: boolean
+  mode: string
+  email: boolean
+  download: boolean
+  currColEnvObj: { [K: string]: any }
+  collapseKey: string
+  commonSettingModalVisible: boolean
+  commonSetting: {
+    checkHttpCodeIs200: boolean
+    checkResponseField: {
+      name: string
+      value: string
+      enable: boolean
+    }
+    checkResponseSchema: boolean
+    checkScript: {
+      enable: boolean
+      content: string
+    }
   }
 }
 
-@connect(
-  state => ({
-    interfaceColList: state.interfaceCol.interfaceColList,
-    currColId: state.interfaceCol.currColId,
-    currCaseId: state.interfaceCol.currCaseId,
-    isShowCol: state.interfaceCol.isShowCol,
-    isRander: state.interfaceCol.isRander,
-    currCaseList: state.interfaceCol.currCaseList,
-    currProject: state.project.currProject,
-    token: state.project.token,
-    envList: state.interfaceCol.envList,
-    curProjectRole: state.project.currProject.role,
-    projectEnv: state.project.projectEnv,
-    curUid: state.user.uid,
-  }),
-  {
-    fetchInterfaceColList,
-    fetchCaseList,
-    setColData,
-    getToken,
-    getEnv,
-    fetchCaseEnvList,
-  },
-)
-@withRouter
-@DragDropContext(HTML5Backend)
-class InterfaceColContent extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    interfaceColList: PropTypes.array,
-    fetchInterfaceColList: PropTypes.func,
-    fetchCaseList: PropTypes.func,
-    setColData: PropTypes.func,
-    history: PropTypes.object,
-    currCaseList: PropTypes.array,
-    currColId: PropTypes.number,
-    currCaseId: PropTypes.number,
-    isShowCol: PropTypes.bool,
-    isRander: PropTypes.bool,
-    currProject: PropTypes.object,
-    getToken: PropTypes.func,
-    token: PropTypes.string,
-    curProjectRole: PropTypes.string,
-    getEnv: PropTypes.func,
-    projectEnv: PropTypes.object,
-    fetchCaseEnvList: PropTypes.func,
-    envList: PropTypes.array,
-    curUid: PropTypes.number,
-  };
+class InterfaceColContent extends Component<PropTypes, StateTypes> {
+  reports: { [K: string]: any }
+  records: { [K: string]: any }
+  currColId: number
 
-  constructor(props) {
+  _crossRequestInterval: NodeJS.Timeout
+  
+  aceEditorRef:RefObject<AceEditor> = createRef()
+  // this.aceEditor = aceEditor
+
+  constructor(props: PropTypes) {
     super(props)
     this.reports = {}
     this.records = {}
@@ -139,11 +151,12 @@ class InterfaceColContent extends Component {
         },
       },
     }
+
     this.onRow = this.onRow.bind(this)
     this.onMoveRow = this.onMoveRow.bind(this)
   }
 
-  async handleColIdChange(newColId) {
+  async handleColIdChange(newColId: number | string) {
     this.props.setColData({
       currColId: Number(newColId),
       isShowCol: true,
@@ -152,7 +165,13 @@ class InterfaceColContent extends Component {
 
     const result = await this.props.fetchCaseList(newColId)
     if (result.payload.data.errcode === 0) {
-      this.reports = handleReport(result.payload.data.colData.test_report)
+      try {
+        this.reports = JSON.parse(result.payload.data.colData.test_report)
+      } catch (e) {
+        console.error(e)
+        this.reports = {}
+      }
+    
       this.setState({
         commonSetting: {
           ...this.state.commonSetting,
@@ -173,13 +192,14 @@ class InterfaceColContent extends Component {
     let { currColId } = this.props
     const params = this.props.match.params
     const { actionId } = params
-    this.currColId = currColId = Number(actionId) || result.payload.data.data[0]._id
+    currColId = Number(actionId) || result.payload.data.data[0]._id
+    this.currColId = currColId
     // this.props.history.push('/project/' + params.id + '/interface/col/' + currColId);
-    if (currColId && currColId != 0) {
+    if (currColId && currColId !== 0) {
       await this.handleColIdChange(currColId)
     }
 
-    this._crossRequestInterval = initCrossRequest(hasPlugin => {
+    this._crossRequestInterval = initCrossRequest((hasPlugin: boolean) => {
       this.setState({ hasPlugin: hasPlugin })
     })
   }
@@ -189,7 +209,7 @@ class InterfaceColContent extends Component {
   }
 
   // 更新分类简介
-  handleChangeInterfaceCol = (desc, name) => {
+  handleChangeInterfaceCol = (desc: string, name: string) => {
     const params = {
       col_id: this.props.currColId,
       name: name,
@@ -204,42 +224,39 @@ class InterfaceColContent extends Component {
       await this.props.fetchInterfaceColList(project_id)
       message.success('接口集合简介更新成功')
     })
-  };
+  }
 
   // 整合header信息
-  handleReqHeader = (project_id, req_header, case_env) => {
-    const envItem = _.find(this.props.envList, item => item._id === project_id)
+  handleReqHeader = (project_id: string, req_header: any[], case_env: any) => {
+    const envItem = this.props.envList.find(item => item._id === project_id)
 
     const currDomain = handleCurrDomain(envItem && envItem.env, case_env)
     const header = currDomain.header
-    header.forEach(item => {
+    for (const item of header) {
       if (!checkNameIsExistInArray(item.name, req_header)) {
-        // item.abled = true;
-        item = {
-          ...item,
-          abled: true,
-        }
-        req_header.push(item)
+        // item = { ...item, abled: true, }
+        req_header.push({ ...item, abled: true })
       }
-    })
-    return req_header
-  };
+    }
 
-  handleColdata = (rows, currColEnvObj = {}) => {
-    const that = this
-    const newRows = produce(rows, draftRows => {
-      draftRows.map(item => {
+    return req_header
+  }
+
+  handleColdata = (rows: any, currColEnvObj: any = {}) => {
+    const newRows: any = produce(rows, (draftRows: any) => {
+      draftRows.map((item: any) => {
         item.id = item._id
         item._test_status = item.test_status
         if (currColEnvObj[item.project_id]) {
           item.case_env = currColEnvObj[item.project_id]
         }
-        item.req_headers = that.handleReqHeader(item.project_id, item.req_headers, item.case_env)
+        item.req_headers = this.handleReqHeader(item.project_id, item.req_headers, item.case_env)
         return item
       })
     })
+
     this.setState({ rows: newRows })
-  };
+  }
 
   executeTests = async () => {
     for (let i = 0, l = this.state.rows.length, newRows, curitem; i < l; i++) {
@@ -248,7 +265,7 @@ class InterfaceColContent extends Component {
       const envItem = _.find(this.props.envList, item => item._id === rows[i].project_id)
 
       curitem = {
-        
+
         ...rows[i],
         env: envItem.env,
         pre_script: this.props.currProject.pre_script,
@@ -293,16 +310,16 @@ class InterfaceColContent extends Component {
       col_id: this.props.currColId,
       test_report: JSON.stringify(this.reports),
     })
-  };
+  }
 
-  handleTest = async interfaceData => {
+  handleTest = async (interfaceData: any) => {
     let requestParams = {}
-    const options = handleParams(interfaceData, this.handleValue, requestParams)
+    const options:any = handleParams(interfaceData, this.handleValue, requestParams)
 
-    let result = {
+    let result:any = {
       code: 400,
       msg: '数据异常',
-      validRes: [],
+      validRes: [] as any,
     }
 
     await plugin.emitHook('before_col_request', {
@@ -320,7 +337,10 @@ class InterfaceColContent extends Component {
         interfaceData.interface_id,
       ))
       options.taskId = this.props.curUid
-      const res = (data.res.body = json_parse(data.res.body))
+
+      data.res.body = json_parse(data.res.body)
+      const res = data.res.body 
+
       result = {
         ...options,
         ...result,
@@ -344,10 +364,10 @@ class InterfaceColContent extends Component {
         }
       }
 
-      const validRes = []
+      const validRes:any[] = []
 
       const responseData = {
-        
+
         status: data.res.status,
         body: res,
         header: data.res.header,
@@ -359,11 +379,7 @@ class InterfaceColContent extends Component {
 
       if (validRes.length === 0) {
         result.code = 0
-        result.validRes = [
-          {
-            message: '验证通过',
-          },
-        ]
+        result.validRes = [{ message: '验证通过' }]
       } else if (validRes.length > 0) {
         result.code = 1
         result.validRes = validRes
@@ -387,11 +403,11 @@ class InterfaceColContent extends Component {
 
     result.params = requestParams
     return result
-  };
+  }
 
   // response, validRes
   // 断言测试
-  handleScriptTest = async (interfaceData, response, validRes, requestParams) => {
+  handleScriptTest = async (interfaceData:any, response:any, validRes:any[], requestParams:any) => {
     // 是否启动断言
     try {
       const test = await axios.post('/api/col/run_script', {
@@ -403,7 +419,7 @@ class InterfaceColContent extends Component {
         interface_id: interfaceData.interface_id,
       })
       if (test.data.errcode !== 0) {
-        test.data.data.logs.forEach(item => {
+        test.data.data.logs.forEach((item: string) => {
           validRes.push({ message: item })
         })
       }
@@ -412,42 +428,29 @@ class InterfaceColContent extends Component {
         message: 'Error: ' + err.message,
       })
     }
-  };
+  }
 
-  handleValue = (val, global) => {
+  handleValue = (val:any, global:any) => {
     const globalValue = changeArrayToObject(global)
     const context = { global: globalValue, ...this.records }
     return handleParamsValue(val, context)
-  };
-
-  arrToObj = (arr, requestParams) => {
-    arr = arr || []
-    const obj = {}
-    arr.forEach(item => {
-      if (item.name && item.enable && item.type !== 'file') {
-        obj[item.name] = this.handleValue(item.value)
-        if (requestParams) {
-          requestParams[item.name] = obj[item.name]
-        }
-      }
-    })
-    return obj
-  };
-
-  onRow(row) {
+  }
+  
+  onRow(row: any) {
     return { rowId: row.id, onMove: this.onMoveRow, onDrop: this.onDrop }
   }
 
   onDrop = () => {
-    const changes = []
+    const changes: any = []
     this.state.rows.forEach((item, index) => {
       changes.push({ id: item._id, index: index })
     })
     axios.post('/api/col/up_case_index', changes).then(() => {
       this.props.fetchInterfaceColList(this.props.match.params.id)
     })
-  };
-  onMoveRow({ sourceRowId, targetRowId }) {
+  }
+
+  onMoveRow({ sourceRowId, targetRowId }: any) {
     const rows = dnd.moveRows({ sourceRowId, targetRowId })(this.state.rows)
 
     if (rows) {
@@ -455,8 +458,7 @@ class InterfaceColContent extends Component {
     }
   }
 
-  onChangeTest = d => {
-    
+  onChangeTest = (d:any) => {
     this.setState({
       commonSetting: {
         ...this.state.commonSetting,
@@ -466,13 +468,13 @@ class InterfaceColContent extends Component {
         },
       },
     })
-  };
+  }
 
-  handleInsertCode = code => {
-    this.aceEditor.editor.insertCode(code)
-  };
+  handleInsertCode = (code:string) => {
+    this.aceEditorRef.current.editor.insertCode(code)
+  }
 
-  async UNSAFE_componentWillReceiveProps(nextProps) {
+  async UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
     const newColId = !isNaN(nextProps.match.params.actionId) ? Number(nextProps.match.params.actionId) : 0
 
     if ((newColId && this.currColId && newColId !== this.currColId) || nextProps.isRander) {
@@ -482,7 +484,7 @@ class InterfaceColContent extends Component {
   }
 
   // 测试用例环境面板折叠
-  changeCollapseClose = key => {
+  changeCollapseClose = (key?: string) => {
     if (key) {
       this.setState({
         collapseKey: key,
@@ -493,16 +495,16 @@ class InterfaceColContent extends Component {
         currColEnvObj: {},
       })
     }
-  };
+  }
 
-  openReport = id => {
+  openReport = (id:number) => {
     if (!this.reports[id]) {
       return message.warn('还没有生成报告')
     }
     this.setState({ visible: true, curCaseid: id })
-  };
+  }
 
-  openAdv = id => {
+  openAdv = (id: number) => {
     const findCase = _.find(this.props.currCaseList, item => item.id === id)
 
     this.setState({
@@ -511,15 +513,15 @@ class InterfaceColContent extends Component {
       advVisible: true,
       curCaseid: id,
     })
-  };
+  }
 
-  handleScriptChange = d => {
+  handleScriptChange = (d:any) => {
     this.setState({ curScript: d.text })
-  };
+  }
 
   handleAdvCancel = () => {
     this.setState({ advVisible: false })
-  };
+  }
 
   handleAdvOk = async () => {
     const { curCaseid, enableScript, curScript } = this.state
@@ -541,13 +543,13 @@ class InterfaceColContent extends Component {
     await this.props.fetchCaseList(currColId)
 
     this.handleColdata(this.props.currCaseList)
-  };
+  }
 
   handleCancel = () => {
     this.setState({ visible: false })
-  };
+  }
 
-  currProjectEnvChange = (envName, project_id) => {
+  currProjectEnvChange = (envName: string, project_id: string) => {
     const currColEnvObj = {
       ...this.state.currColEnvObj,
       [project_id]: envName,
@@ -555,11 +557,11 @@ class InterfaceColContent extends Component {
     this.setState({ currColEnvObj })
     // this.handleColdata(this.props.currCaseList, envName, project_id);
     this.handleColdata(this.props.currCaseList, currColEnvObj)
-  };
+  }
 
   autoTests = () => {
     this.setState({ autoVisible: true, currColEnvObj: {}, collapseKey: '' })
-  };
+  }
 
   handleAuto = () => {
     this.setState({
@@ -570,32 +572,32 @@ class InterfaceColContent extends Component {
       currColEnvObj: {},
       collapseKey: '',
     })
-  };
+  }
 
-  copyUrl = url => {
-    copy(url)
+  copyUrl = (url:string) => {
+    copy(url, { format: 'text/plain' })
     message.success('已经成功复制到剪切板')
-  };
+  }
 
-  modeChange = mode => {
+  modeChange = (mode:string) => {
     this.setState({ mode })
-  };
+  }
 
-  emailChange = email => {
+  emailChange = (email: boolean) => {
     this.setState({ email })
-  };
+  }
 
-  downloadChange = download => {
+  downloadChange = (download: boolean) => {
     this.setState({ download })
-  };
+  }
 
-  handleColEnvObj = envObj => {
+  handleColEnvObj = (envObj: any) => {
     let str = ''
-    for (const key in envObj) {
-      str += envObj[key] ? `&env_${key}=${envObj[key]}` : ''
+    for (const [k, v] of Object.entries(envObj)) {
+      str += v ? `&env_${k}=${v}` : ''
     }
     return str
-  };
+  }
 
   handleCommonSetting = () => {
     const setting = this.state.commonSetting
@@ -607,12 +609,13 @@ class InterfaceColContent extends Component {
     }
     console.log(params)
 
-    axios.post('/api/col/up_col', params).then(async res => {
-      if (res.data.errcode) {
-        return message.error(res.data.errmsg)
-      }
-      message.success('配置测试集成功')
-    })
+    axios.post('/api/col/up_col', params)
+      .then(res => {
+        if (res.data.errcode) {
+          return message.error(res.data.errmsg)
+        }
+        message.success('配置测试集成功')
+      })
 
     this.setState({
       commonSettingModalVisible: false,
@@ -631,7 +634,7 @@ class InterfaceColContent extends Component {
     })
   }
 
-  changeCommonFieldSetting = key => e => {
+  changeCommonFieldSetting = (key:string) => (e: any) => {
     let value = e
     if (typeof e === 'object' && e) {
       value = e.target.value
@@ -647,7 +650,7 @@ class InterfaceColContent extends Component {
       },
     })
   }
-  
+
   render() {
     const currProjectId = this.props.currProject._id
     const columns = [
@@ -663,7 +666,7 @@ class InterfaceColContent extends Component {
         },
         cell: {
           formatters: [
-            (text, { rowData }) => {
+            (text:string, { rowData }:any) => {
               const record = rowData
               return (
                 <Link to={'/project/' + currProjectId + '/interface/case/' + record._id}>
@@ -685,20 +688,20 @@ class InterfaceColContent extends Component {
                 title={
                   <span>
                     {' '}
-                      每个用例都有唯一的key，用于获取所匹配接口的响应数据，例如使用{' '}
+                    每个用例都有唯一的key，用于获取所匹配接口的响应数据，例如使用{' '}
                     <a
                       href="https://hellosean1025.github.io/yapi/documents/case.html#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%8C%E7%BC%96%E8%BE%91%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B"
                       className="link-tooltip"
                       target="blank"
                     >
                       {' '}
-                        变量参数{' '}
+                      变量参数{' '}
                     </a>{' '}
-                      功能{' '}
+                    功能{' '}
                   </span>
                 }
               >
-                  Key
+                Key
               </Tooltip>
             ),
           ],
@@ -710,7 +713,7 @@ class InterfaceColContent extends Component {
         },
         cell: {
           formatters: [
-            (value, { rowData }) => <span>{rowData._id}</span>,
+            (value:any, { rowData }:any) => <span>{rowData._id}</span>,
           ],
         },
       },
@@ -726,7 +729,7 @@ class InterfaceColContent extends Component {
         },
         cell: {
           formatters: [
-            (value, { rowData }) => {
+            (value:any, { rowData }:any) => {
               const id = rowData._id
               const code = this.reports[id] ? this.reports[id].code : 0
               if (rowData.test_status === 'loading') {
@@ -780,7 +783,7 @@ class InterfaceColContent extends Component {
         },
         cell: {
           formatters: [
-            (text, { rowData }) => {
+            (text:string, { rowData }:any) => {
               const record = rowData
               return (
                 <Tooltip title="跳转到对应接口">
@@ -804,7 +807,7 @@ class InterfaceColContent extends Component {
         },
         cell: {
           formatters: [
-            (text, { rowData }) => {
+            (text:string, { rowData }:any) => {
               const reportFun = () => {
                 if (!this.reports[rowData.id]) {
                   return null
@@ -835,10 +838,8 @@ class InterfaceColContent extends Component {
       + location.hostname
       + (location.port !== '' ? ':' + location.port : '')
     const currColEnvObj = this.handleColEnvObj(this.state.currColEnvObj)
-    const autoTestsUrl = `/api/open/run_auto_test?id=${this.props.currColId}&token=${
-      this.props.token
-    }${currColEnvObj ? currColEnvObj : ''}&mode=${this.state.mode}&email=${
-      this.state.email
+    const autoTestsUrl = `/api/open/run_auto_test?id=${this.props.currColId}&token=${this.props.token
+    }${currColEnvObj ? currColEnvObj : ''}&mode=${this.state.mode}&email=${this.state.email
     }&download=${this.state.download}`
 
     let col_name = ''
@@ -931,7 +932,7 @@ class InterfaceColContent extends Component {
                     commonSetting: {
                       ...commonSetting,
                       checkScript: {
-                        ...this.state.checkScript,
+                        ...this.state.commonSetting.checkScript,
                         enable: e,
                       },
                     },
@@ -941,9 +942,7 @@ class InterfaceColContent extends Component {
                   onChange={this.onChangeTest}
                   className="case-script"
                   data={this.state.commonSetting.checkScript.content}
-                  ref={aceEditor => {
-                    this.aceEditor = aceEditor
-                  }}
+                  ref={this.aceEditorRef}
                 />
               </Col>
               <Col span="6">
@@ -966,7 +965,7 @@ class InterfaceColContent extends Component {
 
           </div>
         </Modal>
-        <Row type="flex" justify="center" align="top">
+        <Row justify="center" align="top">
           <Col span={5}>
             <h2
               className="interface-title"
@@ -999,7 +998,7 @@ class InterfaceColContent extends Component {
             {this.state.hasPlugin ? (
               <div
                 style={{
-                  cssFloat: 'right',
+                  float: 'right',
                   paddingTop: '8px',
                 }}
               >
@@ -1029,7 +1028,7 @@ class InterfaceColContent extends Component {
                   disabled
                   type="primary"
                   style={{
-                    cssFloat: 'right',
+                    float: 'right',
                     marginTop: '8px',
                   }}
                 >
@@ -1041,7 +1040,7 @@ class InterfaceColContent extends Component {
         </Row>
 
         <div className="component-label-wrapper">
-          <Label onChange={val => this.handleChangeInterfaceCol(val, col_name)} desc={col_desc} />
+          <Label onChange={(val:any) => this.handleChangeInterfaceCol(val, col_name)} desc={col_desc} />
         </div>
 
         <Table.Provider
@@ -1113,7 +1112,7 @@ class InterfaceColContent extends Component {
             className="autoTestsModal"
             footer={null}
           >
-            <Row type="flex" justify="space-around" className="row" align="top">
+            <Row justify="space-around" className="row" align="top">
               <Col span={3} className="label" style={{ paddingTop: '16px' }}>
                 选择环境
                 <Tooltip title="默认使用测试用例选择的环境">
@@ -1131,7 +1130,7 @@ class InterfaceColContent extends Component {
                 />
               </Col>
             </Row>
-            <Row type="flex" justify="space-around" className="row" align="middle">
+            <Row justify="space-around" className="row" align="middle">
               <Col span={3} className="label">
                 输出格式：
               </Col>
@@ -1146,7 +1145,7 @@ class InterfaceColContent extends Component {
                 </Select>
               </Col>
             </Row>
-            <Row type="flex" justify="space-around" className="row" align="middle">
+            <Row justify="space-around" className="row" align="middle">
               <Col span={3} className="label">
                 消息通知
                 <Tooltip title={'测试不通过时，会给项目组成员发送消息通知'}>
@@ -1163,7 +1162,7 @@ class InterfaceColContent extends Component {
                 />
               </Col>
             </Row>
-            <Row type="flex" justify="space-around" className="row" align="middle">
+            <Row justify="space-around" className="row" align="middle">
               <Col span={3} className="label">
                 下载数据
                 <Tooltip title={'开启后，测试数据将被下载到本地'}>
@@ -1180,9 +1179,9 @@ class InterfaceColContent extends Component {
                 />
               </Col>
             </Row>
-            <Row type="flex" justify="space-around" className="row" align="middle">
+            <Row justify="space-around" className="row" align="middle">
               <Col span={21} className="autoTestUrl">
-                <a 
+                <a
                   target="_blank"
                   rel="noopener noreferrer"
                   href={localUrl + autoTestsUrl} >
@@ -1205,4 +1204,28 @@ class InterfaceColContent extends Component {
   }
 }
 
-export default InterfaceColContent
+const states = (state: any) => ({
+  interfaceColList: state.interfaceCol.interfaceColList,
+  currColId: state.interfaceCol.currColId,
+  currCaseId: state.interfaceCol.currCaseId,
+  isShowCol: state.interfaceCol.isShowCol,
+  isRander: state.interfaceCol.isRander,
+  currCaseList: state.interfaceCol.currCaseList,
+  currProject: state.project.currProject,
+  token: state.project.token,
+  envList: state.interfaceCol.envList,
+  curProjectRole: state.project.currProject.role,
+  projectEnv: state.project.projectEnv,
+  curUid: state.user.uid,
+})
+const actions = {
+  fetchInterfaceColList,
+  fetchCaseList,
+  setColData,
+  getToken,
+  getEnv,
+  fetchCaseEnvList,
+}
+
+export default
+  connect(states, actions)(withRouter(DragDropContext(HTML5Backend)(InterfaceColContent))) as typeof InterfaceColContent
