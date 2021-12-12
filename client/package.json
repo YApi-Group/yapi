@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "webpack server --config webpack.dev.ts",
     "prod": "rimraf ./dist-prod && cross-env NODE_ENV=production webpack --config ./webpack.prod.ts",
-    "test": "ava",
-    "docs": "ydoc build"
+    "test": "ava"
   },
   "scripts-info": {
     "dev": "运行开发服务器",
@@ -50,13 +49,11 @@
     "rc-scroll-anim": "^2.7.6",
     "rc-tween-one": "^2.7.3",
     "react": "^16.13.0",
-    "react-dnd": "^2.5.4",
-    "react-dnd-html5-backend": "^2.5.4",
+    "react-dnd": "^14.0.4",
+    "react-dnd-html5-backend": "^14.0.2",
     "react-dom": "^16.13.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
-    "reactabular-dnd": "^8.16.0",
-    "reactabular-table": "^8.14.0",
     "recharts": "^2.0.9",
     "redux": "^4.1.0",
     "redux-devtools": "^3.4.0",

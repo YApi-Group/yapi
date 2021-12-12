@@ -3,7 +3,7 @@ import { Button, Form, Input, Tooltip, Select, message, Row, Col, Radio, FormIns
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component, RefObject } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import constants from '@/cons'
 import { DispatchCommonFunc, DispatchPromiseFunc } from '@/types'

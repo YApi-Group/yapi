@@ -12,7 +12,7 @@ import { Layout, Menu, Dropdown, message, Tooltip, Popover, Tag } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
 import plugin from '@/plugin.js'

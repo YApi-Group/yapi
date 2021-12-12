@@ -4,25 +4,18 @@ import {
   InfoCircleOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons'
-import { Tooltip, Input, Button, Row, Col, Spin, Modal, message, Select, Switch } from 'antd'
+import { Tooltip, Input, Button, Row, Col, Spin, Modal, message, Select, Switch, Table as TableV2 } from 'antd'
+import { ColumnType } from 'antd/lib/table'
 import axios from 'axios'
 import copy from 'copy-to-clipboard'
 import produce from 'immer'
 import PropTypes from 'prop-types'
 import React, { createRef, PureComponent as Component, RefObject } from 'react'
-// @ts-ignore
-import { DragDropContext } from 'react-dnd'
-// @ts-ignore
-import HTML5Backend from 'react-dnd-html5-backend'
+import { DndProvider, useDrag, useDrop } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-// @ts-ignore
-import * as dnd from 'reactabular-dnd'
-// @ts-ignore
-import * as Table from 'reactabular-table'
-// @ts-ignore
-import * as resolve from 'table-resolver'
 import _ from 'underscore'
 
 import AceEditor from '@/components/AceEditor/AceEditor'
@@ -151,9 +144,6 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
         },
       },
     }
-
-    this.onRow = this.onRow.bind(this)
-    this.onMoveRow = this.onMoveRow.bind(this)
   }
 
   async handleColIdChange(newColId: number | string) {
@@ -436,27 +426,26 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     return handleParamsValue(val, context)
   }
   
-  onRow(row: any) {
-    return { rowId: row.id, onMove: this.onMoveRow, onDrop: this.onDrop }
-  }
+  // onRow(row: any) {
+  //   return { rowId: row.id, onMove: this.onMoveRow, onDrop: this.onDrop }
+  // }
 
-  onDrop = () => {
-    const changes: any = []
-    this.state.rows.forEach((item, index) => {
-      changes.push({ id: item._id, index: index })
-    })
-    axios.post('/api/col/up_case_index', changes).then(() => {
-      this.props.fetchInterfaceColList(this.props.match.params.id)
-    })
-  }
+  // onDrop = () => {
+  //   const changes: any = []
+  //   this.state.rows.forEach((item, index) => {
+  //     changes.push({ id: item._id, index: index })
+  //   })
+  //   axios.post('/api/col/up_case_index', changes).then(() => {
+  //     this.props.fetchInterfaceColList(this.props.match.params.id)
+  //   })
+  // }
 
-  onMoveRow({ sourceRowId, targetRowId }: any) {
-    const rows = dnd.moveRows({ sourceRowId, targetRowId })(this.state.rows)
-
-    if (rows) {
-      this.setState({ rows })
-    }
-  }
+  // onMoveRow({ sourceRowId, targetRowId }: any) {
+  //   const rows = dnd.moveRows({ sourceRowId, targetRowId })(this.state.rows)
+  //   if (rows) {
+  //     this.setState({ rows })
+  //   }
+  // }
 
   onChangeTest = (d:any) => {
     this.setState({
@@ -653,184 +642,119 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
 
   render() {
     const currProjectId = this.props.currProject._id
-    const columns = [
+    const columns: ColumnType<any>[] = [
       {
-        property: 'casename',
-        header: {
-          label: '用例名称',
-        },
-        props: {
-          style: {
-            width: '250px',
-          },
-        },
-        cell: {
-          formatters: [
-            (text:string, { rowData }:any) => {
-              const record = rowData
-              return (
-                <Link to={'/project/' + currProjectId + '/interface/case/' + record._id}>
-                  {record.casename.length > 23
-                    ? record.casename.substr(0, 20) + '...'
-                    : record.casename}
-                </Link>
-              )
-            },
-          ],
-        },
+        dataIndex: 'casename',
+        title: '用例名称',
+        render: (text:string, record:any) => (
+          <Link to={'/project/' + currProjectId + '/interface/case/' + record._id}>
+            {record.casename.length > 23
+              ? record.casename.substr(0, 20) + '...'
+              : record.casename}
+          </Link>
+        ),
       },
       {
-        header: {
-          label: 'key',
-          formatters: [
-            () => (
-              <Tooltip
-                title={
-                  <span>
-                    {' '}
+        dataIndex: 'key',
+        title: () => (
+          <Tooltip
+            title={
+              <span>
+                {' '}
                     每个用例都有唯一的key，用于获取所匹配接口的响应数据，例如使用{' '}
-                    <a
-                      href="https://hellosean1025.github.io/yapi/documents/case.html#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%8C%E7%BC%96%E8%BE%91%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B"
-                      className="link-tooltip"
-                      target="blank"
-                    >
-                      {' '}
+                <a
+                  href="https://hellosean1025.github.io/yapi/documents/case.html#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%8C%E7%BC%96%E8%BE%91%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B"
+                  className="link-tooltip"
+                  target="blank"
+                >
+                  {' '}
                       变量参数{' '}
-                    </a>{' '}
+                </a>{' '}
                     功能{' '}
-                  </span>
-                }
-              >
+              </span>
+            }
+          >
                 Key
-              </Tooltip>
-            ),
-          ],
-        },
-        props: {
-          style: {
-            width: '100px',
-          },
-        },
-        cell: {
-          formatters: [
-            (value:any, { rowData }:any) => <span>{rowData._id}</span>,
-          ],
-        },
+          </Tooltip>
+        ),
+        render: (value:any, record:any) => <span>{record._id}</span>,
       },
       {
-        property: 'test_status',
-        header: {
-          label: '状态',
-        },
-        props: {
-          style: {
-            width: '100px',
-          },
-        },
-        cell: {
-          formatters: [
-            (value:any, { rowData }:any) => {
-              const id = rowData._id
-              const code = this.reports[id] ? this.reports[id].code : 0
-              if (rowData.test_status === 'loading') {
-                return (
-                  <div>
-                    <Spin />
-                  </div>
-                )
-              }
+        dataIndex: 'test_status',
+        title: '状态',
+        render: (value:any, rowData :any) => {
+          const id = rowData._id
+          const code = this.reports[id] ? this.reports[id].code : 0
+          if (rowData.test_status === 'loading') {
+            return (
+              <div>
+                <Spin />
+              </div>
+            )
+          }
 
-              switch (code) {
-                case 0:
-                  return (
-                    <div>
-                      <Tooltip title="Pass">
-                        <CheckCircleOutlined style={{ color: '#00a854' }} />
-                      </Tooltip>
-                    </div>
-                  )
-                case 400:
-                  return (
-                    <div>
-                      <Tooltip title="请求异常">
-                        <InfoCircleOutlined style={{ color: '#f04134' }} />
-                      </Tooltip>
-                    </div>
-                  )
-                case 1:
-                  return (
-                    <div>
-                      <Tooltip title="验证失败">
-                        <ExclamationCircleFilled style={{ color: '#ffbf00' }} />
-                      </Tooltip>
-                    </div>
-                  )
-                default:
-                  return (
-                    <div>
-                      <CheckCircleOutlined style={{ color: '#00a854' }} />
-                    </div>
-                  )
-              }
-            },
-          ],
-        },
-      },
-      {
-        property: 'path',
-        header: {
-          label: '接口路径',
-        },
-        cell: {
-          formatters: [
-            (text:string, { rowData }:any) => {
-              const record = rowData
+          switch (code) {
+            case 0:
               return (
-                <Tooltip title="跳转到对应接口">
-                  <Link to={`/project/${record.project_id}/interface/api/${record.interface_id}`}>
-                    {record.path.length > 23 ? record.path + '...' : record.path}
-                  </Link>
-                </Tooltip>
+                <div>
+                  <Tooltip title="Pass">
+                    <CheckCircleOutlined style={{ color: '#00a854' }} />
+                  </Tooltip>
+                </div>
               )
-            },
-          ],
+            case 400:
+              return (
+                <div>
+                  <Tooltip title="请求异常">
+                    <InfoCircleOutlined style={{ color: '#f04134' }} />
+                  </Tooltip>
+                </div>
+              )
+            case 1:
+              return (
+                <div>
+                  <Tooltip title="验证失败">
+                    <ExclamationCircleFilled style={{ color: '#ffbf00' }} />
+                  </Tooltip>
+                </div>
+              )
+            default:
+              return (
+                <div>
+                  <CheckCircleOutlined style={{ color: '#00a854' }} />
+                </div>
+              )
+          }
         },
       },
       {
-        header: {
-          label: '测试报告',
-        },
-        props: {
-          style: {
-            width: '200px',
-          },
-        },
-        cell: {
-          formatters: [
-            (text:string, { rowData }:any) => {
-              const reportFun = () => {
-                if (!this.reports[rowData.id]) {
-                  return null
-                }
-                return <Button onClick={() => this.openReport(rowData.id)}>测试报告</Button>
-              }
-              return <div className="interface-col-table-action">{reportFun()}</div>
-            },
-          ],
+        dataIndex: 'path',
+        title: '接口路径',
+        render: (text:string, record:any) => (
+          <Tooltip title="跳转到对应接口">
+            <Link to={`/project/${record.project_id}/interface/api/${record.interface_id}`}>
+              {record.path.length > 23 ? record.path + '...' : record.path}
+            </Link>
+          </Tooltip>
+        ),
+      },
+      {
+        dataIndex: 'report',
+        title: '测试报告',
+        render: (text:string, rowData :any) => {
+          const reportFun = () => {
+            if (!this.reports[rowData.id]) {
+              return null
+            }
+            return <Button onClick={() => this.openReport(rowData.id)}>测试报告</Button>
+          }
+          return <div className="interface-col-table-action">{reportFun()}</div>
         },
       },
     ]
+
     const { rows } = this.state
-    const components = {
-      header: {
-        cell: dnd.Header,
-      },
-      body: {
-        row: dnd.Row,
-      },
-    }
-    const resolvedColumns = resolve.columnChildren({ columns })
-    const resolvedRows = resolve.resolve({ columns: resolvedColumns, method: resolve.nested })(rows)
+    // console.log(rows)
 
     const localUrl
       = location.protocol
@@ -1043,26 +967,12 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
           <Label onChange={(val:any) => this.handleChangeInterfaceCol(val, col_name)} desc={col_desc} />
         </div>
 
-        <Table.Provider
-          components={components}
-          columns={resolvedColumns}
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-          }}
-        >
-          <Table.Header
-            className="interface-col-table-header"
-            headerRows={resolve.headerRows({ columns })}
-          />
+        <TableV2
+          rowKey="id"
+          columns={columns}
+          dataSource={rows}
+        />
 
-          <Table.Body
-            className="interface-col-table-body"
-            rows={resolvedRows}
-            rowKey="id"
-            onRow={this.onRow}
-          />
-        </Table.Provider>
         <Modal
           title="测试报告"
           width="900px"
@@ -1227,5 +1137,4 @@ const actions = {
   fetchCaseEnvList,
 }
 
-export default
-  connect(states, actions)(withRouter(DragDropContext(HTML5Backend)(InterfaceColContent))) as typeof InterfaceColContent
+export default connect(states, actions)(withRouter(InterfaceColContent as any)) as any as typeof InterfaceColContent

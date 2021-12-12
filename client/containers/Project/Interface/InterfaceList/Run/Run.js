@@ -3,7 +3,7 @@ import axios from 'axios'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import { Postman } from '../../../../../components'
 
@@ -26,9 +26,9 @@ export default class Run extends Component {
     currInterface: PropTypes.object,
     match: PropTypes.object,
     curUid: PropTypes.number,
-  };
+  }
 
-  state = {};
+  state = {}
 
   constructor(props) {
     super(props)
@@ -40,7 +40,7 @@ export default class Run extends Component {
 
   savePostmanRef = postman => {
     this.postman = postman
-  };
+  }
 
   saveCase = async (colId, caseName) => {
     const project_id = this.props.match.params.id
@@ -80,7 +80,7 @@ export default class Run extends Component {
       message.success('添加成功')
       this.setState({ saveCaseModalVisible: false })
     }
-  };
+  }
 
   render() {
     const { currInterface, currProject } = this.props

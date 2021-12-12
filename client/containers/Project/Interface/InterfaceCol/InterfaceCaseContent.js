@@ -3,7 +3,7 @@ import axios from 'axios'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
 import { Postman } from '../../../../components'
@@ -54,12 +54,12 @@ export default class InterfaceCaseContent extends Component {
     getEnv: PropTypes.func,
     projectEnv: PropTypes.object,
     curUid: PropTypes.number,
-  };
+  }
 
   state = {
     isEditingCasename: true,
     editCasename: '',
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -110,7 +110,7 @@ export default class InterfaceCaseContent extends Component {
 
   savePostmanRef = postman => {
     this.postman = postman
-  };
+  }
 
   updateCase = async () => {
     const {
@@ -155,20 +155,20 @@ export default class InterfaceCaseContent extends Component {
       message.success('更新成功')
       this.props.fetchCaseData(id)
     }
-  };
+  }
 
   triggerEditCasename = () => {
     this.setState({
       isEditingCasename: true,
       editCasename: this.props.currCase.casename,
     })
-  };
+  }
   cancelEditCasename = () => {
     this.setState({
       isEditingCasename: false,
       editCasename: this.props.currCase.casename,
     })
-  };
+  }
 
   render() {
     const { currCase, currProject, projectEnv } = this.props

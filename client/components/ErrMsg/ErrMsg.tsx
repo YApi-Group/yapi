@@ -1,7 +1,7 @@
 import { FrownOutlined, MehOutlined } from '@ant-design/icons'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component, ReactElement } from 'react'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import './ErrMsg.scss'
 

@@ -4,7 +4,7 @@ import axios from 'axios'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import { fetchInterfaceColList } from '../../../../../reducer/modules/interfaceCol'
 
@@ -29,7 +29,7 @@ export default class AddColModal extends Component {
     onOk: PropTypes.func,
     onCancel: PropTypes.func,
     caseName: PropTypes.string,
-  };
+  }
 
   state = {
     visible: false,
@@ -37,7 +37,7 @@ export default class AddColModal extends Component {
     addColDesc: '',
     id: 0,
     caseName: '',
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -65,11 +65,11 @@ export default class AddColModal extends Component {
     } else {
       message.error(res.data.errmsg)
     }
-  };
+  }
 
   select = id => {
     this.setState({ id })
-  };
+  }
 
   render() {
     const { interfaceColList = [] } = this.props

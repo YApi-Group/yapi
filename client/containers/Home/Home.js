@@ -4,7 +4,7 @@ import { Row, Col, Button, Card } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
 import LogoSVG from '../../components/LogoSVG/index.js'
@@ -352,10 +352,10 @@ class Home extends Component {
     login: PropTypes.bool,
     history: PropTypes.object,
     changeMenuItem: PropTypes.func,
-  };
+  }
   toStart = () => {
     this.props.changeMenuItem('/group')
-  };
+  }
   render() {
     return (
       <div className="home-main">

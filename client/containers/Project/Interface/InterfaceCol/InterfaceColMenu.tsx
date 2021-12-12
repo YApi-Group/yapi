@@ -5,7 +5,7 @@ import { debounce } from 'lodash-es'
 import PropTypes from 'prop-types'
 import React, { ChangeEvent, createRef, PureComponent as Component, RefObject } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import { AnyFunc } from '@/types.js'
 
@@ -434,7 +434,7 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
           onMouseLeave={this.leaveItem}
           title={interfaceCase.casename}
         >
-          <span className="casename">{interfaceCase.casename} 1111</span>
+          <span className="casename">{interfaceCase.casename}</span>
           <div className="btns">
             <Tooltip title="删除用例">
               <DeleteOutlined

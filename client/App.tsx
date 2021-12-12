@@ -78,21 +78,17 @@ type AppProps = {
   curUserRole: string
 }
 
-class App extends Component<AppProps> {
+type AppState = {
+  login: number
+}
+
+class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props)
     this.state = {
       login: LOADING_STATUS,
     }
-
-    this.route.bind(this)
   }
-
-  // static propTypes = {
-  //   checkLoginState: PropTypes.func,
-  //   loginState: PropTypes.number,
-  //   curUserRole: PropTypes.string,
-  // }
 
   componentDidMount() {
     this.props.checkLoginState()
@@ -106,8 +102,10 @@ class App extends Component<AppProps> {
     ReactDOM.render(<MyPopConfirm msg={msg} callback={callback} />, container)
   }
 
-  route(status: number) {
-    if (status === LOADING_STATUS) { return <Loading visible /> }
+  render() {
+    if (this.props.loginState === LOADING_STATUS) {
+      return <Loading visible />
+    }
 
     const r = (
       <BrowserRouter getUserConfirmation={this.showConfirm}>
@@ -125,24 +123,10 @@ class App extends Component<AppProps> {
                 ) : key === 'home' ? (
                   <Route key={key} exact path={item.path} component={item.component} />
                 ) : (
-                  <Route
-                    key={key}
-                    path={item.path}
-                    component={requireAuthentication(item.component)}
-                  />
+                  <Route key={key} path={item.path} component={requireAuthentication(item.component)} />
                 )
               })}
             </div>
-            {/* <div className="router-container">
-                <Route exact path="/" component={Home} />
-                <Route path="/group" component={requireAuthentication(Group)} />
-                <Route path="/project/:id" component={requireAuthentication(Project)} />
-                <Route path="/user" component={requireAuthentication(User)} />
-                <Route path="/follow" component={requireAuthentication(Follows)} />
-                <Route path="/add-project" component={requireAuthentication(AddProject)} />
-                <Route path="/login" component={Login} />
-                {/* <Route path="/statistic" component={statisticsPage} /> */}
-            {/* </div> */}
           </div>
           <Footer />
         </div>
@@ -150,10 +134,6 @@ class App extends Component<AppProps> {
     )
 
     return r
-  }
-
-  render() {
-    return this.route(this.props.loginState)
   }
 }
 

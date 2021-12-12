@@ -3,7 +3,7 @@ import { Card, Tooltip, Modal, Alert, Input, message } from 'antd'
 import produce from 'immer'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import constants from '@/cons'
 import { AnyFunc } from '@/types'

@@ -2,7 +2,7 @@ import { Tabs, Modal, Button } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { Prompt } from 'react-router'
+import { Prompt } from 'react-router-dom'
 import { withRouter } from 'react-router-dom'
 
 import plugin from '@/plugin'
