@@ -2,17 +2,22 @@ import {
   CheckCircleOutlined,
   ExclamationCircleFilled,
   InfoCircleOutlined,
-  QuestionCircleOutlined,
+  QuestionCircleOutlined, 
 } from '@ant-design/icons'
-import { Tooltip, Input, Button, Row, Col, Spin, Modal, message, Select, Switch, Table } from 'antd'
-import { ColumnType } from 'antd/lib/table'
+import { Tooltip, Input, Button, Row, Col, Spin, Modal, message, Select, Switch } from 'antd'
 import axios from 'axios'
 import copy from 'copy-to-clipboard'
 import produce from 'immer'
 import PropTypes from 'prop-types'
-import React, { createRef, PureComponent as Component, RefObject } from 'react'
+import React, { PureComponent as Component } from 'react'
+import { DragDropContext } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 import { connect } from 'react-redux'
-import { withRouter, Link } from 'react-router-dom'
+import { withRouter } from 'react-router'
+import { Link } from 'react-router-dom'
+import * as dnd from 'reactabular-dnd'
+import * as Table from 'reactabular-table'
+import * as resolve from 'table-resolver'
 import _ from 'underscore'
 
 import AceEditor from '@/components/AceEditor/AceEditor'
@@ -20,7 +25,6 @@ import CaseEnv from '@/components/CaseEnv'
 import { initCrossRequest } from '@/components/Postman/CheckCrossInstall.js'
 import { InsertCodeMap } from '@/components/Postman/Postman.js'
 import plugin from '@/plugin.js'
-import { AnyFunc } from '@/types.js'
 import createContext from '@common/createContext'
 import { handleParams, crossRequest, handleCurrDomain, checkNameIsExistInArray } from '@common/postmanLib.js'
 import { handleParamsValue, json_parse, changeArrayToObject } from '@common/utils.js'
@@ -34,8 +38,7 @@ import {
 } from '../../../../reducer/modules/interfaceCol'
 import { getToken, getEnv } from '../../../../reducer/modules/project'
 
-import CaseReport from './CaseReport'
-import CaseTable from './CaseTable'
+import CaseReport from './CaseReport.js'
 
 const Option = Select.Option
 
@@ -43,71 +46,65 @@ const defaultModalStyle = {
   top: 10,
 }
 
-type PropTypes = {
-  match?: any
-  interfaceColList?: any[]
-  fetchInterfaceColList?: AnyFunc
-  fetchCaseList?: AnyFunc
-  setColData?: AnyFunc
-  history?: any
-  currCaseList?: any[]
-  currColId?: number
-  currCaseId?: number
-  isShowCol?: boolean
-  isRander?: boolean
-  currProject?: any
-  getToken?: AnyFunc
-  token?: string
-  curProjectRole?: string
-  getEnv?: AnyFunc
-  projectEnv?: any
-  fetchCaseEnvList?: AnyFunc
-  envList?: any[]
-  curUid?: number
-}
-
-type StateTypes = {
-  rows: any[]
-  reports: { [K: string]: any }
-  visible: boolean
-  curCaseid: any
-  hasPlugin: boolean
-  advVisible: boolean
-  curScript: string
-  enableScript: boolean
-  autoVisible: boolean
-  mode: string
-  email: boolean
-  download: boolean
-  currColEnvObj: { [K: string]: any }
-  collapseKey: string
-  commonSettingModalVisible: boolean
-  commonSetting: {
-    checkHttpCodeIs200: boolean
-    checkResponseField: {
-      name: string
-      value: string
-      enable: boolean
-    }
-    checkResponseSchema: boolean
-    checkScript: {
-      enable: boolean
-      content: string
-    }
+function handleReport(json) {
+  try {
+    return JSON.parse(json)
+  } catch (e) {
+    return {}
   }
 }
 
-class InterfaceColContent extends Component<PropTypes, StateTypes> {
-  reports: { [K: string]: any }
-  records: { [K: string]: any }
-  currColId: number
+@connect(
+  state => ({
+    interfaceColList: state.interfaceCol.interfaceColList,
+    currColId: state.interfaceCol.currColId,
+    currCaseId: state.interfaceCol.currCaseId,
+    isShowCol: state.interfaceCol.isShowCol,
+    isRander: state.interfaceCol.isRander,
+    currCaseList: state.interfaceCol.currCaseList,
+    currProject: state.project.currProject,
+    token: state.project.token,
+    envList: state.interfaceCol.envList,
+    curProjectRole: state.project.currProject.role,
+    projectEnv: state.project.projectEnv,
+    curUid: state.user.uid,
+  }),
+  {
+    fetchInterfaceColList,
+    fetchCaseList,
+    setColData,
+    getToken,
+    getEnv,
+    fetchCaseEnvList,
+  },
+)
+@withRouter
+@DragDropContext(HTML5Backend)
+class InterfaceColContent extends Component {
+  static propTypes = {
+    match: PropTypes.object,
+    interfaceColList: PropTypes.array,
+    fetchInterfaceColList: PropTypes.func,
+    fetchCaseList: PropTypes.func,
+    setColData: PropTypes.func,
+    history: PropTypes.object,
+    currCaseList: PropTypes.array,
+    currColId: PropTypes.number,
+    currCaseId: PropTypes.number,
+    isShowCol: PropTypes.bool,
+    isRander: PropTypes.bool,
+    currProject: PropTypes.object,
+    getToken: PropTypes.func,
+    token: PropTypes.string,
+    curProjectRole: PropTypes.string,
+    getEnv: PropTypes.func,
+    projectEnv: PropTypes.object,
+    fetchCaseEnvList: PropTypes.func,
+    envList: PropTypes.array,
+    curUid: PropTypes.number,
+  }
 
-  _crossRequestInterval: NodeJS.Timeout
-  
-  aceEditorRef:RefObject<AceEditor> = createRef()
-  // this.aceEditor = aceEditor
-
-  constructor(props: PropTypes) {
+  constructor(props) {
     super(props)
     this.reports = {}
     this.records = {}
@@ -142,9 +139,11 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
         },
       },
     }
+    this.onRow = this.onRow.bind(this)
+    this.onMoveRow = this.onMoveRow.bind(this)
   }
 
-  async handleColIdChange(newColId: number | string) {
+  async handleColIdChange(newColId) {
     this.props.setColData({
       currColId: Number(newColId),
       isShowCol: true,
@@ -153,13 +152,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
 
     const result = await this.props.fetchCaseList(newColId)
     if (result.payload.data.errcode === 0) {
-      try {
-        this.reports = JSON.parse(result.payload.data.colData.test_report)
-      } catch (e) {
-        console.error(e)
-        this.reports = {}
-      }
-    
+      this.reports = handleReport(result.payload.data.colData.test_report)
       this.setState({
         commonSetting: {
           ...this.state.commonSetting,
@@ -180,14 +173,13 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     let { currColId } = this.props
     const params = this.props.match.params
     const { actionId } = params
-    currColId = Number(actionId) || result.payload.data.data[0]._id
-    this.currColId = currColId
+    this.currColId = currColId = Number(actionId) || result.payload.data.data[0]._id
     // this.props.history.push('/project/' + params.id + '/interface/col/' + currColId);
-    if (currColId && currColId !== 0) {
+    if (currColId && currColId != 0) {
       await this.handleColIdChange(currColId)
     }
 
-    this._crossRequestInterval = initCrossRequest((hasPlugin: boolean) => {
+    this._crossRequestInterval = initCrossRequest(hasPlugin => {
       this.setState({ hasPlugin: hasPlugin })
     })
   }
@@ -197,7 +189,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
   }
 
   // 更新分类简介
-  handleChangeInterfaceCol = (desc: string, name: string) => {
+  handleChangeInterfaceCol = (desc, name) => {
     const params = {
       col_id: this.props.currColId,
       name: name,
@@ -215,34 +207,37 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
   }
 
   // 整合header信息
-  handleReqHeader = (project_id: string, req_header: any[], case_env: any) => {
-    const envItem = this.props.envList.find(item => item._id === project_id)
+  handleReqHeader = (project_id, req_header, case_env) => {
+    const envItem = _.find(this.props.envList, item => item._id === project_id)
 
     const currDomain = handleCurrDomain(envItem && envItem.env, case_env)
     const header = currDomain.header
-    for (const item of header) {
+    header.forEach(item => {
       if (!checkNameIsExistInArray(item.name, req_header)) {
-        // item = { ...item, abled: true, }
-        req_header.push({ ...item, abled: true })
+        // item.abled = true;
+        item = {
+          ...item,
+          abled: true,
+        }
+        req_header.push(item)
       }
-    }
-
+    })
     return req_header
   }
 
-  handleColdata = (rows: any, currColEnvObj: any = {}) => {
-    const newRows: any = produce(rows, (draftRows: any) => {
-      draftRows.map((item: any) => {
+  handleColdata = (rows, currColEnvObj = {}) => {
+    const that = this
+    const newRows = produce(rows, draftRows => {
+      draftRows.map(item => {
         item.id = item._id
         item._test_status = item.test_status
         if (currColEnvObj[item.project_id]) {
           item.case_env = currColEnvObj[item.project_id]
         }
-        item.req_headers = this.handleReqHeader(item.project_id, item.req_headers, item.case_env)
+        item.req_headers = that.handleReqHeader(item.project_id, item.req_headers, item.case_env)
         return item
       })
     })
-
     this.setState({ rows: newRows })
   }
 
@@ -253,7 +248,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
       const envItem = _.find(this.props.envList, item => item._id === rows[i].project_id)
 
       curitem = {
-
+        
         ...rows[i],
         env: envItem.env,
         pre_script: this.props.currProject.pre_script,
@@ -300,14 +295,14 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     })
   }
 
-  handleTest = async (interfaceData: any) => {
+  handleTest = async interfaceData => {
     let requestParams = {}
-    const options:any = handleParams(interfaceData, this.handleValue, requestParams)
+    const options = handleParams(interfaceData, this.handleValue, requestParams)
 
-    let result:any = {
+    let result = {
       code: 400,
       msg: '数据异常',
-      validRes: [] as any,
+      validRes: [],
     }
 
     await plugin.emitHook('before_col_request', {
@@ -325,10 +320,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
         interfaceData.interface_id,
       ))
       options.taskId = this.props.curUid
-
-      data.res.body = json_parse(data.res.body)
-      const res = data.res.body 
-
+      const res = (data.res.body = json_parse(data.res.body))
       result = {
         ...options,
         ...result,
@@ -352,10 +344,10 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
         }
       }
 
-      const validRes:any[] = []
+      const validRes = []
 
       const responseData = {
-
+        
         status: data.res.status,
         body: res,
         header: data.res.header,
@@ -367,7 +359,11 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
 
       if (validRes.length === 0) {
         result.code = 0
-        result.validRes = [{ message: '验证通过' }]
+        result.validRes = [
+          {
+            message: '验证通过',
+          },
+        ]
       } else if (validRes.length > 0) {
         result.code = 1
         result.validRes = validRes
@@ -395,7 +391,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
 
   // response, validRes
   // 断言测试
-  handleScriptTest = async (interfaceData:any, response:any, validRes:any[], requestParams:any) => {
+  handleScriptTest = async (interfaceData, response, validRes, requestParams) => {
     // 是否启动断言
     try {
       const test = await axios.post('/api/col/run_script', {
@@ -407,7 +403,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
         interface_id: interfaceData.interface_id,
       })
       if (test.data.errcode !== 0) {
-        test.data.data.logs.forEach((item: string) => {
+        test.data.data.logs.forEach(item => {
           validRes.push({ message: item })
         })
       }
@@ -418,34 +414,49 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     }
   }
 
-  handleValue = (val:any, global:any) => {
+  handleValue = (val, global) => {
     const globalValue = changeArrayToObject(global)
     const context = { global: globalValue, ...this.records }
     return handleParamsValue(val, context)
   }
-  
-  // onRow(row: any) {
-  //   return { rowId: row.id, onMove: this.onMoveRow, onDrop: this.onDrop }
-  // }
 
-  // onDrop = () => {
-  //   const changes: any = []
-  //   this.state.rows.forEach((item, index) => {
-  //     changes.push({ id: item._id, index: index })
-  //   })
-  //   axios.post('/api/col/up_case_index', changes).then(() => {
-  //     this.props.fetchInterfaceColList(this.props.match.params.id)
-  //   })
-  // }
+  arrToObj = (arr, requestParams) => {
+    arr = arr || []
+    const obj = {}
+    arr.forEach(item => {
+      if (item.name && item.enable && item.type !== 'file') {
+        obj[item.name] = this.handleValue(item.value)
+        if (requestParams) {
+          requestParams[item.name] = obj[item.name]
+        }
+      }
+    })
+    return obj
+  }
 
-  // onMoveRow({ sourceRowId, targetRowId }: any) {
-  //   const rows = dnd.moveRows({ sourceRowId, targetRowId })(this.state.rows)
-  //   if (rows) {
-  //     this.setState({ rows })
-  //   }
-  // }
+  onRow(row) {
+    return { rowId: row.id, onMove: this.onMoveRow, onDrop: this.onDrop }
+  }
 
-  onChangeTest = (d:any) => {
+  onDrop = () => {
+    const changes = []
+    this.state.rows.forEach((item, index) => {
+      changes.push({ id: item._id, index: index })
+    })
+    axios.post('/api/col/up_case_index', changes).then(() => {
+      this.props.fetchInterfaceColList(this.props.match.params.id)
+    })
+  }
+  onMoveRow({ sourceRowId, targetRowId }) {
+    const rows = dnd.moveRows({ sourceRowId, targetRowId })(this.state.rows)
+
+    if (rows) {
+      this.setState({ rows })
+    }
+  }
+
+  onChangeTest = d => {
+    
     this.setState({
       commonSetting: {
         ...this.state.commonSetting,
@@ -457,11 +468,11 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     })
   }
 
-  handleInsertCode = (code:string) => {
-    this.aceEditorRef.current.editor.insertCode(code)
+  handleInsertCode = code => {
+    this.aceEditor.editor.insertCode(code)
   }
 
-  async UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
+  async UNSAFE_componentWillReceiveProps(nextProps) {
     const newColId = !isNaN(nextProps.match.params.actionId) ? Number(nextProps.match.params.actionId) : 0
 
     if ((newColId && this.currColId && newColId !== this.currColId) || nextProps.isRander) {
@@ -471,7 +482,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
   }
 
   // 测试用例环境面板折叠
-  changeCollapseClose = (key?: string) => {
+  changeCollapseClose = key => {
     if (key) {
       this.setState({
         collapseKey: key,
@@ -484,14 +495,14 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     }
   }
 
-  openReport = (id:number) => {
+  openReport = id => {
     if (!this.reports[id]) {
       return message.warn('还没有生成报告')
     }
     this.setState({ visible: true, curCaseid: id })
   }
 
-  openAdv = (id: number) => {
+  openAdv = id => {
     const findCase = _.find(this.props.currCaseList, item => item.id === id)
 
     this.setState({
@@ -502,7 +513,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     })
   }
 
-  handleScriptChange = (d:any) => {
+  handleScriptChange = d => {
     this.setState({ curScript: d.text })
   }
 
@@ -536,7 +547,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     this.setState({ visible: false })
   }
 
-  currProjectEnvChange = (envName: string, project_id: string) => {
+  currProjectEnvChange = (envName, project_id) => {
     const currColEnvObj = {
       ...this.state.currColEnvObj,
       [project_id]: envName,
@@ -561,27 +572,27 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     })
   }
 
-  copyUrl = (url:string) => {
-    copy(url, { format: 'text/plain' })
+  copyUrl = url => {
+    copy(url)
     message.success('已经成功复制到剪切板')
   }
 
-  modeChange = (mode:string) => {
+  modeChange = mode => {
     this.setState({ mode })
   }
 
-  emailChange = (email: boolean) => {
+  emailChange = email => {
     this.setState({ email })
   }
 
-  downloadChange = (download: boolean) => {
+  downloadChange = download => {
     this.setState({ download })
   }
 
-  handleColEnvObj = (envObj: any) => {
+  handleColEnvObj = envObj => {
     let str = ''
-    for (const [k, v] of Object.entries(envObj)) {
-      str += v ? `&env_${k}=${v}` : ''
+    for (const key in envObj) {
+      str += envObj[key] ? `&env_${key}=${envObj[key]}` : ''
     }
     return str
   }
@@ -596,13 +607,12 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     }
     console.log(params)
 
-    axios.post('/api/col/up_col', params)
-      .then(res => {
-        if (res.data.errcode) {
-          return message.error(res.data.errmsg)
-        }
-        message.success('配置测试集成功')
-      })
+    axios.post('/api/col/up_col', params).then(async res => {
+      if (res.data.errcode) {
+        return message.error(res.data.errmsg)
+      }
+      message.success('配置测试集成功')
+    })
 
     this.setState({
       commonSettingModalVisible: false,
@@ -621,7 +631,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     })
   }
 
-  changeCommonFieldSetting = (key:string) => (e: any) => {
+  changeCommonFieldSetting = key => e => {
     let value = e
     if (typeof e === 'object' && e) {
       value = e.target.value
@@ -637,122 +647,187 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
       },
     })
   }
-
+  
   render() {
     const currProjectId = this.props.currProject._id
-    const columns: ColumnType<any>[] = [
+    const columns = [
       {
-        dataIndex: 'casename',
-        title: '用例名称',
-        render: (text:string, record:any) => (
-          <Link to={'/project/' + currProjectId + '/interface/case/' + record._id}>
-            {record.casename.length > 23
-              ? record.casename.substr(0, 20) + '...'
-              : record.casename}
-          </Link>
-        ),
-      },
-      {
-        dataIndex: 'key',
-        title: () => (
-          <Tooltip
-            title={
-              <span>
-                {' '}
-                    每个用例都有唯一的key，用于获取所匹配接口的响应数据，例如使用{' '}
-                <a
-                  href="https://hellosean1025.github.io/yapi/documents/case.html#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%8C%E7%BC%96%E8%BE%91%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B"
-                  className="link-tooltip"
-                  target="blank"
-                >
-                  {' '}
-                      变量参数{' '}
-                </a>{' '}
-                    功能{' '}
-              </span>
-            }
-          >
-                Key
-          </Tooltip>
-        ),
-        render: (value:any, record:any) => <span>{record._id}</span>,
-      },
-      {
-        dataIndex: 'test_status',
-        title: '状态',
-        render: (value:any, rowData :any) => {
-          const id = rowData._id
-          const code = this.reports[id] ? this.reports[id].code : 0
-          if (rowData.test_status === 'loading') {
-            return (
-              <div>
-                <Spin />
-              </div>
-            )
-          }
-
-          switch (code) {
-            case 0:
+        property: 'casename',
+        header: {
+          label: '用例名称',
+        },
+        props: {
+          style: {
+            width: '250px',
+          },
+        },
+        cell: {
+          formatters: [
+            (text, { rowData }) => {
+              const record = rowData
               return (
-                <div>
-                  <Tooltip title="Pass">
-                    <CheckCircleOutlined style={{ color: '#00a854' }} />
-                  </Tooltip>
-                </div>
+                <Link to={'/project/' + currProjectId + '/interface/case/' + record._id}>
+                  {record.casename.length > 23
+                    ? record.casename.substr(0, 20) + '...'
+                    : record.casename}
+                </Link>
               )
-            case 400:
-              return (
-                <div>
-                  <Tooltip title="请求异常">
-                    <InfoCircleOutlined style={{ color: '#f04134' }} />
-                  </Tooltip>
-                </div>
-              )
-            case 1:
-              return (
-                <div>
-                  <Tooltip title="验证失败">
-                    <ExclamationCircleFilled style={{ color: '#ffbf00' }} />
-                  </Tooltip>
-                </div>
-              )
-            default:
-              return (
-                <div>
-                  <CheckCircleOutlined style={{ color: '#00a854' }} />
-                </div>
-              )
-          }
+            },
+          ],
         },
       },
       {
-        dataIndex: 'path',
-        title: '接口路径',
-        render: (text:string, record:any) => (
-          <Tooltip title="跳转到对应接口">
-            <Link to={`/project/${record.project_id}/interface/api/${record.interface_id}`}>
-              {record.path.length > 23 ? record.path + '...' : record.path}
-            </Link>
-          </Tooltip>
-        ),
+        header: {
+          label: 'key',
+          formatters: [
+            () => (
+              <Tooltip
+                title={
+                  <span>
+                    {' '}
+                      每个用例都有唯一的key，用于获取所匹配接口的响应数据，例如使用{' '}
+                    <a
+                      href="https://hellosean1025.github.io/yapi/documents/case.html#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%8C%E7%BC%96%E8%BE%91%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B"
+                      className="link-tooltip"
+                      target="blank"
+                    >
+                      {' '}
+                        变量参数{' '}
+                    </a>{' '}
+                      功能{' '}
+                  </span>
+                }
+              >
+                  Key
+              </Tooltip>
+            ),
+          ],
+        },
+        props: {
+          style: {
+            width: '100px',
+          },
+        },
+        cell: {
+          formatters: [
+            (value, { rowData }) => <span>{rowData._id}</span>,
+          ],
+        },
       },
       {
-        dataIndex: 'report',
-        title: '测试报告',
-        render: (text:string, rowData :any) => {
-          const reportFun = () => {
-            if (!this.reports[rowData.id]) {
-              return null
-            }
-            return <Button onClick={() => this.openReport(rowData.id)}>测试报告</Button>
-          }
-          return <div className="interface-col-table-action">{reportFun()}</div>
+        property: 'test_status',
+        header: {
+          label: '状态',
+        },
+        props: {
+          style: {
+            width: '100px',
+          },
+        },
+        cell: {
+          formatters: [
+            (value, { rowData }) => {
+              const id = rowData._id
+              const code = this.reports[id] ? this.reports[id].code : 0
+              if (rowData.test_status === 'loading') {
+                return (
+                  <div>
+                    <Spin />
+                  </div>
+                )
+              }
+
+              switch (code) {
+                case 0:
+                  return (
+                    <div>
+                      <Tooltip title="Pass">
+                        <CheckCircleOutlined style={{ color: '#00a854' }} />
+                      </Tooltip>
+                    </div>
+                  )
+                case 400:
+                  return (
+                    <div>
+                      <Tooltip title="请求异常">
+                        <InfoCircleOutlined style={{ color: '#f04134' }} />
+                      </Tooltip>
+                    </div>
+                  )
+                case 1:
+                  return (
+                    <div>
+                      <Tooltip title="验证失败">
+                        <ExclamationCircleFilled style={{ color: '#ffbf00' }} />
+                      </Tooltip>
+                    </div>
+                  )
+                default:
+                  return (
+                    <div>
+                      <CheckCircleOutlined style={{ color: '#00a854' }} />
+                    </div>
+                  )
+              }
+            },
+          ],
+        },
+      },
+      {
+        property: 'path',
+        header: {
+          label: '接口路径',
+        },
+        cell: {
+          formatters: [
+            (text, { rowData }) => {
+              const record = rowData
+              return (
+                <Tooltip title="跳转到对应接口">
+                  <Link to={`/project/${record.project_id}/interface/api/${record.interface_id}`}>
+                    {record.path.length > 23 ? record.path + '...' : record.path}
+                  </Link>
+                </Tooltip>
+              )
+            },
+          ],
+        },
+      },
+      {
+        header: {
+          label: '测试报告',
+        },
+        props: {
+          style: {
+            width: '200px',
+          },
+        },
+        cell: {
+          formatters: [
+            (text, { rowData }) => {
+              const reportFun = () => {
+                if (!this.reports[rowData.id]) {
+                  return null
+                }
+                return <Button onClick={() => this.openReport(rowData.id)}>测试报告</Button>
+              }
+              return <div className="interface-col-table-action">{reportFun()}</div>
+            },
+          ],
         },
       },
     ]
-
     const { rows } = this.state
-    // console.log(rows)
+    const components = {
+      header: {
+        cell: dnd.Header,
+      },
+      body: {
+        row: dnd.Row,
+      },
+    }
+    const resolvedColumns = resolve.columnChildren({ columns })
+    const resolvedRows = resolve.resolve({ columns: resolvedColumns, method: resolve.nested })(rows)
 
     const localUrl
       = location.protocol
@@ -760,8 +835,10 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
       + location.hostname
       + (location.port !== '' ? ':' + location.port : '')
     const currColEnvObj = this.handleColEnvObj(this.state.currColEnvObj)
-    const autoTestsUrl = `/api/open/run_auto_test?id=${this.props.currColId}&token=${this.props.token
-    }${currColEnvObj ? currColEnvObj : ''}&mode=${this.state.mode}&email=${this.state.email
+    const autoTestsUrl = `/api/open/run_auto_test?id=${this.props.currColId}&token=${
+      this.props.token
+    }${currColEnvObj ? currColEnvObj : ''}&mode=${this.state.mode}&email=${
+      this.state.email
     }&download=${this.state.download}`
 
     let col_name = ''
@@ -854,7 +931,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
                     commonSetting: {
                       ...commonSetting,
                       checkScript: {
-                        ...this.state.commonSetting.checkScript,
+                        ...this.state.checkScript,
                         enable: e,
                       },
                     },
@@ -864,7 +941,9 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
                   onChange={this.onChangeTest}
                   className="case-script"
                   data={this.state.commonSetting.checkScript.content}
-                  ref={this.aceEditorRef}
+                  ref={aceEditor => {
+                    this.aceEditor = aceEditor
+                  }}
                 />
               </Col>
               <Col span="6">
@@ -887,7 +966,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
 
           </div>
         </Modal>
-        <Row justify="center" align="top">
+        <Row type="flex" justify="center" align="top">
           <Col span={5}>
             <h2
               className="interface-title"
@@ -920,7 +999,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
             {this.state.hasPlugin ? (
               <div
                 style={{
-                  float: 'right',
+                  cssFloat: 'right',
                   paddingTop: '8px',
                 }}
               >
@@ -950,7 +1029,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
                   disabled
                   type="primary"
                   style={{
-                    float: 'right',
+                    cssFloat: 'right',
                     marginTop: '8px',
                   }}
                 >
@@ -962,17 +1041,29 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
         </Row>
 
         <div className="component-label-wrapper">
-          <Label onChange={(val:any) => this.handleChangeInterfaceCol(val, col_name)} desc={col_desc} />
+          <Label onChange={val => this.handleChangeInterfaceCol(val, col_name)} desc={col_desc} />
         </div>
 
-        <Table
-          rowKey="id"
-          columns={columns}
-          dataSource={rows}
-        />
+        <Table.Provider
+          components={components}
+          columns={resolvedColumns}
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+          }}
+        >
+          <Table.Header
+            className="interface-col-table-header"
+            headerRows={resolve.headerRows({ columns })}
+          />
 
-        <CaseTable />
-
+          <Table.Body
+            className="interface-col-table-body"
+            rows={resolvedRows}
+            rowKey="id"
+            onRow={this.onRow}
+          />
+        </Table.Provider>
         <Modal
           title="测试报告"
           width="900px"
@@ -1022,7 +1113,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
             className="autoTestsModal"
             footer={null}
           >
-            <Row justify="space-around" className="row" align="top">
+            <Row type="flex" justify="space-around" className="row" align="top">
               <Col span={3} className="label" style={{ paddingTop: '16px' }}>
                 选择环境
                 <Tooltip title="默认使用测试用例选择的环境">
@@ -1040,7 +1131,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
                 />
               </Col>
             </Row>
-            <Row justify="space-around" className="row" align="middle">
+            <Row type="flex" justify="space-around" className="row" align="middle">
               <Col span={3} className="label">
                 输出格式：
               </Col>
@@ -1055,7 +1146,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
                 </Select>
               </Col>
             </Row>
-            <Row justify="space-around" className="row" align="middle">
+            <Row type="flex" justify="space-around" className="row" align="middle">
               <Col span={3} className="label">
                 消息通知
                 <Tooltip title={'测试不通过时，会给项目组成员发送消息通知'}>
@@ -1072,7 +1163,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
                 />
               </Col>
             </Row>
-            <Row justify="space-around" className="row" align="middle">
+            <Row type="flex" justify="space-around" className="row" align="middle">
               <Col span={3} className="label">
                 下载数据
                 <Tooltip title={'开启后，测试数据将被下载到本地'}>
@@ -1089,9 +1180,9 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
                 />
               </Col>
             </Row>
-            <Row justify="space-around" className="row" align="middle">
+            <Row type="flex" justify="space-around" className="row" align="middle">
               <Col span={21} className="autoTestUrl">
-                <a
+                <a 
                   target="_blank"
                   rel="noopener noreferrer"
                   href={localUrl + autoTestsUrl} >
@@ -1114,27 +1205,4 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
   }
 }
 
-const states = (state: any) => ({
-  interfaceColList: state.interfaceCol.interfaceColList,
-  currColId: state.interfaceCol.currColId,
-  currCaseId: state.interfaceCol.currCaseId,
-  isShowCol: state.interfaceCol.isShowCol,
-  isRander: state.interfaceCol.isRander,
-  currCaseList: state.interfaceCol.currCaseList,
-  currProject: state.project.currProject,
-  token: state.project.token,
-  envList: state.interfaceCol.envList,
-  curProjectRole: state.project.currProject.role,
-  projectEnv: state.project.projectEnv,
-  curUid: state.user.uid,
-})
-const actions = {
-  fetchInterfaceColList,
-  fetchCaseList,
-  setColData,
-  getToken,
-  getEnv,
-  fetchCaseEnvList,
-}
-
-export default connect(states, actions)(withRouter(InterfaceColContent as any)) as any as typeof InterfaceColContent
+export default InterfaceColContent

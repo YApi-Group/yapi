@@ -18,6 +18,8 @@
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
     "@babel/runtime": "^7.14.6",
+    "@dnd-kit/core": "^4.0.3",
+    "@dnd-kit/sortable": "^5.1.0",
     "ajv": "^8.6.0",
     "ajv-i18n": "^4.0.0",
     "antd": "4.16.2",
@@ -54,6 +56,7 @@
     "react-dom": "^16.13.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
+    "react-sortable-hoc": "^2.0.0",
     "recharts": "^2.0.9",
     "redux": "^4.1.0",
     "redux-devtools": "^3.4.0",
