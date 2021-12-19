@@ -4,7 +4,7 @@ import {
   InfoCircleOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons'
-import { Tooltip, Input, Button, Row, Col, Spin, Modal, message, Select, Switch, Table } from 'antd'
+import { Tooltip, Input, Button, Row, Col, Spin, Modal, message, Select, Switch } from 'antd'
 import { ColumnType } from 'antd/lib/table'
 import axios from 'axios'
 import copy from 'copy-to-clipboard'
@@ -423,27 +423,16 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     const context = { global: globalValue, ...this.records }
     return handleParamsValue(val, context)
   }
-  
-  // onRow(row: any) {
-  //   return { rowId: row.id, onMove: this.onMoveRow, onDrop: this.onDrop }
-  // }
 
-  // onDrop = () => {
-  //   const changes: any = []
-  //   this.state.rows.forEach((item, index) => {
-  //     changes.push({ id: item._id, index: index })
-  //   })
-  //   axios.post('/api/col/up_case_index', changes).then(() => {
-  //     this.props.fetchInterfaceColList(this.props.match.params.id)
-  //   })
-  // }
+  onSortEnd = (newRows: any[]) => {
+    this.setState({ rows: newRows })
 
-  // onMoveRow({ sourceRowId, targetRowId }: any) {
-  //   const rows = dnd.moveRows({ sourceRowId, targetRowId })(this.state.rows)
-  //   if (rows) {
-  //     this.setState({ rows })
-  //   }
-  // }
+    const changes = newRows.map((item, index) => ({ id: item._id, index: index }))    
+    // console.log(changes)
+    axios.post('/api/col/up_case_index', changes).then(() => {
+      this.props.fetchInterfaceColList(this.props.match.params.id)
+    })
+  }
 
   onChangeTest = (d:any) => {
     this.setState({
@@ -461,7 +450,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     this.aceEditorRef.current.editor.insertCode(code)
   }
 
-  async UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
+  UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
     const newColId = !isNaN(nextProps.match.params.actionId) ? Number(nextProps.match.params.actionId) : 0
 
     if ((newColId && this.currColId && newColId !== this.currColId) || nextProps.isRander) {
@@ -965,13 +954,18 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
           <Label onChange={(val:any) => this.handleChangeInterfaceCol(val, col_name)} desc={col_desc} />
         </div>
 
-        <Table
+        {/* <Table
           rowKey="id"
           columns={columns}
           dataSource={rows}
-        />
+        /> */}
 
-        <CaseTable />
+        <CaseTable 
+          rowKey="id"
+          columns={columns}
+          dataSource={rows}        
+          onSortEnd={this.onSortEnd}
+        />
 
         <Modal
           title="测试报告"

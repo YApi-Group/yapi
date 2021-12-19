@@ -3,108 +3,64 @@ import { MenuOutlined } from '@ant-design/icons'
 // import { useSortable, arrayMove, SortableContext,
 //  sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Table } from 'antd'
+import { ColumnsType } from 'antd/lib/table'
 import React, { Component } from 'react'
 import { SortableContainer, SortableElement, SortableHandle, SortEnd } from 'react-sortable-hoc'
-
 // import styles from './ct.module.less'
 
+// eslint-disable-next-line new-cap
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />)
-
-const columns = [
-  {
-    title: 'Sort',
-    dataIndex: 'sort',
-    width: 30,
-    className: 'drag-visible',
-    render: () => <DragHandle />,
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-  },
-]
-
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    index: 0,
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    index: 1,
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    index: 2,
-  },
-]
-
+// eslint-disable-next-line new-cap
 const SortableCon = SortableContainer((props: any) => <tbody {...props} />)
+// eslint-disable-next-line new-cap
 const SortableItem = SortableElement((props: any) => <tr {...props} />)
 
-// function SortableItem(props: any) {
-//   const { attributes, listeners, setNodeRef } = useSortable({ id: props.id })
+const sortCol = {
+  title: '排序',
+  dataIndex: 'sort',
+  width: 30,
+  className: 'drag-visible',
+  render: () => <DragHandle />,
+}
 
-//   return (
-//     <tr ref={setNodeRef} {...attributes} {...listeners} {...props} />
-//   )
-// }
+type PropTypes = {
+  rowKey: string
+  columns: ColumnsType<any>
+  dataSource: any[]
+  onSortEnd(newDatas: any[]): void
+}
 
-class CaseTable extends Component {
-  state = {
-    dataSource: data,
-  }
-
+class CaseTable extends Component<PropTypes> {
   onSortEnd = ({ oldIndex, newIndex }: SortEnd) => {
-    const { dataSource } = this.state
+    const { dataSource } = this.props
     if (oldIndex !== newIndex) {
-      // arrayMoveImmutable([].concat(dataSource), oldIndex, newIndex).filter(el => !!el)
-      const newData = dataSource.slice()
-      newData.splice(newIndex, 0, ...newData.splice(oldIndex, 1))
-      console.log('Sorted items: ', newData)
-      this.setState({ dataSource: newData })
+      const newDatas = dataSource.slice()
+      newDatas.splice(newIndex, 0, ...newDatas.splice(oldIndex, 1))
+      // console.log(dataSource, newDatas)
+      this.props.onSortEnd(newDatas)
     }
   }
 
-  DraggableContainer = (props:any) => (
-    <SortableCon 
-      useDragHandle
-      disableAutoscroll
-      helperClass="row-dragging"
-      onSortEnd={this.onSortEnd} 
-      {...props}
-    />
+  DraggableContainer = (chProps: any) => (
+    <SortableCon useDragHandle disableAutoscroll helperClass="row-dragging" onSortEnd={this.onSortEnd} {...chProps} />
   )
 
-  DraggableBodyRow = (props: any) => {
-    const { dataSource } = this.state
+  DraggableBodyRow = (chProps: any) => {
+    const { dataSource, rowKey } = this.props
     // function findIndex base on Table rowKey props and should always be a right array index
-    const index = dataSource.findIndex(x => x.index === props['data-row-key'])
-    return <SortableItem index={index} {...props} />
+    const index = dataSource.findIndex(p => p[rowKey] === chProps['data-row-key'])
+    // console.log(this.props, chProps, index)
+    return <SortableItem index={index} {...chProps} />
   }
 
   render() {
-    const { dataSource } = this.state
+    const { columns, ...restProps } = this.props
+    const realCols = [sortCol, ...columns]
 
     return (
       <Table
-        pagination={false}
-        dataSource={dataSource}
-        columns={columns}
-        rowKey="index"
+        {...restProps}
+        columns={realCols}
         components={{
           body: {
             wrapper: this.DraggableContainer,

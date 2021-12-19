@@ -489,39 +489,40 @@ module.exports = {
     VERSION_INFO: 'readonly',
   },
 
-  // 配置文件， 可以继承基础配置中已启用的规则
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-  ],
-
-  parser: '@babel/eslint-parser',
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
-    sourceType: 'module',
-  },
-
   settings: {
     react: {
       version: 'detect',
     },
   },
 
-  plugins: [
-    'react',
-    'import',
-    '@babel',
-  ],
-
-  // 规则
-  rules: {
-    ...jsRules,
-    ...babelRules,
-  },
-
   overrides: [
+    {
+      files: ['*.js', '*.jsx'],
+      extends: [
+        'eslint:recommended',
+        'plugin:react/recommended',
+      ],
+
+      parser: '@babel/eslint-parser',
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+        sourceType: 'module',
+      },
+
+      plugins: [
+        'react',
+        'import',
+        '@babel',
+      ],
+
+      // 额外覆盖的规则
+      rules: {
+        ...jsRules,
+        ...babelRules,
+      },
+    },
     {
       files: ['*.ts', '*.tsx'],
       extends: [
@@ -537,10 +538,11 @@ module.exports = {
 
       plugins: [
         'react',
-        '@typescript-eslint',
         'import',
+        '@typescript-eslint',
       ],
 
+      // 额外覆盖的规则
       rules: {
         ...jsRules,
         ...tsRules,
