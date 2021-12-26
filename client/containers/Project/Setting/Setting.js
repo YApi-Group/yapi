@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
-import ProjectEnv from './ProjectEnv/index.js'
+import ProjectEnv from './ProjectEnv'
 import ProjectMessage from './ProjectMessage/ProjectMessage.jsx'
 import ProjectMock from './ProjectMock/index.js'
 import ProjectRequest from './ProjectRequest/ProjectRequest'

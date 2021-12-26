@@ -161,4 +161,4 @@ const actions = {
   setBreadcrumb,
 }
 
-export default connect(states, actions)(Project) as typeof Project
+export default connect(states, actions)(Project) as any as typeof Project

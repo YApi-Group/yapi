@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 import constants from '@/cons'
+import { AnyFunc } from '@/types'
 
 import './index.scss'
 
@@ -31,15 +32,22 @@ const initMap = {
   ],
 }
 
-class ProjectEnvContent extends Component {
-  static propTypes = {
-    projectMsg: PropTypes.object,
-    form: PropTypes.object,
-    onSubmit: PropTypes.func,
-    handleEnvInput: PropTypes.func,
+type PropTypes = {
+  projectMsg?: any
+  form?: any
+  onSubmit?: AnyFunc
+  handleEnvInput?: AnyFunc
+}
+
+type StateTypes = typeof initMap
+
+class ProjectEnvContent extends Component<PropTypes, StateTypes> {
+  constructor(props: PropTypes) {
+    super(props)
+    this.state = { ...initMap }
   }
 
-  initState(curdata) {
+  initState(curdata:any) {
     const header = [
       {
         name: '',
@@ -92,10 +100,6 @@ class ProjectEnvContent extends Component {
     return { header, cookie, global }
   }
 
-  constructor(props) {
-    super(props)
-    this.state = { ...initMap }
-  }
   addHeader = (value, index, name) => {
     const nextHeader = this.state[name][index + 1]
     if (nextHeader && typeof nextHeader === 'object') {
@@ -358,4 +362,5 @@ class ProjectEnvContent extends Component {
     )
   }
 }
+
 export default ProjectEnvContent

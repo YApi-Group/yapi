@@ -4,36 +4,38 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
+import { AnyFunc } from '@/types'
+
 import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
 import { updateEnv, getProject, getEnv } from '../../../../reducer/modules/project'
 
-import ProjectEnvContent from './ProjectEnvContent.js'
+import ProjectEnvContent from './ProjectEnvContent'
 
 import './index.scss'
 
 const { Content, Sider } = Layout
 
-@connect(
-  state => ({
-    projectMsg: state.project.currProject,
-  }),
-  {
-    updateEnv,
-    getProject,
-    getEnv,
-  },
-)
-class ProjectEnv extends Component {
-  static propTypes = {
-    projectId: PropTypes.number,
-    updateEnv: PropTypes.func,
-    getProject: PropTypes.func,
-    projectMsg: PropTypes.object,
-    onOk: PropTypes.func,
-    getEnv: PropTypes.func,
-  };
+type PropTypes = {
+  projectId?: number
+  updateEnv?: AnyFunc
+  getProject?: AnyFunc
+  projectMsg?: any
+  onOk?: AnyFunc
+  getEnv?: AnyFunc
+}
 
-  constructor(props) {
+type StateTypes = {
+  env: any[]
+  _id: number
+  currentEnvMsg: any
+  delIcon: string
+  currentKey: number
+}
+
+class ProjectEnv extends Component<PropTypes, StateTypes> {
+  _isMounted = false
+
+  constructor(props: PropTypes) {
     super(props)
     this.state = {
       env: [],
@@ -44,13 +46,12 @@ class ProjectEnv extends Component {
     }
   }
 
-  initState(curdata, id) {
-    const newValue = {}
-    newValue.env = [].concat(curdata)
-    newValue._id = id
+  initState(curdata: any[], id: number) {
     this.setState({
       ...this.state,
-      ...newValue,
+
+      env: [].concat(curdata),
+      _id: id,
     })
   }
 
@@ -66,49 +67,54 @@ class ProjectEnv extends Component {
     this._isMounted = false
   }
 
-  handleClick = (key, data) => {
+  handleClick = (key: number, data: any) => {
     this.setState({
       currentEnvMsg: data,
       currentKey: key,
     })
-  };
+  }
 
   // 增加环境变量项
-  addParams = (name, data) => {
-    const newValue = {}
-    data = { name: '新环境', domain: '', header: [] }
-    newValue[name] = [].concat(data, this.state[name])
-    this.setState(newValue)
+  addEnvParams = () => {
+    const data = { name: '新环境', domain: '', header: [] as any[] }
+
+    this.setState({
+      env: [data].concat(this.state.env),
+    })
     this.handleClick(0, data)
-  };
+  }
 
   // 删除提示信息
-  showConfirm(key, name) {
-    const assignValue = this.delParams(key, name)
+  showConfirm(key: number) {
+    const assignValue = this.delParams(key)
     this.onSave(assignValue)
   }
 
   // 删除环境变量项
-  delParams = (key, name) => {
+  delParams = (key: number) => {
     const curValue = this.state.env
-    const newValue = {}
-    newValue[name] = curValue.filter((val, index) => index !== key)
-    this.setState(newValue)
-    this.handleClick(0, newValue[name][0])
-    newValue._id = this.state._id
-    return newValue
-  };
 
-  enterItem = key => {
+    const newValue = {
+      _id: this.state._id,
+      env: curValue.filter((val, index) => index !== key),
+    }
+
+    this.setState(newValue)
+    this.handleClick(0, newValue.env[0])
+
+    return newValue
+  }
+
+  enterItem = (key: any) => {
     this.setState({ delIcon: key })
-  };
+  }
 
   // 保存设置
-  async onSave(assignValue) {
+  async onSave(assignValue: any) {
     await this.props
       .updateEnv(assignValue)
-      .then(res => {
-        if (res.payload.data.errcode == 0) {
+      .then((res: any) => {
+        if (res.payload.data.errcode === 0) {
           this.props.getProject(this.props.projectId)
           this.props.getEnv(this.props.projectId)
           message.success('修改成功! ')
@@ -123,32 +129,35 @@ class ProjectEnv extends Component {
   }
 
   //  提交保存信息
-  onSubmit = (value, index) => {
-    const assignValue = {}
-    assignValue.env = [].concat(this.state.env)
+  onSubmit = (value: any, index: number) => {
+    const assignValue = {
+      env: [].concat(this.state.env),
+      _id: this.state._id,
+    }
     assignValue.env.splice(index, 1, value.env)
-    assignValue._id = this.state._id
+
     this.onSave(assignValue)
     this.props.onOk && this.props.onOk(assignValue.env, index)
-  };
+  }
 
   // 动态修改环境名称
-  handleInputChange = (value, currentKey) => {
+  handleInputChange = (value: string, currentKey: number) => {
     const newValue = [].concat(this.state.env)
     newValue[currentKey].name = value || '新环境'
     this.setState({ env: newValue })
-  };
+  }
 
   // 侧边栏拖拽
-  handleDragMove = name => (data, from, to) => {
+  handleDragMove = () => (data: any, from: any, to: any) => {
     const newValue = {
-      [name]: data,
+      _id: this.state._id,
+      env: data,
     }
     this.setState(newValue)
-    newValue._id = this.state._id
-    this.handleClick(to, newValue[name][to])
+
+    this.handleClick(to, newValue.env[to])
     this.onSave(newValue)
-  };
+  }
 
   render() {
     const { env, currentKey } = this.state
@@ -168,7 +177,7 @@ class ProjectEnv extends Component {
             title="您确认删除此环境变量?"
             onConfirm={e => {
               e.stopPropagation()
-              this.showConfirm(index, 'env')
+              this.showConfirm(index)
             }}
             okText="确定"
             cancelText="取消"
@@ -176,7 +185,7 @@ class ProjectEnv extends Component {
             <DeleteOutlined
               className="interface-delete-icon"
               style={{
-                display: this.state.delIcon == index && env.length - 1 !== 0 ? 'block' : 'none',
+                display: this.state.delIcon === String(index) && env.length - 1 !== 0 ? 'block' : 'none',
               }}
             />
           </Popconfirm>
@@ -192,16 +201,17 @@ class ProjectEnv extends Component {
               <Row className="first-menu-item menu-item">
                 <div className="env-icon-style">
                   <h3>
-                    环境列表&nbsp;<Tooltip placement="top" title="在这里添加项目的环境配置">
+                    环境列表&nbsp;
+                    <Tooltip placement="top" title="在这里添加项目的环境配置">
                       <QuestionCircleOutlined />
                     </Tooltip>
                   </h3>
                   <Tooltip title="添加环境变量">
-                    <PlusOutlined onClick={() => this.addParams('env')} />
+                    <PlusOutlined onClick={() => this.addEnvParams()} />
                   </Tooltip>
                 </div>
               </Row>
-              <EasyDragSort data={() => env} onChange={this.handleDragMove('env')}>
+              <EasyDragSort data={() => env} onChange={this.handleDragMove()}>
                 {envSettingItems}
               </EasyDragSort>
             </div>
@@ -221,4 +231,13 @@ class ProjectEnv extends Component {
   }
 }
 
-export default ProjectEnv
+const states = (state: any) => ({
+  projectMsg: state.project.currProject,
+})
+const actions = {
+  updateEnv,
+  getProject,
+  getEnv,
+}
+
+export default connect(states, actions)(ProjectEnv)

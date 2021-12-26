@@ -28,7 +28,7 @@ import { handleParams, checkRequestBodyIsRaw, handleContentType, crossRequest, c
 import { handleParamsValue, changeArrayToObject, schemaValidator } from '@common/utils.js'
 
 import { isJson, deepCopyJson, json5_parse } from '../../common.js'
-import ProjectEnv from '../../containers/Project/Setting/ProjectEnv/index.js'
+import ProjectEnv from '../../containers/Project/Setting/ProjectEnv'
 import ModalPostman from '../ModalPostman/index.js'
 
 import CheckCrossInstall, { initCrossRequest } from './CheckCrossInstall.js'

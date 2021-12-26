@@ -27,7 +27,7 @@ type PropTypes = {
   rowKey: string
   columns: ColumnsType<any>
   dataSource: any[]
-  onSortEnd(newDatas: any[]): void
+  onSortEnd?(newDatas: any[]): void
 }
 
 class CaseTable extends Component<PropTypes> {
