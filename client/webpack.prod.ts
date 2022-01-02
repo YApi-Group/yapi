@@ -69,7 +69,7 @@ const prodConf: Configuration = {
               publicPath: '../', // 设定 css 内部引用的路径
             },
           },
-          { loader: 'css-loader' },
+          { loader: 'css-loader' }, /* css-loader auto set module for \.module\. files */
           { loader: 'postcss-loader' },
           /* antd 需要打开 javascriptEnabled */
           {
@@ -80,22 +80,6 @@ const prodConf: Configuration = {
               },
             },
           },
-        ],
-      },
-
-      {
-        test: /\.module\.less$/,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: '../', // 设定 css 内部引用的路径
-            },
-          },
-          /* css-loader auto set module for \.module\. files */
-          { loader: 'css-loader' },
-          { loader: 'postcss-loader' },
-          { loader: 'less-loader' },
         ],
       },
 

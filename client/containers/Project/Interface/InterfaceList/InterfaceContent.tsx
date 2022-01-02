@@ -2,8 +2,7 @@ import { Tabs, Modal, Button } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { Prompt } from 'react-router-dom'
-import { withRouter } from 'react-router-dom'
+import { Prompt, withRouter } from 'react-router-dom'
 
 import plugin from '@/plugin'
 import { AnyFunc } from '@/types'
@@ -178,4 +177,4 @@ const actions = {
   fetchInterfaceData,
 }
 
-export default connect(states, actions)(withRouter(Content as any)) as typeof Content
+export default connect(states, actions)(withRouter(Content as any)) as any as typeof Content

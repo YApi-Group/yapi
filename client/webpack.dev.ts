@@ -72,31 +72,18 @@ const devConf: Configuration = {
 
       {
         test: /\.less$/,
-        exclude: /\.module\.less$/,
         use: [
           { loader: 'style-loader' },
-          { loader: 'css-loader' },
+          { loader: 'css-loader' }, /* css-loader auto set module for \.module\. files */
           { loader: 'postcss-loader' },
-          /* antd 需要打开 javascriptEnabled */
           {
             loader: 'less-loader',
             options: {
               lessOptions: {
-                javascriptEnabled: true,
+                javascriptEnabled: true, /* antd need javascriptEnabled */
               },
             },
           },
-        ],
-      },
-
-      {
-        test: /\.module\.less$/,
-        use: [
-          { loader: 'style-loader' },
-          /* css-loader auto set module for \.module\. files */
-          { loader: 'css-loader' },
-          { loader: 'postcss-loader' },
-          { loader: 'less-loader' },
         ],
       },
 

@@ -1,15 +1,25 @@
 import { DeleteOutlined, QuestionCircleOutlined, SaveOutlined } from '@ant-design/icons'
-import { Row, Col, Form, Input, Select, Button, AutoComplete, Tooltip } from 'antd'
+import { Row, Col, Form, Input, Select, Button, AutoComplete, Tooltip, FormInstance } from 'antd'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { Component, MouseEvent, createRef, RefObject } from 'react'
 
 import constants from '@/cons'
 import { AnyFunc } from '@/types'
+
+import styles from './pec.module.less'
 
 import './index.scss'
 
 const FormItem = Form.Item
 const Option = Select.Option
+
+const headerOpts = constants.HTTP_REQUEST_HEADER.map(v => ({ label: v, value: v }))
+
+type ItemKey = 'header' | 'cookie' | 'global'
+type ItemData = {
+  name: string
+  value: string
+}
 
 const initMap = {
   header: [
@@ -33,21 +43,24 @@ const initMap = {
 }
 
 type PropTypes = {
-  projectMsg?: any
-  form?: any
-  onSubmit?: AnyFunc
-  handleEnvInput?: AnyFunc
+  projectMsg: any
+  onSubmit: AnyFunc
+  handleEnvInput: AnyFunc
 }
 
 type StateTypes = typeof initMap
 
 class ProjectEnvContent extends Component<PropTypes, StateTypes> {
+  formRef: RefObject<FormInstance>
+
   constructor(props: PropTypes) {
     super(props)
+
+    this.formRef = createRef()
     this.state = { ...initMap }
   }
 
-  initState(curdata:any) {
+  initState(curdata: any) {
     const header = [
       {
         name: '',
@@ -68,20 +81,20 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
       },
     ]
 
-    const curheader = curdata.header
+    const curHeader = curdata.header
     const curGlobal = curdata.global
 
-    if (curheader && curheader.length !== 0) {
-      curheader.forEach(item => {
+    if (curHeader && curHeader.length !== 0) {
+      curHeader.forEach((item: ItemData) => {
         if (item.name === 'Cookie') {
-          let cookieStr = item.value
+          const cookieStr = item.value
           if (cookieStr) {
-            cookieStr = cookieStr.split(';').forEach(c => {
+            cookieStr.split(';').forEach(c => {
               if (c) {
-                c = c.split('=')
+                const ary = c.split('=')
                 cookie.unshift({
-                  name: c[0] ? c[0].trim() : '',
-                  value: c[1] ? c[1].trim() : '',
+                  name: ary[0] ? ary[0].trim() : '',
+                  value: ary[1] ? ary[1].trim() : '',
                 })
               }
             })
@@ -93,39 +106,43 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
     }
 
     if (curGlobal && curGlobal.length !== 0) {
-      curGlobal.forEach(item => {
+      curGlobal.forEach((item: ItemData) => {
         global.unshift(item)
       })
     }
     return { header, cookie, global }
   }
 
-  addHeader = (value, index, name) => {
+  addHeader = (index: number, name: ItemKey) => {
     const nextHeader = this.state[name][index + 1]
     if (nextHeader && typeof nextHeader === 'object') {
       return
     }
-    const newValue = {}
+
     const data = { name: '', value: '' }
-    newValue[name] = [].concat(this.state[name], data)
+    const newValue: any = {
+      [name]: [].concat(this.state[name], data),
+    }
     this.setState(newValue)
   }
 
-  delHeader = (key, name) => {
-    const curValue = this.props.form.getFieldValue(name)
-    const newValue = {}
-    newValue[name] = curValue.filter((val, index) => index !== key)
-    this.props.form.setFieldsValue(newValue)
+  delHeader = (key: number, name: ItemKey) => {
+    const curValue: any[] = this.formRef.current.getFieldValue(name)
+    const newValue: any = {
+      [name]: curValue.filter((val, index) => index !== key),
+    }
+
+    this.formRef.current.setFieldsValue(newValue)
     this.setState(newValue)
   }
 
-  handleInit(data) {
-    this.props.form.resetFields()
+  handleInit(data: any) {
+    this.formRef.current.resetFields()
     const newValue = this.initState(data)
     this.setState({ ...newValue })
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
     const curEnvName = this.props.projectMsg.name
     const nextEnvName = nextProps.projectMsg.name
     if (curEnvName !== nextEnvName) {
@@ -133,37 +150,43 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
     }
   }
 
-  handleOk = e => {
+  handleOk = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    const { form, onSubmit, projectMsg } = this.props
-    form.validateFields((err, values) => {
-      if (!err) {
-        const header = values.header.filter(val => val.name !== '')
-        const cookie = values.cookie.filter(val => val.name !== '')
-        const global = values.global.filter(val => val.name !== '')
+    const { onSubmit, projectMsg } = this.props
+
+    this.formRef.current
+      .validateFields()
+      .then((values: any) => {
+        const header: ItemData[] = values.header.filter((val: ItemData) => val.name !== '')
+        const cookie: ItemData[] = values.cookie.filter((val: ItemData) => val.name !== '')
+        const global: ItemData[] = values.global.filter((val: ItemData) => val.name !== '')
         if (cookie.length > 0) {
           header.push({
             name: 'Cookie',
             value: cookie.map(item => item.name + '=' + item.value).join(';'),
           })
         }
-        const assignValue = {}
-        assignValue.env = {
-          _id: projectMsg._id,
-          name: values.env.name,
-          domain: values.env.protocol + values.env.domain,
-          header: header,
-          global,
+
+        const assignValue = {
+          env: {
+            _id: projectMsg._id,
+            name: values.env.name,
+            domain: values.env.protocol + values.env.domain,
+            header: header,
+            global,
+          },
         }
         onSubmit(assignValue)
-      }
-    })
+      })
+      .catch(err => {
+        console.warn(err)
+      })
   }
 
   render() {
     const { projectMsg } = this.props
-    // const { getFieldDecor111ator } = this.props.form
-    const headerTpl = (item, index) => {
+
+    const headerTpl = (item: ItemData, index: number) => {
       const headerLength = this.state.header.length - 1
       return (
         <Row gutter={2} key={index}>
@@ -176,10 +199,10 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
               <AutoComplete
                 style={{ width: '200px' }}
                 allowClear={true}
-                dataSource={constants.HTTP_REQUEST_HEADER}
+                options={headerOpts}
                 placeholder="请输入header名称"
-                onChange={() => this.addHeader(item, index, 'header')}
-                filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                onChange={() => this.addHeader(index, 'header')}
+                filterOption={(inputValue, option) => option.props.children.toUpperCase().includes(inputValue.toUpperCase())
                 }
               />
             </FormItem>
@@ -208,7 +231,7 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
       )
     }
 
-    const commonTpl = (item, index, name) => {
+    const commonTpl = (item: ItemData, index: number, name: ItemKey) => {
       const length = this.state[name].length - 1
       return (
         <Row gutter={2} key={index}>
@@ -221,7 +244,7 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
               <Input
                 placeholder={`请输入 ${name} Name`}
                 style={{ width: '200px' }}
-                onChange={() => this.addHeader(item, index, name)}
+                onChange={() => this.addHeader(index, name)}
               />
             </FormItem>
           </Col>
@@ -248,7 +271,7 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
       )
     }
 
-    const envTpl = data => (
+    const envTpl = (data: any) => (
       <div>
         <h3 className="env-label">环境名称</h3>
         <FormItem
@@ -260,18 +283,16 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
             {
               required: false,
               whitespace: true,
-              validator(rule, value, callback) {
+              validator(_, value) {
                 if (value) {
                   if (value.length === 0) {
-                    callback('请输入环境名称')
+                    return Promise.reject('请输入环境名称')
                   } else if (!/\S/.test(value)) {
-                    callback('请输入环境名称')
-                  } else {
-                    return callback()
+                    return Promise.reject('请输入环境名称')
                   }
-                } else {
-                  callback('请输入环境名称')
+                  return Promise.resolve()
                 }
+                return Promise.reject('请输入环境名称')
               },
             },
           ]}
@@ -284,48 +305,45 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
         </FormItem>
 
         <h3 className="env-label">环境域名</h3>
-        <FormItem
-          required={false}
-          name="env.domain"
-          validateTrigger={['onChange', 'onBlur']}
-          initialValue={data.domain ? data.domain.split('//')[1] : ''}
-          rules={[
-            {
-              required: false,
-              whitespace: true,
-              validator(rule, value, callback) {
-                if (value) {
-                  if (value.length === 0) {
-                    callback('请输入环境域名!')
-                  } else if (/\s/.test(value)) {
-                    callback('环境域名不允许出现空格!')
-                  } else {
-                    return callback()
+        <div className={styles.domainBar}>
+          <FormItem
+            noStyle
+            name="env.protocol"
+            initialValue={data.domain ? data.domain.split('//')[0] + '//' : 'http://'}
+            rules={[{ required: true }]}
+          >
+            <Select>
+              <Option value="http://">{'http://'}</Option>
+              <Option value="https://">{'https://'}</Option>
+            </Select>
+          </FormItem>
+          <FormItem
+            noStyle
+            required={false}
+            name="env.domain"
+            validateTrigger={['onChange', 'onBlur']}
+            initialValue={data.domain ? data.domain.split('//')[1] : ''}
+            rules={[
+              {
+                required: false,
+                whitespace: true,
+                validator(_, value) {
+                  if (value) {
+                    if (value.length === 0) {
+                      return Promise.reject('请输入环境域名!')
+                    } else if (/\s/.test(value)) {
+                      return Promise.reject('环境域名不允许出现空格!')
+                    }
+                    return Promise.resolve()
                   }
-                } else {
-                  callback('请输入环境域名!')
-                }
+                  return Promise.reject('请输入环境域名!')
+                },
               },
-            },
-          ]}
-        >
-          <Input
-            placeholder="请输入环境域名"
-            style={{ width: '90%', marginRight: 8 }}
-            addonBefore={
-              <FormItem
-                name="env.protocol"
-                initialValue={data.domain ? data.domain.split('//')[0] + '//' : 'http://'}
-                rules={[{ required: true }]}
-              >
-                <Select>
-                  <Option value="http://">{'http://'}</Option>
-                  <Option value="https://">{'https://'}</Option>
-                </Select>
-              </FormItem>
-            }
-          />
-        </FormItem>
+            ]}
+          >
+            <Input placeholder="请输入环境域名" style={{ height: '32px' }} />
+          </FormItem>
+        </div>
 
         <h3 className="env-label">Header</h3>
         {this.state.header.map((item, index) => headerTpl(item, index))}
@@ -351,14 +369,22 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
     )
 
     return (
-      <div>
-        {envTpl(projectMsg)}
-        <div className="btnwrap-changeproject">
-          <Button className="m-btn btn-save" icon={<SaveOutlined />} type="primary" size="large" onClick={this.handleOk}>
-            保 存
-          </Button>
+      <Form ref={this.formRef}>
+        <div>
+          {envTpl(projectMsg)}
+          <div className={styles.btnSave}>
+            <Button
+              className="m-btn btn-save"
+              icon={<SaveOutlined />}
+              type="primary"
+              size="large"
+              onClick={this.handleOk}
+            >
+              保 存
+            </Button>
+          </div>
         </div>
-      </div>
+      </Form>
     )
   }
 }
