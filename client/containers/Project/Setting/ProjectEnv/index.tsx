@@ -10,6 +10,7 @@ import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
 import { updateEnv, getProject, getEnv } from '../../../../reducer/modules/project'
 
 import ProjectEnvContent from './ProjectEnvContent'
+import styles from './index.module.less'
 
 import './index.scss'
 
@@ -37,6 +38,7 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
 
   constructor(props: PropTypes) {
     super(props)
+
     this.state = {
       env: [],
       _id: null,
@@ -198,24 +200,23 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
         <Layout className="project-env">
           <Sider width={195} style={{ background: '#fff' }}>
             <div style={{ height: '100%', borderRight: 0 }}>
-              <Row className="first-menu-item menu-item">
-                <div className="env-icon-style">
-                  <h3>
+              <Row className={styles.envAddDiv}>
+                <Tooltip placement="top" title="在这里添加项目的环境配置">
                     环境列表&nbsp;
-                    <Tooltip placement="top" title="在这里添加项目的环境配置">
-                      <QuestionCircleOutlined />
-                    </Tooltip>
-                  </h3>
-                  <Tooltip title="添加环境变量">
-                    <PlusOutlined onClick={() => this.addEnvParams()} />
-                  </Tooltip>
-                </div>
+                  <QuestionCircleOutlined />
+                </Tooltip>
+
+                <Tooltip title="添加环境变量">
+                  <PlusOutlined onClick={() => this.addEnvParams()} />
+                </Tooltip>
               </Row>
+
               <EasyDragSort data={() => env} onChange={this.handleDragMove()}>
                 {envSettingItems}
               </EasyDragSort>
             </div>
           </Sider>
+
           <Layout className="env-content">
             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
               <ProjectEnvContent

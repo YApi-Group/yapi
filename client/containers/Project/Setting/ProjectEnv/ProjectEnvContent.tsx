@@ -10,7 +10,6 @@ import styles from './pec.module.less'
 
 import './index.scss'
 
-const FormItem = Form.Item
 const Option = Select.Option
 
 const headerOpts = constants.HTTP_REQUEST_HEADER.map(v => ({ label: v, value: v }))
@@ -157,6 +156,7 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
     this.formRef.current
       .validateFields()
       .then((values: any) => {
+        console.log(values)
         const header: ItemData[] = values.header.filter((val: ItemData) => val.name !== '')
         const cookie: ItemData[] = values.cookie.filter((val: ItemData) => val.name !== '')
         const global: ItemData[] = values.global.filter((val: ItemData) => val.name !== '')
@@ -179,7 +179,7 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
         onSubmit(assignValue)
       })
       .catch(err => {
-        console.warn(err)
+        console.error(err)
       })
   }
 
@@ -191,8 +191,8 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
       return (
         <Row gutter={2} key={index}>
           <Col span={10}>
-            <FormItem
-              name={'header[' + index + '].name'}
+            <Form.Item
+              name={['header', index, 'name']}
               validateTrigger={['onChange', 'onBlur']}
               initialValue={item.name || ''}
             >
@@ -202,20 +202,21 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
                 options={headerOpts}
                 placeholder="请输入header名称"
                 onChange={() => this.addHeader(index, 'header')}
-                filterOption={(inputValue, option) => option.props.children.toUpperCase().includes(inputValue.toUpperCase())
+                filterOption={
+                  (inputVal, opt) => opt.value.toUpperCase().includes(inputVal.toUpperCase())
                 }
               />
-            </FormItem>
+            </Form.Item>
           </Col>
 
           <Col span={12}>
-            <FormItem
-              name={'header[' + index + '].value'}
+            <Form.Item
+              name={['header', index, 'value']}
               validateTrigger={['onChange', 'onBlur']}
               initialValue={item.value || ''}
             >
               <Input placeholder="请输入参数内容" style={{ width: '90%', marginRight: 8 }} />
-            </FormItem>
+            </Form.Item>
           </Col>
           <Col span={2} className={index === headerLength ? ' env-last-row' : null}>
             {/* 新增的项中，只有最后一项没有有删除按钮 */}
@@ -236,8 +237,8 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
       return (
         <Row gutter={2} key={index}>
           <Col span={10}>
-            <FormItem
-              name={`${name}[${index}].name`}
+            <Form.Item
+              name={[name, index, 'name']}
               validateTrigger={['onChange', 'onBlur']}
               initialValue={item.name || ''}
             >
@@ -246,16 +247,16 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
                 style={{ width: '200px' }}
                 onChange={() => this.addHeader(index, name)}
               />
-            </FormItem>
+            </Form.Item>
           </Col>
           <Col span={12}>
-            <FormItem
-              name={`${name}[${index}].value`}
+            <Form.Item
+              name={[name, index, 'value']}
               validateTrigger={['onChange', 'onBlur']}
               initialValue={item.value || ''}
             >
               <Input placeholder="请输入参数内容" style={{ width: '90%', marginRight: 8 }} />
-            </FormItem>
+            </Form.Item>
           </Col>
           <Col span={2} className={index === length ? ' env-last-row' : null}>
             {/* 新增的项中，只有最后一项没有有删除按钮 */}
@@ -274,9 +275,9 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
     const envTpl = (data: any) => (
       <div>
         <h3 className="env-label">环境名称</h3>
-        <FormItem
+        <Form.Item
           required={false}
-          name="env.name"
+          name={['env', 'name']}
           validateTrigger={['onChange', 'onBlur']}
           initialValue={data.name === '新环境' ? '' : data.name || ''}
           rules={[
@@ -302,13 +303,13 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
             placeholder="请输入环境名称"
             style={{ width: '90%', marginRight: 8 }}
           />
-        </FormItem>
+        </Form.Item>
 
         <h3 className="env-label">环境域名</h3>
         <div className={styles.domainBar}>
-          <FormItem
+          <Form.Item
             noStyle
-            name="env.protocol"
+            name={['env', 'protocol']}
             initialValue={data.domain ? data.domain.split('//')[0] + '//' : 'http://'}
             rules={[{ required: true }]}
           >
@@ -316,11 +317,11 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
               <Option value="http://">{'http://'}</Option>
               <Option value="https://">{'https://'}</Option>
             </Select>
-          </FormItem>
-          <FormItem
+          </Form.Item>
+          <Form.Item
             noStyle
             required={false}
-            name="env.domain"
+            name={['env', 'domain']}
             validateTrigger={['onChange', 'onBlur']}
             initialValue={data.domain ? data.domain.split('//')[1] : ''}
             rules={[
@@ -342,7 +343,7 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
             ]}
           >
             <Input placeholder="请输入环境域名" style={{ height: '32px' }} />
-          </FormItem>
+          </Form.Item>
         </div>
 
         <h3 className="env-label">Header</h3>
