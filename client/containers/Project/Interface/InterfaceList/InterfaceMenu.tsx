@@ -27,7 +27,7 @@ import {
   deleteInterfaceCatData,
   initInterface,
 } from '../../../../reducer/modules/interface.js'
-import { getProject } from '../../../../reducer/modules/project.js'
+import { getProject } from '../../../../reducer/modules/project'
 
 import AddInterfaceCatForm from './AddInterfaceCatForm'
 import AddInterfaceForm from './AddInterfaceForm'

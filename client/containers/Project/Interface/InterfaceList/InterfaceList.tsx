@@ -15,7 +15,7 @@ import {
   fetchInterfaceList,
   fetchInterfaceCatList,
 } from '../../../../reducer/modules/interface.js'
-import { getProject } from '../../../../reducer/modules/project.js'
+import { getProject } from '../../../../reducer/modules/project'
 
 import AddInterfaceForm from './AddInterfaceForm'
 

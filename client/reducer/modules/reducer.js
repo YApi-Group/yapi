@@ -9,7 +9,7 @@ import inter from './interface.js'
 import interfaceCol from './interfaceCol.js'
 import menu from './menu.js'
 import news from './news.js'
-import project from './project.js'
+import project from './project'
 import user from './user.js'
 
 const reducerModules = {

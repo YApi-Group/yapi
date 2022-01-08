@@ -31,7 +31,7 @@ import {
   delMember,
   changeMemberRole,
   changeMemberEmailNotice,
-} from '../../../../reducer/modules/project.js'
+} from '../../../../reducer/modules/project'
 
 import '../Setting.scss'
 

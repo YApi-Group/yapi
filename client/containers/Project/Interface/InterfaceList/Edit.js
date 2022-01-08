@@ -9,7 +9,7 @@ import {
   fetchInterfaceListMenu,
   fetchInterfaceData,
 } from '../../../../reducer/modules/interface.js'
-import { getProject } from '../../../../reducer/modules/project.js'
+import { getProject } from '../../../../reducer/modules/project'
 
 import './Edit.scss'
 import { withRouter, Link } from 'react-router-dom'

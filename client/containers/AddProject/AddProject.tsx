@@ -10,7 +10,7 @@ import { DispatchCommonFunc, DispatchPromiseFunc } from '@/types'
 
 import { pickRandomProperty, handlePath, nameLengthLimit } from '../../common'
 import { fetchGroupList } from '../../reducer/modules/group.js'
-import { addProject } from '../../reducer/modules/project.js'
+import { addProject } from '../../reducer/modules/project'
 import { setBreadcrumb } from '../../reducer/modules/user'
 
 import './AddProject.scss'
