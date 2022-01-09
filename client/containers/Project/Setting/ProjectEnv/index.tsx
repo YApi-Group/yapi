@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
+import { NameValueStr, EnvPart, ProjectGetData } from '@/ajax/ProjectGet'
 import { AnyFunc } from '@/types'
 
 import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
@@ -20,15 +21,15 @@ type PropTypes = {
   projectId?: number
   updateEnv?: AnyFunc
   getProject?: AnyFunc
-  projectMsg?: any
+  currProject?: ProjectGetData
   onOk?: AnyFunc
   getEnv?: AnyFunc
 }
 
 type StateTypes = {
-  env: any[]
+  env: EnvPart[]
   _id: number
-  currentEnvMsg: any
+  currentEnvMsg: EnvPart
   delIcon: string
   currentKey: number
 }
@@ -40,19 +41,19 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
     super(props)
 
     this.state = {
-      env: [],
+      env: [] as EnvPart[],
       _id: null,
-      currentEnvMsg: {},
+      currentEnvMsg: { name: '', domain: '' },
       delIcon: null,
       currentKey: -2,
     }
   }
 
-  initState(curdata: any[], id: number) {
+  initState(curdata: EnvPart[], id: number) {
     this.setState({
       ...this.state,
 
-      env: [].concat(curdata),
+      env: curdata.slice(),
       _id: id,
     })
   }
@@ -60,7 +61,7 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
   async UNSAFE_componentWillMount() {
     this._isMounted = true
     await this.props.getProject(this.props.projectId)
-    const { env, _id } = this.props.projectMsg
+    const { env, _id } = this.props.currProject
     this.initState(env, _id)
     this.handleClick(0, env[0])
   }
@@ -69,16 +70,17 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
     this._isMounted = false
   }
 
-  handleClick = (key: number, data: any) => {
+  handleClick = (key: number, data: EnvPart) => {
+    // console.log(key, data)
     this.setState({
-      currentEnvMsg: data,
       currentKey: key,
+      currentEnvMsg: data,
     })
   }
 
   // 增加环境变量项
   addEnvParams = () => {
-    const data = { name: '新环境', domain: '', header: [] as any[] }
+    const data: EnvPart = { name: '新环境', domain: '', header: [] as NameValueStr[] }
 
     this.setState({
       env: [data].concat(this.state.env),
@@ -107,6 +109,7 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
     return newValue
   }
 
+  // TODO debug 不显示
   enterItem = (key: any) => {
     this.setState({ delIcon: key })
   }
@@ -202,7 +205,7 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
             <div style={{ height: '100%', borderRight: 0 }}>
               <Row className={styles.envAddDiv}>
                 <Tooltip placement="top" title="在这里添加项目的环境配置">
-                    环境列表&nbsp;
+                  环境列表&nbsp;
                   <QuestionCircleOutlined />
                 </Tooltip>
 
@@ -220,6 +223,7 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
           <Layout className="env-content">
             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
               <ProjectEnvContent
+                key={this.state.currentEnvMsg._id + this.state.currentEnvMsg.name}
                 projectMsg={this.state.currentEnvMsg}
                 onSubmit={e => this.onSubmit(e, currentKey)}
                 handleEnvInput={e => this.handleInputChange(e, currentKey)}
@@ -233,7 +237,7 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
 }
 
 const states = (state: any) => ({
-  projectMsg: state.project.currProject,
+  currProject: state.project.currProject,
 })
 const actions = {
   updateEnv,

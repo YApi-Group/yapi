@@ -517,7 +517,6 @@ module.exports = {
         '@babel',
       ],
 
-      // 额外覆盖的规则
       rules: {
         ...jsRules,
         ...babelRules,
@@ -542,7 +541,6 @@ module.exports = {
         '@typescript-eslint',
       ],
 
-      // 额外覆盖的规则
       rules: {
         ...jsRules,
         ...tsRules,

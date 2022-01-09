@@ -3,6 +3,7 @@ import { Row, Col, Form, Input, Select, Button, AutoComplete, Tooltip, FormInsta
 import PropTypes from 'prop-types'
 import React, { Component, MouseEvent, createRef, RefObject } from 'react'
 
+import { EnvPart } from '@/ajax/ProjectGet'
 import constants from '@/cons'
 import { AnyFunc } from '@/types'
 
@@ -21,28 +22,13 @@ type ItemData = {
 }
 
 const initMap = {
-  header: [
-    {
-      name: '',
-      value: '',
-    },
-  ],
-  cookie: [
-    {
-      name: '',
-      value: '',
-    },
-  ],
-  global: [
-    {
-      name: '',
-      value: '',
-    },
-  ],
+  header: [{ name: '', value: '' }],
+  cookie: [{ name: '', value: '' }],
+  global: [{ name: '', value: '' }],
 }
 
 type PropTypes = {
-  projectMsg: any
+  projectMsg: EnvPart
   onSubmit: AnyFunc
   handleEnvInput: AnyFunc
 }
@@ -56,29 +42,14 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
     super(props)
 
     this.formRef = createRef()
-    this.state = { ...initMap }
+
+    this.state = this.initState(props.projectMsg)
   }
 
   initState(curdata: any) {
-    const header = [
-      {
-        name: '',
-        value: '',
-      },
-    ]
-    const cookie = [
-      {
-        name: '',
-        value: '',
-      },
-    ]
-
-    const global = [
-      {
-        name: '',
-        value: '',
-      },
-    ]
+    const header = [{ name: '', value: '' }]
+    const cookie = [{ name: '', value: '' }]
+    const global = [{ name: '', value: '' }]
 
     const curHeader = curdata.header
     const curGlobal = curdata.global
@@ -141,13 +112,13 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
     this.setState({ ...newValue })
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
-    const curEnvName = this.props.projectMsg.name
-    const nextEnvName = nextProps.projectMsg.name
-    if (curEnvName !== nextEnvName) {
-      this.handleInit(nextProps.projectMsg)
-    }
-  }
+  // UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
+  //   const curEnvName = this.props.projectMsg.name
+  //   const nextEnvName = nextProps.projectMsg.name
+  //   if (curEnvName !== nextEnvName) {
+  //     this.handleInit(nextProps.projectMsg)
+  //   }
+  // }
 
   handleOk = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
@@ -202,9 +173,7 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
                 options={headerOpts}
                 placeholder="请输入header名称"
                 onChange={() => this.addHeader(index, 'header')}
-                filterOption={
-                  (inputVal, opt) => opt.value.toUpperCase().includes(inputVal.toUpperCase())
-                }
+                filterOption={(inputVal, opt) => opt.value.toUpperCase().includes(inputVal.toUpperCase())}
               />
             </Form.Item>
           </Col>
