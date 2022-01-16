@@ -1,16 +1,17 @@
 import * as path from 'path'
 
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ip from 'ip'
 import moment from 'moment-timezone'
-import { DefinePlugin, Configuration } from 'webpack'
+import { HotModuleReplacementPlugin, DefinePlugin, Configuration } from 'webpack'
 
 import 'webpack-dev-server'
 
-const localHost = ip.address()
-
 const devConf: Configuration = {
+  target: 'web',
+
   entry: {
     main: path.resolve(__dirname, './index.js'),
   },
@@ -24,31 +25,51 @@ const devConf: Configuration = {
   },
 
   mode: 'development',
+  stats: { children: true },
+  /* 缓存到硬盘上，可以加快冷启动速度 */
+  cache: {
+    type: 'filesystem',
+  },
   /* 用于标记编译文件与源文件对应位置，便于调试，该模式 eval 比 inline-source-map 快 */
   devtool: 'inline-source-map',
-  /* 开发模式下仍然打开 treeshake */
   optimization: {
+    /* 开发模式下如下设置 可提升热更新速度 */
+    moduleIds: 'deterministic',
+    runtimeChunk: 'single',
+    /* 开发模式下仍然打开 treeshake */
     usedExports: true,
     sideEffects: true,
+    /* 开发模式下仍然 split 可以提升热更新速度 */
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendors: {
+          test: /node_modules/,
+          priority: 10,
+        },
+      },
+    },
   },
-
-  stats: { children: false },
 
   watchOptions: {
     aggregateTimeout: 200,
-    poll: 500,
     ignored: /node_modules/,
   },
 
   devServer: {
     hot: true,
-    open: true,
-    host: localHost,
-    // clientLogLevel: 'none',
-    // contentBase: path.resolve(__dirname, './dist-dev'), // 没有静态文件加载的时候，没什么用
+    open: ['/'],
+    host: ip.address(),
+    client: { logging: 'none' },
+    devMiddleware: {
+      writeToDisk: false,
+    },
+    static: {
+      directory: path.resolve(__dirname, './dist-dev'), // 没有静态文件加载的时候，没什么用
+    },
+
     historyApiFallback: true, // 404的页面会自动跳转到/页面
-    // public: '/',
-    // writeToDisk: true,
+
     proxy: [
       {
         /* 所有 /api/ 请求都代理到后端 */
@@ -56,7 +77,7 @@ const devConf: Configuration = {
         target: 'http://127.0.0.1:3000',
         changeOrigin: true,
       },
-    ],
+    ] as any, // 临时 debug 类型提示错误问题
   },
 
   module: {
@@ -146,6 +167,9 @@ const devConf: Configuration = {
   },
 
   plugins: [
+    new HotModuleReplacementPlugin(),
+    new ReactRefreshWebpackPlugin(),
+
     new DefinePlugin({
       VERSION_INFO: JSON.stringify('version: ' + moment.tz('Asia/Shanghai').format()), /* 编译时添加版本信息 */
     }),

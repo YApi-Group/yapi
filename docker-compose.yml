@@ -19,7 +19,7 @@ services:
 
   mongo-express:
     image: mongo-express
-    hostname: me1
+    hostname: me
     # restart: always
     ports:
       - 9027:8081

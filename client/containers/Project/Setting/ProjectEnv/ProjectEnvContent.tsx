@@ -106,12 +106,11 @@ class ProjectEnvContent extends Component<PropTypes, StateTypes> {
     this.setState(newValue)
   }
 
-  handleInit(data: any) {
-    this.formRef.current.resetFields()
-    const newValue = this.initState(data)
-    this.setState({ ...newValue })
-  }
-
+  // handleInit(data: any) {
+  //   this.formRef.current.resetFields()
+  //   const newValue = this.initState(data)
+  //   this.setState({ ...newValue })
+  // }
   // UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
   //   const curEnvName = this.props.projectMsg.name
   //   const nextEnvName = nextProps.projectMsg.name

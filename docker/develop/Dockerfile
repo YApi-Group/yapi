@@ -124,5 +124,5 @@ RUN echo 'root:000000' | chpasswd
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-EXPOSE 27017
+EXPOSE 22 27017
 CMD ["mongod"]
