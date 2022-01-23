@@ -9,14 +9,16 @@ import TerserWebpackPlugin from 'terser-webpack-plugin'
 import { Configuration, DefinePlugin } from 'webpack'
 
 const prodConf: Configuration = {
+  target: 'web',
+
   entry: {
     main: path.resolve(__dirname, './index.js'),
   },
 
   output: {
-    path: path.resolve(__dirname, './dist-prod'),
     library: 'MyYapi', // Only for umd/amd
     libraryTarget: 'var', // {'var', 'umd', 'comments', 'this' ...}
+    path: path.resolve(__dirname, './dist-prod'),
     filename: 'js/[name].[contenthash:8].js',
     publicPath: '/',
   },
@@ -49,12 +51,7 @@ const prodConf: Configuration = {
       {
         test: /\.css$/,
         use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: '../', // 设定 css 内部引用的路径
-            },
-          },
+          { loader: MiniCssExtractPlugin.loader },
           { loader: 'css-loader' },
           { loader: 'postcss-loader' },
         ],
@@ -63,12 +60,7 @@ const prodConf: Configuration = {
       {
         test: /\.less$/,
         use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: '../', // 设定 css 内部引用的路径
-            },
-          },
+          { loader: MiniCssExtractPlugin.loader },
           { loader: 'css-loader' }, /* css-loader auto set module for \.module\. files */
           { loader: 'postcss-loader' },
           /* antd 需要打开 javascriptEnabled */
@@ -86,12 +78,7 @@ const prodConf: Configuration = {
       {
         test: /\.scss$/,
         use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: '../', // 设定 css 内部引用的路径
-            },
-          },
+          { loader: MiniCssExtractPlugin.loader },
           { loader: 'css-loader' },
           { loader: 'postcss-loader' },
           { loader: 'sass-loader' },

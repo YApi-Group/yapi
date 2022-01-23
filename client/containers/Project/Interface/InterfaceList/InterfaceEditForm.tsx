@@ -37,6 +37,7 @@ import { changeEditStatus } from '../../../../reducer/modules/interface.js'
 import '@common/tui-editor/dist/tui-editor.min.css' // editor ui
 import '@common/tui-editor/dist/tui-editor-contents.min.css' // editor content
 import './editor.css'
+import { AnyFunc } from '@/types.js'
 
 const ResBodySchema = jSchema({ lang: 'zh_CN', mock: constants.MOCK_SOURCE })
 const ReqBodySchema = jSchema({ lang: 'zh_CN', mock: constants.MOCK_SOURCE })
@@ -109,32 +110,25 @@ const HTTP_METHOD = constants.HTTP_METHOD
 const HTTP_METHOD_KEYS = Object.keys(HTTP_METHOD)
 const HTTP_REQUEST_HEADER = constants.HTTP_REQUEST_HEADER
 
-// @connect(
-//   state => ({
-//     custom_field: state.group.field,
-//     projectMsg: state.project.currProject,
-//   }),
-//   {
-//     changeEditStatus,
-//   },
-// )
-class InterfaceEditForm extends Component {
-  static propTypes = {
-    custom_field: PropTypes.object,
-    groupList: PropTypes.array,
-    form: PropTypes.object,
-    curdata: PropTypes.object,
-    mockUrl: PropTypes.string,
-    onSubmit: PropTypes.func,
-    basepath: PropTypes.string,
-    noticed: PropTypes.bool,
-    cat: PropTypes.array,
-    changeEditStatus: PropTypes.func,
-    projectMsg: PropTypes.object,
-    onTagClick: PropTypes.func,
-  }
+type PropTypes = {
+  custom_field?: any
+  groupList?: any[]
+  form?: any
+  curdata?: any
+  mockUrl?: string
+  onSubmit?: AnyFunc
+  basepath?: string
+  noticed?: boolean
+  cat?: any[]
+  changeEditStatus?: AnyFunc
+  projectMsg?: any
+  onTagClick?: AnyFunc
+}
 
-  initState(curdata) {
+class InterfaceEditForm extends Component<PropTypes, any> {
+  startTime: number
+
+  initState(curdata:any) {
     this.startTime = new Date().getTime()
     if (curdata.req_query && curdata.req_query.length === 0) {
       delete curdata.req_query
@@ -1266,7 +1260,7 @@ class InterfaceEditForm extends Component {
   }
 }
 
-const states = state => ({
+const states = (state: any) => ({
   custom_field: state.group.field,
   projectMsg: state.project.currProject,
 })

@@ -1,8 +1,11 @@
 import { message, Modal } from 'antd'
 import axios from 'axios'
 import PropTypes from 'prop-types'
-import React, { PureComponent as Component } from 'react'
+import React, { createRef, PureComponent as Component, RefObject } from 'react'
 import { connect } from 'react-redux'
+import { withRouter, Link } from 'react-router-dom'
+
+import { AnyFunc } from '@/types.js'
 
 import {
   updateInterfaceData,
@@ -10,40 +13,39 @@ import {
   fetchInterfaceData,
 } from '../../../../reducer/modules/interface.js'
 import { getProject } from '../../../../reducer/modules/project'
+import ProjectTag from '../../Setting/ProjectMessage/ProjectTag'
+
+import InterfaceEditForm from './InterfaceEditForm'
 
 import './Edit.scss'
-import { withRouter, Link } from 'react-router-dom'
 
-import ProjectTag from '../../Setting/ProjectMessage/ProjectTag.jsx'
+type PropTypes = {
+  curdata?: any
+  currProject?: any
+  updateInterfaceData?: AnyFunc
+  fetchInterfaceListMenu?: AnyFunc
+  fetchInterfaceData?: AnyFunc
+  match?: any
+  switchToView?: AnyFunc
+  getProject?: AnyFunc
+}
 
-import InterfaceEditForm from './InterfaceEditForm.js'
+type StateTypes = {
+  mockUrl:string
+  curdata: any
+  status: number
+  visible: boolean
+}
 
-@connect(
-  state => ({
-    curdata: state.inter.curdata,
-    currProject: state.project.currProject,
-  }),
-  {
-    updateInterfaceData,
-    fetchInterfaceListMenu,
-    fetchInterfaceData,
-    getProject,
-  },
-)
-class InterfaceEdit extends Component {
-  static propTypes = {
-    curdata: PropTypes.object,
-    currProject: PropTypes.object,
-    updateInterfaceData: PropTypes.func,
-    fetchInterfaceListMenu: PropTypes.func,
-    fetchInterfaceData: PropTypes.func,
-    match: PropTypes.object,
-    switchToView: PropTypes.func,
-    getProject: PropTypes.func,
-  }
-
-  constructor(props) {
+class InterfaceEdit extends Component<PropTypes, StateTypes> {
+  wsIns: WebSocket
+  tagRef: RefObject<ProjectTag>
+  
+  constructor(props: PropTypes) {
     super(props)
+
+    this.tagRef = createRef()
+
     const { curdata, currProject } = this.props
     this.state = {
       mockUrl:
@@ -55,11 +57,10 @@ class InterfaceEdit extends Component {
       curdata: {},
       status: 0,
       visible: false,
-      // tag: []
     }
   }
 
-  onSubmit = async params => {
+  onSubmit = async (params:any) => {
     params.id = this.props.match.params.actionId
     const result = await axios.post('/api/interface/up', params)
     this.props.fetchInterfaceListMenu(this.props.currProject._id).then()
@@ -75,17 +76,16 @@ class InterfaceEdit extends Component {
   componentWillUnmount() {
     try {
       if (this.state.status === 1) {
-        this.WebSocket.close()
+        this.wsIns.close()
       }
     } catch (e) {
-      return null
+      console.error(e)
     }
   }
 
   componentDidMount() {
     const domain = location.hostname + (location.port !== '' ? ':' + location.port : '')
-    let s,
-      initData = false
+    let initData = false
     // 因后端 node 仅支持 ws， 暂不支持 wss
     const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
 
@@ -100,13 +100,13 @@ class InterfaceEdit extends Component {
     }, 3000)
 
     try {
-      s = new WebSocket(wsProtocol
+      const s = new WebSocket(wsProtocol
           + '://'
           + domain
           + '/api/interface/solve_conflict?id='
           + this.props.match.params.actionId)
       s.onopen = () => {
-        this.WebSocket = s
+        this.wsIns = s
       }
 
       s.onmessage = e => {
@@ -148,7 +148,7 @@ class InterfaceEdit extends Component {
   }
 
   handleOk = async () => {
-    let { tag } = this.tag.state
+    let { tag } = this.tagRef.current.state
     tag = tag.filter(val => val.name !== '')
 
     const id = this.props.currProject._id
@@ -174,12 +174,6 @@ class InterfaceEdit extends Component {
     this.setState({
       visible: false,
     })
-  }
-
-  tagSubmit = tagRef => {
-    this.tag = tagRef
-
-    // this.setState({tag})
   }
 
   render() {
@@ -216,7 +210,7 @@ class InterfaceEdit extends Component {
           okText="保存"
         >
           <div className="tag-modal-center">
-            <ProjectTag tagMsg={tag} ref={this.tagSubmit} />
+            <ProjectTag tagMsg={tag} ref={this.tagRef} />
           </div>
         </Modal>
       </div>
@@ -224,4 +218,16 @@ class InterfaceEdit extends Component {
   }
 }
 
-export default withRouter(InterfaceEdit)
+const states = (state:any) => ({
+  curdata: state.inter.curdata,
+  currProject: state.project.currProject,
+})
+
+const actions = {
+  updateInterfaceData,
+  fetchInterfaceListMenu,
+  fetchInterfaceData,
+  getProject,
+}
+
+export default withRouter(connect(states, actions)(InterfaceEdit as any)) as any as typeof InterfaceEdit
