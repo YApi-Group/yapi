@@ -590,4 +590,4 @@ const states = (state: any) => ({
   custom_field: state.group.field,
 })
 
-export default connect(states)(View) as typeof View
+export default connect(states)(View) as any as typeof View

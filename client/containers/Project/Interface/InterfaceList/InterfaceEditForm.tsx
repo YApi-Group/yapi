@@ -14,11 +14,12 @@ import {
   Radio,
   AutoComplete,
   Switch,
+  RadioChangeEvent,
 } from 'antd'
 import axios from 'axios'
 import json5 from 'json5'
 import PropTypes from 'prop-types'
-import React, { PureComponent as Component } from 'react'
+import React, { ChangeEvent, PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 
@@ -26,24 +27,44 @@ import AceEditor from '@/components/AceEditor/AceEditor'
 import mockEditor from '@/components/AceEditor/mockEditor'
 import constants from '@/cons'
 import jSchema from '@/package'
+import { AnyFunc, HttpMethod } from '@/types'
 import Editor from '@common/tui-editor/dist/tui-editor-Editor-all.min.js'
-
-// const jSchema = require('json-schema-editor-visual')
 
 import { handlePath, nameLengthLimit } from '../../../../common.js'
 import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
 import { changeEditStatus } from '../../../../reducer/modules/interface.js'
 
+// const jSchema = require('json-schema-editor-visual')
+
 import '@common/tui-editor/dist/tui-editor.min.css' // editor ui
 import '@common/tui-editor/dist/tui-editor-contents.min.css' // editor content
 import './editor.css'
-import { AnyFunc } from '@/types.js'
+
+type ReqBodyForm = {
+  name: string
+  type: 'text' | 'file'
+  required: string
+  desc: string
+  example: string
+}
+
+type CurDataType = {
+  method: HttpMethod
+  req_query?: any
+  req_headers?: any
+  req_params?: any
+  req_body_form?: ReqBodyForm[]
+
+  hideTabs: {
+    req: { [key: string]: string }
+  }
+}
 
 const ResBodySchema = jSchema({ lang: 'zh_CN', mock: constants.MOCK_SOURCE })
 const ReqBodySchema = jSchema({ lang: 'zh_CN', mock: constants.MOCK_SOURCE })
 const TabPane = Tabs.TabPane
 
-function checkIsJsonSchema(json) {
+function checkIsJsonSchema(json: any) {
   try {
     json = json5.parse(json)
     if (json.properties && typeof json.properties === 'object' && !json.type) {
@@ -66,8 +87,8 @@ function checkIsJsonSchema(json) {
   }
 }
 
-let EditFormContext
-const validJson = json => {
+let EditFormContext: InterfaceEditForm = null
+const validJson = (json: string) => {
   try {
     json5.parse(json)
     return true
@@ -93,6 +114,9 @@ const Option = Select.Option
 const InputGroup = Input.Group
 const RadioButton = Radio.Button
 const RadioGroup = Radio.Group
+
+type ParamName = 'req_query' | 'req_headers' | 'req_params' | 'req_body_form'
+
 const dataTpl = {
   req_query: { name: '', required: '1', desc: '', example: '' },
   req_headers: { name: '', required: '1', desc: '', example: '' },
@@ -114,7 +138,7 @@ type PropTypes = {
   custom_field?: any
   groupList?: any[]
   form?: any
-  curdata?: any
+  curdata?: CurDataType
   mockUrl?: string
   onSubmit?: AnyFunc
   basepath?: string
@@ -125,10 +149,51 @@ type PropTypes = {
   onTagClick?: AnyFunc
 }
 
-class InterfaceEditForm extends Component<PropTypes, any> {
-  startTime: number
+type StateTypes = {
+  title: string
+  catid: string
+  path: string
+  tag: string
+  status: string
 
-  initState(curdata:any) {
+  custom_field_value: string
+  submitStatus: boolean
+  jsonType: string
+  markdown: string
+  desc: string
+
+  method: HttpMethod
+
+  api_opened: boolean
+
+  res_body: any
+  res_body_type: any
+  res_body_is_json_schema: any
+
+  req_query: any
+  req_headers: any
+  req_params: any
+  req_body_form: any
+  req_body_type: any
+  req_radio_type: any
+  req_body_other: any
+  req_body_is_json_schema: any
+
+  hideTabs: { [key: string]: any }
+
+  visible: boolean
+  bulkName: ParamName
+  bulkValue: any
+}
+
+class InterfaceEditForm extends Component<PropTypes, StateTypes> {
+  startTime: number
+  _isMounted = false
+  mockPreview: any
+  resBodyEditor: any
+  editor: any
+
+  initState(curdata: CurDataType): any {
     this.startTime = new Date().getTime()
     if (curdata.req_query && curdata.req_query.length === 0) {
       delete curdata.req_query
@@ -206,127 +271,121 @@ class InterfaceEditForm extends Component<PropTypes, any> {
     }
   }
 
-  constructor(props) {
+  constructor(props: PropTypes) {
     super(props)
+
     const { curdata } = this.props
     // console.log('custom_field1', this.props.custom_field);
     this.state = this.initState(curdata)
   }
 
-  handleSubmit = e => {
-    e.preventDefault()
+  handleFinish = (values: any) => {
     this.setState({ submitStatus: true })
+    setTimeout(() => {
+      if (this._isMounted) {
+        this.setState({ submitStatus: false })
+      }
+    }, 3000)
 
     try {
-      this.props.form.validateFields((err, values) => {
-        setTimeout(() => {
-          if (this._isMounted) {
-            this.setState({ submitStatus: false })
-          }
-        }, 3000)
-        if (!err) {
-          values.desc = this.editor.getHtml()
-          values.markdown = this.editor.getMarkdown()
-          if (values.res_body_type === 'json') {
-            if (this.state.res_body && validJson(this.state.res_body) === false) {
-              return message.error('返回body json格式有问题，请检查！')
-            }
-            try {
-              values.res_body = JSON.stringify(JSON.parse(this.state.res_body), null, '   ')
-            } catch (e) {
-              values.res_body = this.state.res_body
-            }
-          }
-          if (values.req_body_type === 'json') {
-            if (this.state.req_body_other && validJson(this.state.req_body_other) === false) {
-              return message.error('响应Body json格式有问题，请检查！')
-            }
-            try {
-              values.req_body_other = JSON.stringify(JSON.parse(this.state.req_body_other), null, '   ')
-            } catch (e) {
-              values.req_body_other = this.state.req_body_other
-            }
-          }
-
-          values.method = this.state.method
-          values.req_params = values.req_params || []
-          values.req_headers = values.req_headers || []
-          values.req_body_form = values.req_body_form || []
-          let isFile = false,
-            isHaveContentType = false
-          if (values.req_body_type === 'form') {
-            values.req_body_form.forEach(item => {
-              if (item.type === 'file') {
-                isFile = true
-              }
-            })
-
-            values.req_headers.map(item => {
-              if (item.name === 'Content-Type') {
-                item.value = isFile ? 'multipart/form-data' : 'application/x-www-form-urlencoded'
-                isHaveContentType = true
-              }
-            })
-            if (isHaveContentType === false) {
-              values.req_headers.unshift({
-                name: 'Content-Type',
-                value: isFile ? 'multipart/form-data' : 'application/x-www-form-urlencoded',
-              })
-            }
-          } else if (values.req_body_type === 'json') {
-            values.req_headers
-              ? values.req_headers.map(item => {
-                if (item.name === 'Content-Type') {
-                  item.value = 'application/json'
-                  isHaveContentType = true
-                }
-              })
-              : []
-            if (isHaveContentType === false) {
-              values.req_headers = values.req_headers || []
-              values.req_headers.unshift({
-                name: 'Content-Type',
-                value: 'application/json',
-              })
-            }
-          }
-          values.req_headers = values.req_headers ? values.req_headers.filter(item => item.name !== '') : []
-
-          values.req_body_form = values.req_body_form ? values.req_body_form.filter(item => item.name !== '') : []
-          values.req_params = values.req_params ? values.req_params.filter(item => item.name !== '') : []
-          values.req_query = values.req_query ? values.req_query.filter(item => item.name !== '') : []
-
-          if (HTTP_METHOD[values.method].request_body !== true) {
-            values.req_body_form = []
-          }
-
-          if (values.req_body_is_json_schema && values.req_body_other && values.req_body_type === 'json') {
-            values.req_body_other = checkIsJsonSchema(values.req_body_other)
-            if (!values.req_body_other) {
-              return message.error('请求参数 json-schema 格式有误')
-            }
-          }
-          if (values.res_body_is_json_schema && values.res_body && values.res_body_type === 'json') {
-            values.res_body = checkIsJsonSchema(values.res_body)
-            if (!values.res_body) {
-              return message.error('返回数据 json-schema 格式有误')
-            }
-          }
-
-          this.props.onSubmit(values)
-          EditFormContext.props.changeEditStatus(false)
+      values.desc = this.editor.getHtml()
+      values.markdown = this.editor.getMarkdown()
+      if (values.res_body_type === 'json') {
+        if (this.state.res_body && validJson(this.state.res_body) === false) {
+          return message.error('返回body json格式有问题，请检查！')
         }
-      })
+        try {
+          values.res_body = JSON.stringify(JSON.parse(this.state.res_body), null, '   ')
+        } catch (e) {
+          values.res_body = this.state.res_body
+        }
+      }
+      if (values.req_body_type === 'json') {
+        if (this.state.req_body_other && validJson(this.state.req_body_other) === false) {
+          return message.error('响应Body json格式有问题，请检查！')
+        }
+        try {
+          values.req_body_other = JSON.stringify(JSON.parse(this.state.req_body_other), null, '   ')
+        } catch (e) {
+          values.req_body_other = this.state.req_body_other
+        }
+      }
+
+      values.method = this.state.method
+      values.req_params = values.req_params || []
+      values.req_headers = values.req_headers || []
+      values.req_body_form = values.req_body_form || []
+      let isFile = false,
+        isHaveContentType = false
+      if (values.req_body_type === 'form') {
+        values.req_body_form.forEach((item: any) => {
+          if (item.type === 'file') {
+            isFile = true
+          }
+        })
+
+        values.req_headers.map((item: any) => {
+          if (item.name === 'Content-Type') {
+            item.value = isFile ? 'multipart/form-data' : 'application/x-www-form-urlencoded'
+            isHaveContentType = true
+          }
+        })
+        if (isHaveContentType === false) {
+          values.req_headers.unshift({
+            name: 'Content-Type',
+            value: isFile ? 'multipart/form-data' : 'application/x-www-form-urlencoded',
+          })
+        }
+      } else if (values.req_body_type === 'json') {
+        values.req_headers
+          && values.req_headers.map((item: any) => {
+            if (item.name === 'Content-Type') {
+              item.value = 'application/json'
+              isHaveContentType = true
+            }
+          })
+
+        if (isHaveContentType === false) {
+          values.req_headers = values.req_headers || []
+          values.req_headers.unshift({
+            name: 'Content-Type',
+            value: 'application/json',
+          })
+        }
+      }
+      values.req_headers = values.req_headers ? values.req_headers.filter((item: any) => item.name !== '') : []
+
+      values.req_body_form = values.req_body_form ? values.req_body_form.filter((item: any) => item.name !== '') : []
+      values.req_params = values.req_params ? values.req_params.filter((item: any) => item.name !== '') : []
+      values.req_query = values.req_query ? values.req_query.filter((item: any) => item.name !== '') : []
+
+      if (HTTP_METHOD[values.method as HttpMethod].request_body !== true) {
+        values.req_body_form = []
+      }
+
+      if (values.req_body_is_json_schema && values.req_body_other && values.req_body_type === 'json') {
+        values.req_body_other = checkIsJsonSchema(values.req_body_other)
+        if (!values.req_body_other) {
+          return message.error('请求参数 json-schema 格式有误')
+        }
+      }
+      if (values.res_body_is_json_schema && values.res_body && values.res_body_type === 'json') {
+        values.res_body = checkIsJsonSchema(values.res_body)
+        if (!values.res_body) {
+          return message.error('返回数据 json-schema 格式有误')
+        }
+      }
+
+      this.props.onSubmit(values)
+      EditFormContext.props.changeEditStatus(false)
     } catch (e) {
       console.error(e.message)
-      this.setState({
-        submitStatus: false,
-      })
+      this.setState({ submitStatus: false })
     }
   }
 
-  onChangeMethod = val => {
-    let radio = []
+  onChangeMethod = (val: HttpMethod) => {
+    let radio: string[] = []
     if (HTTP_METHOD[val].request_body) {
       radio = ['req', 'body']
     } else {
@@ -368,17 +427,17 @@ class InterfaceEditForm extends Component<PropTypes, any> {
     this._isMounted = false
   }
 
-  addParams = (name, data) => {
-    const newValue = {}
+  addParams = (name: ParamName, data?: any) => {
+    const newValue: any = {}
     data = data || dataTpl[name]
     newValue[name] = [].concat(this.state[name], data)
     this.setState(newValue)
   }
 
-  delParams = (key, name) => {
-    const curValue = this.props.form.getFieldValue(name)
-    const newValue = {}
-    newValue[name] = curValue.filter((val, index) => index !== key)
+  delParams = (key: number, name: ParamName) => {
+    const curValue: any[] = this.props.form.getFieldValue(name)
+    const newValue: any = {}
+    newValue[name] = curValue.filter((_, index) => index !== key)
     this.props.form.setFieldsValue(newValue)
     this.setState(newValue)
   }
@@ -405,7 +464,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
     this.mockPreview.setValue(str)
   }
 
-  handleJsonType = key => {
+  handleJsonType = (key: string) => {
     key = key || 'tpl'
     if (key === 'preview') {
       this.handleMockPreview()
@@ -415,11 +474,11 @@ class InterfaceEditForm extends Component<PropTypes, any> {
     })
   }
 
-  handlePath = e => {
-    let val = e.target.value,
-      queue = []
+  handlePath = (e: ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value
+    const queue: any[] = []
 
-    const insertParams = name => {
+    const insertParams = (name: string) => {
       const findExist = _.find(this.state.req_params, { name: name })
       if (findExist) {
         queue.push(findExist)
@@ -427,14 +486,14 @@ class InterfaceEditForm extends Component<PropTypes, any> {
         queue.push({ name: name, desc: '' })
       }
     }
+
     val = handlePath(val)
     this.props.form.setFieldsValue({
       path: val,
     })
     if (val && val.indexOf(':') !== -1) {
-      let paths = val.split('/'),
-        name,
-        i
+      const paths = val.split('/')
+      let name, i
       for (i = 1; i < paths.length; i++) {
         if (paths[i][0] === ':') {
           name = paths[i].substr(1)
@@ -444,18 +503,16 @@ class InterfaceEditForm extends Component<PropTypes, any> {
     }
 
     if (val && val.length > 3) {
-      val.replace(/\{(.+?)\}/g, function (str, match) {
+      val.replace(/\{(.+?)\}/g, function (str, match): any {
         insertParams(match)
       })
     }
 
-    this.setState({
-      req_params: queue,
-    })
+    this.setState({ req_params: queue })
   }
 
   // 点击切换radio
-  changeRadioGroup = e => {
+  changeRadioGroup = (e: RadioChangeEvent) => {
     const res = e.target.value.split('-')
     if (res[0] === 'req') {
       this.setState({
@@ -465,10 +522,10 @@ class InterfaceEditForm extends Component<PropTypes, any> {
     this._changeRadioGroup(res[0], res[1])
   }
 
-  _changeRadioGroup = (group, item) => {
-    const obj = {}
+  _changeRadioGroup = (group: string, item: string) => {
+    const obj: any = {}
     // 先全部隐藏
-    for (const key in this.state.hideTabs[group]) {
+    for (const key of Object.keys(this.state.hideTabs[group])) {
       obj[key] = 'hide'
     }
     // 再取消选中项目的隐藏
@@ -481,8 +538,8 @@ class InterfaceEditForm extends Component<PropTypes, any> {
     })
   }
 
-  handleDragMove = name => data => {
-    const newValue = {
+  handleDragMove = (name: ParamName) => (data: any) => {
+    const newValue: any = {
       [name]: data,
     }
     this.props.form.setFieldsValue(newValue)
@@ -490,7 +547,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
   }
 
   // 处理res_body Editor
-  handleResBody = d => {
+  handleResBody = (d: any) => {
     const initResBody = this.state.res_body
     this.setState({
       res_body: d.text,
@@ -499,7 +556,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
   }
 
   // 处理 req_body_other Editor
-  handleReqBody = d => {
+  handleReqBody = (d: any) => {
     const initReqBody = this.state.req_body_other
     this.setState({
       req_body_other: d.text,
@@ -511,9 +568,9 @@ class InterfaceEditForm extends Component<PropTypes, any> {
   handleBulkOk = () => {
     const curValue = this.props.form.getFieldValue(this.state.bulkName) || []
     // { name: '', required: '1', desc: '', example: '' }
-    const newValue = []
+    const newValue: any[] = []
 
-    this.state.bulkValue.split('\n').forEach((item, index) => {
+    this.state.bulkValue.split('\n').forEach((item: string, index: number) => {
       const valueItem = { ...(curValue[index] || dataTpl[this.state.bulkName]) }
       const indexOfColon = item.indexOf(':')
       if (indexOfColon !== -1) {
@@ -529,7 +586,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
       bulkValue: null,
       bulkName: null,
       [this.state.bulkName]: newValue,
-    })
+    } as any)
   }
 
   // 取消批量导入参数
@@ -541,8 +598,8 @@ class InterfaceEditForm extends Component<PropTypes, any> {
     })
   }
 
-  showBulk = name => {
-    const value = this.props.form.getFieldValue(name)
+  showBulk = (name: ParamName) => {
+    const value: any[] = this.props.form.getFieldValue(name)
 
     let bulkValue = ''
     if (value) {
@@ -556,7 +613,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
     })
   }
 
-  handleBulkValueInput = e => {
+  handleBulkValueInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     this.setState({
       bulkValue: e.target.value,
     })
@@ -574,13 +631,10 @@ class InterfaceEditForm extends Component<PropTypes, any> {
 
     const req_body_other_use_schema_editor = checkIsJsonSchema(this.state.req_body_other) || ''
 
-    const queryTpl = (data, index) => (
+    const queryTpl = (data: any, index: number) => (
       <Row key={index} className="interface-edit-item-content">
-        <Col
-          span="1"
-          easy_drag_sort_child="true"
-          className="interface-edit-item-content-col interface-edit-item-content-col-drag"
-        >
+        {/* easy_drag_sort_child="true" */}
+        <Col span="1" className="interface-edit-item-content-col interface-edit-item-content-col-drag">
           <BarsOutlined />
         </Col>
         <Col span="4" draggable="false" className="interface-edit-item-content-col">
@@ -600,13 +654,13 @@ class InterfaceEditForm extends Component<PropTypes, any> {
 
         <Col span="6" className="interface-edit-item-content-col">
           <FormItem name={'req_query[' + index + '].example'} initialValue={data.example}>
-            <TextArea autosize={true} placeholder="参数示例" />
+            <TextArea autoSize={true} placeholder="参数示例" />
           </FormItem>
         </Col>
 
         <Col span="9" className="interface-edit-item-content-col">
           <FormItem name={'req_query[' + index + '].desc'} initialValue={data.desc}>
-            <TextArea autosize={true} placeholder="备注" />
+            <TextArea autoSize={true} placeholder="备注" />
           </FormItem>
         </Col>
 
@@ -616,13 +670,10 @@ class InterfaceEditForm extends Component<PropTypes, any> {
       </Row>
     )
 
-    const headerTpl = (data, index) => (
+    const headerTpl = (data: any, index: number) => (
       <Row key={index} className="interface-edit-item-content">
-        <Col
-          span="1"
-          easy_drag_sort_child="true"
-          className="interface-edit-item-content-col interface-edit-item-content-col-drag"
-        >
+        {/* easy_drag_sort_child="true" */}
+        <Col span="1" className="interface-edit-item-content-col interface-edit-item-content-col-drag">
           <BarsOutlined />
         </Col>
 
@@ -630,7 +681,10 @@ class InterfaceEditForm extends Component<PropTypes, any> {
           <FormItem name={'req_headers[' + index + '].name'} initialValue={data.name}>
             <AutoComplete
               dataSource={HTTP_REQUEST_HEADER}
-              filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+              filterOption={
+                (inputValue, option) => option.props.children
+                  .toUpperCase()
+                  .includes(inputValue.toUpperCase())
               }
               placeholder="参数名称"
             />
@@ -645,13 +699,13 @@ class InterfaceEditForm extends Component<PropTypes, any> {
 
         <Col span="5" className="interface-edit-item-content-col">
           <FormItem name={'req_headers[' + index + '].example'} initialValue={data.example}>
-            <TextArea autosize={true} placeholder="参数示例" />
+            <TextArea autoSize={true} placeholder="参数示例" />
           </FormItem>
         </Col>
 
         <Col span="8" className="interface-edit-item-content-col">
           <FormItem name={'req_headers[' + index + '].desc'} initialValue={data.desc}>
-            <TextArea autosize={true} placeholder="备注" />
+            <TextArea autoSize={true} placeholder="备注" />
           </FormItem>
         </Col>
 
@@ -661,13 +715,10 @@ class InterfaceEditForm extends Component<PropTypes, any> {
       </Row>
     )
 
-    const requestBodyTpl = (data, index) => (
+    const requestBodyTpl = (data: any, index: number) => (
       <Row key={index} className="interface-edit-item-content">
-        <Col
-          span="1"
-          easy_drag_sort_child="true"
-          className="interface-edit-item-content-col interface-edit-item-content-col-drag"
-        >
+        {/* easy_drag_sort_child="true" */}
+        <Col span="1" className="interface-edit-item-content-col interface-edit-item-content-col-drag">
           <BarsOutlined />
         </Col>
 
@@ -697,13 +748,13 @@ class InterfaceEditForm extends Component<PropTypes, any> {
 
         <Col span="5" className="interface-edit-item-content-col">
           <FormItem name={'req_body_form[' + index + '].example'} initialValue={data.example}>
-            <TextArea autosize={true} placeholder="参数示例" />
+            <TextArea autoSize={true} placeholder="参数示例" />
           </FormItem>
         </Col>
 
         <Col span="7" className="interface-edit-item-content-col">
           <FormItem name={'req_body_form[' + index + '].desc'} initialValue={data.desc}>
-            <TextArea autosize={true} placeholder="备注" />
+            <TextArea autoSize={true} placeholder="备注" />
           </FormItem>
         </Col>
 
@@ -713,7 +764,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
       </Row>
     )
 
-    const paramsTpl = (data, index) => (
+    const paramsTpl = (data: any, index: number) => (
       <Row key={index} className="interface-edit-item-content">
         <Col span="6" className="interface-edit-item-content-col">
           <FormItem name={'req_params[' + index + '].name'} initialValue={data.name}>
@@ -723,27 +774,27 @@ class InterfaceEditForm extends Component<PropTypes, any> {
 
         <Col span="7" className="interface-edit-item-content-col">
           <FormItem name={'req_params[' + index + '].example'} initialValue={data.example}>
-            <TextArea autosize={true} placeholder="参数示例" />
+            <TextArea autoSize={true} placeholder="参数示例" />
           </FormItem>
         </Col>
 
         <Col span="11" className="interface-edit-item-content-col">
           <FormItem name={'req_params[' + index + '].desc'} initialValue={data.desc}>
-            <TextArea autosize={true} placeholder="备注" />
+            <TextArea autoSize={true} placeholder="备注" />
           </FormItem>
         </Col>
       </Row>
     )
 
-    const paramsList = this.state.req_params.map((item, index) => paramsTpl(item, index))
+    const paramsList = this.state.req_params.map((item: any, index: number) => paramsTpl(item, index))
 
-    const QueryList = this.state.req_query.map((item, index) => queryTpl(item, index))
+    const QueryList = this.state.req_query.map((item: any, index: number) => queryTpl(item, index))
 
-    const headerList = this.state.req_headers ? this.state.req_headers.map((item, index) => headerTpl(item, index)) : []
+    const headerList = this.state.req_headers
+      ? this.state.req_headers.map((item: any, index: number) => headerTpl(item, index))
+      : []
 
-    const requestBodyList = this.state.req_body_form.map((item, index) => requestBodyTpl(item, index))
-
-    const DEMOPATH = '/api/user/{id}'
+    const requestBodyList = this.state.req_body_form.map((item: any, index: number) => requestBodyTpl(item, index))
 
     return (
       <div>
@@ -758,13 +809,13 @@ class InterfaceEditForm extends Component<PropTypes, any> {
           <div>
             <TextArea
               placeholder="每行一个name:examples"
-              autosize={{ minRows: 6, maxRows: 10 }}
+              autoSize={{ minRows: 6, maxRows: 10 }}
               value={this.state.bulkValue}
               onChange={this.handleBulkValueInput}
             />
           </div>
         </Modal>
-        <Form onSubmit={this.handleSubmit} onValuesChange={EditFormContext.props.changeEditStatus(true)}>
+        <Form onFinish={this.handleFinish} onValuesChange={EditFormContext.props.changeEditStatus(true)}>
           <h2 className="interface-title" style={{ marginTop: 0 }}>
             基本设置
           </h2>
@@ -806,10 +857,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
                   <Tooltip
                     title={
                       <div>
-                        <p>
-                          1. 支持动态路由,例如:
-                          {DEMOPATH}
-                        </p>
+                        <p>1. 支持动态路由,例如: {'/api/user/{id}'}</p>
                         <p>2. 支持 ?controller=xxx 的QueryRouter,非router的Query参数请定义到 Request设置-&#62;Query</p>
                       </div>
                     }
@@ -856,7 +904,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
               initialValue={this.state.tag}
             >
               <Select placeholder="请选择 tag " mode="multiple">
-                {projectMsg.tag.map(item => (
+                {projectMsg.tag.map((item: any) => (
                   <Option value={item.name} key={item._id}>
                     {item.name}
                   </Option>
@@ -911,7 +959,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
 
           <div className="panel-sub">
             <FormItem className={'interface-edit-item ' + this.state.hideTabs.req.query}>
-              <Row type="flex" justify="space-around">
+              <Row justify="space-around">
                 <Col span={12}>
                   <Button size="small" type="primary" onClick={() => this.addParams('req_query')}>
                     添加Query参数
@@ -976,7 +1024,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
                   }
                 >
                   <Col style={{ minHeight: '50px' }}>
-                    <Row type="flex" justify="space-around">
+                    <Row justify="space-around">
                       <Col span="12" className="interface-edit-item">
                         <Button size="small" type="primary" onClick={() => this.addParams('req_body_form')}>
                           添加form参数
@@ -1044,10 +1092,10 @@ class InterfaceEditForm extends Component<PropTypes, any> {
                         EditFormContext.props.changeEditStatus(true)
                       }
                     }}
-                    isMock={true}
                     data={req_body_other_use_schema_editor}
                   />
                 )}
+                {/* isMock={true} TODO !!!! */}
               </Col>
               <Col>
                 {!this.props.form.getFieldValue('req_body_is_json_schema') && (
@@ -1065,7 +1113,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
               <Row className="interface-edit-item">
                 <Col className="interface-edit-item-other-body">
                   <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
-                    <TextArea placeholder="" autosize={true} />
+                    <TextArea placeholder="" autoSize={true} />
                   </FormItem>
                 </Col>
               </Row>
@@ -1074,7 +1122,7 @@ class InterfaceEditForm extends Component<PropTypes, any> {
               <Row>
                 <Col>
                   <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
-                    <TextArea placeholder="" autosize={{ minRows: 8 }} />
+                    <TextArea placeholder="" autoSize={{ minRows: 8 }} />
                   </FormItem>
                 </Col>
               </Row>
@@ -1150,9 +1198,9 @@ class InterfaceEditForm extends Component<PropTypes, any> {
                             EditFormContext.props.changeEditStatus(true)
                           }
                         }}
-                        isMock={true}
                         data={res_body_use_schema_editor}
                       />
+                      {/* isMock={true} */}
                     </div>
                   )}
                   {!this.props.form.getFieldValue('res_body_is_json_schema') && this.state.jsonType === 'tpl' && (

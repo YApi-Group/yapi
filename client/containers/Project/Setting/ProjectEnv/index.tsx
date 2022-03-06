@@ -223,7 +223,7 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
           <Layout className="env-content">
             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
               <ProjectEnvContent
-                key={this.state.currentEnvMsg._id + this.state.currentEnvMsg.name}
+                key={this.state.currentEnvMsg._id}
                 projectMsg={this.state.currentEnvMsg}
                 onSubmit={e => this.onSubmit(e, currentKey)}
                 handleEnvInput={e => this.handleInputChange(e, currentKey)}

@@ -5,7 +5,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ip from 'ip'
 import moment from 'moment-timezone'
-import { HotModuleReplacementPlugin, DefinePlugin, Configuration } from 'webpack'
+import { DefinePlugin, Configuration } from 'webpack'
 
 import 'webpack-dev-server'
 
@@ -167,7 +167,6 @@ const devConf: Configuration = {
   },
 
   plugins: [
-    new HotModuleReplacementPlugin(),
     new ReactRefreshWebpackPlugin(),
 
     new DefinePlugin({
