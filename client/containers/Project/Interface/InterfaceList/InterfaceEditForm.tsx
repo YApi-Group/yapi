@@ -15,11 +15,12 @@ import {
   AutoComplete,
   Switch,
   RadioChangeEvent,
+  FormInstance,
 } from 'antd'
 import axios from 'axios'
 import json5 from 'json5'
 import PropTypes from 'prop-types'
-import React, { ChangeEvent, PureComponent as Component } from 'react'
+import React, { ChangeEvent, createRef, PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 
@@ -132,7 +133,7 @@ const dataTpl = {
 
 const HTTP_METHOD = constants.HTTP_METHOD
 const HTTP_METHOD_KEYS = Object.keys(HTTP_METHOD)
-const HTTP_REQUEST_HEADER = constants.HTTP_REQUEST_HEADER
+const HTTP_REQUEST_HEADER = constants.HTTP_REQUEST_HEADER.map(v => ({ label: v, value: v }))
 
 type PropTypes = {
   custom_field?: any
@@ -192,6 +193,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
   mockPreview: any
   resBodyEditor: any
   editor: any
+  formRef = createRef<FormInstance>()
 
   initState(curdata: CurDataType): any {
     this.startTime = new Date().getTime()
@@ -402,6 +404,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
 
   componentDidMount() {
     EditFormContext = this
+
     this._isMounted = true
     this.setState({
       req_radio_type: HTTP_METHOD[this.state.method].request_body ? 'req-body' : 'req-query',
@@ -435,10 +438,10 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
   }
 
   delParams = (key: number, name: ParamName) => {
-    const curValue: any[] = this.props.form.getFieldValue(name)
+    const curValue: any[] = this.formRef.current.getFieldValue(name)
     const newValue: any = {}
     newValue[name] = curValue.filter((_, index) => index !== key)
-    this.props.form.setFieldsValue(newValue)
+    this.formRef.current.setFieldsValue(newValue)
     this.setState(newValue)
   }
 
@@ -446,8 +449,8 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
     let str = ''
 
     try {
-      if (this.props.form.getFieldValue('res_body_is_json_schema')) {
-        const schema = json5.parse(this.props.form.getFieldValue('res_body'))
+      if (this.formRef.current.getFieldValue('res_body_is_json_schema')) {
+        const schema = json5.parse(this.formRef.current.getFieldValue('res_body'))
         const result = await axios.post('/api/interface/schema2json', {
           schema: schema,
         })
@@ -488,7 +491,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
     }
 
     val = handlePath(val)
-    this.props.form.setFieldsValue({
+    this.formRef.current.setFieldsValue({
       path: val,
     })
     if (val && val.indexOf(':') !== -1) {
@@ -542,7 +545,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
     const newValue: any = {
       [name]: data,
     }
-    this.props.form.setFieldsValue(newValue)
+    this.formRef.current.setFieldsValue(newValue)
     this.setState(newValue)
   }
 
@@ -566,7 +569,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
 
   // 处理批量导入参数
   handleBulkOk = () => {
-    const curValue = this.props.form.getFieldValue(this.state.bulkName) || []
+    const curValue = this.formRef.current.getFieldValue(this.state.bulkName) || []
     // { name: '', required: '1', desc: '', example: '' }
     const newValue: any[] = []
 
@@ -580,7 +583,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
       }
     })
 
-    this.props.form.setFieldsValue({ [this.state.bulkName]: newValue })
+    this.formRef.current.setFieldsValue({ [this.state.bulkName]: newValue })
     this.setState({
       visible: false,
       bulkValue: null,
@@ -599,7 +602,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
   }
 
   showBulk = (name: ParamName) => {
-    const value: any[] = this.props.form.getFieldValue(name)
+    const value: any[] = this.formRef.current.getFieldValue(name)
 
     let bulkValue = ''
     if (value) {
@@ -638,13 +641,13 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
           <BarsOutlined />
         </Col>
         <Col span="4" draggable="false" className="interface-edit-item-content-col">
-          <FormItem name={'req_query[' + index + '].name'} initialValue={data.name}>
+          <FormItem name={['req_query', index, 'name']} initialValue={data.name}>
             <Input placeholder="参数名称" />
           </FormItem>
         </Col>
 
         <Col span="3" className="interface-edit-item-content-col">
-          <FormItem name={'req_query[' + index + '].required'} initialValue={data.required}>
+          <FormItem name={['req_query', index, 'required']} initialValue={data.required}>
             <Select>
               <Option value="1">必需</Option>
               <Option value="0">非必需</Option>
@@ -653,13 +656,13 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
         </Col>
 
         <Col span="6" className="interface-edit-item-content-col">
-          <FormItem name={'req_query[' + index + '].example'} initialValue={data.example}>
+          <FormItem name={['req_query', index, 'example']} initialValue={data.example}>
             <TextArea autoSize={true} placeholder="参数示例" />
           </FormItem>
         </Col>
 
         <Col span="9" className="interface-edit-item-content-col">
-          <FormItem name={'req_query[' + index + '].desc'} initialValue={data.desc}>
+          <FormItem name={['req_query', index, 'desc']} initialValue={data.desc}>
             <TextArea autoSize={true} placeholder="备注" />
           </FormItem>
         </Col>
@@ -678,13 +681,11 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
         </Col>
 
         <Col span="4" className="interface-edit-item-content-col">
-          <FormItem name={'req_headers[' + index + '].name'} initialValue={data.name}>
+          <FormItem name={['req_headers', index, 'name']} initialValue={data.name}>
             <AutoComplete
-              dataSource={HTTP_REQUEST_HEADER}
+              options={HTTP_REQUEST_HEADER}
               filterOption={
-                (inputValue, option) => option.props.children
-                  .toUpperCase()
-                  .includes(inputValue.toUpperCase())
+                (input, opt) => opt.value.toUpperCase().includes(input.toUpperCase())
               }
               placeholder="参数名称"
             />
@@ -692,19 +693,19 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
         </Col>
 
         <Col span="5" className="interface-edit-item-content-col">
-          <FormItem name={'req_headers[' + index + '].value'} initialValue={data.value}>
+          <FormItem name={['req_headers', index, 'value']} initialValue={data.value}>
             <Input placeholder="参数值" />
           </FormItem>
         </Col>
 
         <Col span="5" className="interface-edit-item-content-col">
-          <FormItem name={'req_headers[' + index + '].example'} initialValue={data.example}>
+          <FormItem name={['req_headers', index, 'example']} initialValue={data.example}>
             <TextArea autoSize={true} placeholder="参数示例" />
           </FormItem>
         </Col>
 
         <Col span="8" className="interface-edit-item-content-col">
-          <FormItem name={'req_headers[' + index + '].desc'} initialValue={data.desc}>
+          <FormItem name={['req_headers', index, 'desc']} initialValue={data.desc}>
             <TextArea autoSize={true} placeholder="备注" />
           </FormItem>
         </Col>
@@ -723,13 +724,13 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
         </Col>
 
         <Col span="4" className="interface-edit-item-content-col">
-          <FormItem name={'req_body_form[' + index + '].name'} initialValue={data.name}>
+          <FormItem name={['req_body_form', index, 'name']} initialValue={data.name}>
             <Input placeholder="name" />
           </FormItem>
         </Col>
 
         <Col span="3" className="interface-edit-item-content-col">
-          <FormItem name={'req_body_form[' + index + '].type'} initialValue={data.type}>
+          <FormItem name={['req_body_form', index, 'type']} initialValue={data.type}>
             <Select>
               <Option value="text">text</Option>
               <Option value="file">file</Option>
@@ -738,7 +739,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
         </Col>
 
         <Col span="3" className="interface-edit-item-content-col">
-          <FormItem name={'req_body_form[' + index + '].required'} initialValue={data.required}>
+          <FormItem name={['req_body_form', index, 'required']} initialValue={data.required}>
             <Select>
               <Option value="1">必需</Option>
               <Option value="0">非必需</Option>
@@ -747,13 +748,13 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
         </Col>
 
         <Col span="5" className="interface-edit-item-content-col">
-          <FormItem name={'req_body_form[' + index + '].example'} initialValue={data.example}>
+          <FormItem name={['req_body_form', index, 'example']} initialValue={data.example}>
             <TextArea autoSize={true} placeholder="参数示例" />
           </FormItem>
         </Col>
 
         <Col span="7" className="interface-edit-item-content-col">
-          <FormItem name={'req_body_form[' + index + '].desc'} initialValue={data.desc}>
+          <FormItem name={['req_body_form', index, 'desc']} initialValue={data.desc}>
             <TextArea autoSize={true} placeholder="备注" />
           </FormItem>
         </Col>
@@ -767,19 +768,19 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
     const paramsTpl = (data: any, index: number) => (
       <Row key={index} className="interface-edit-item-content">
         <Col span="6" className="interface-edit-item-content-col">
-          <FormItem name={'req_params[' + index + '].name'} initialValue={data.name}>
+          <FormItem name={['req_params', index, 'name']} initialValue={data.name}>
             <Input disabled placeholder="参数名称" />
           </FormItem>
         </Col>
 
         <Col span="7" className="interface-edit-item-content-col">
-          <FormItem name={'req_params[' + index + '].example'} initialValue={data.example}>
+          <FormItem name={['req_params', index, 'example']} initialValue={data.example}>
             <TextArea autoSize={true} placeholder="参数示例" />
           </FormItem>
         </Col>
 
         <Col span="11" className="interface-edit-item-content-col">
-          <FormItem name={'req_params[' + index + '].desc'} initialValue={data.desc}>
+          <FormItem name={['req_params', index, 'desc']} initialValue={data.desc}>
             <TextArea autoSize={true} placeholder="备注" />
           </FormItem>
         </Col>
@@ -815,7 +816,9 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
             />
           </div>
         </Modal>
-        <Form onFinish={this.handleFinish} onValuesChange={EditFormContext.props.changeEditStatus(true)}>
+
+        {/* onValuesChange={EditFormContext.props.changeEditStatus(true)} */}
+        <Form onFinish={this.handleFinish} ref={this.formRef} >
           <h2 className="interface-title" style={{ marginTop: 0 }}>
             基本设置
           </h2>
@@ -976,7 +979,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
             <Row className={'interface-edit-item ' + this.state.hideTabs.req.query}>
               <Col>
                 <EasyDragSort
-                  data={() => this.props.form.getFieldValue('req_query')}
+                  data={() => this.formRef.current.getFieldValue('req_query')}
                   onChange={this.handleDragMove('req_query')}
                   onlyChild="easy_drag_sort_child"
                 >
@@ -994,7 +997,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
             <Row className={'interface-edit-item ' + this.state.hideTabs.req.headers}>
               <Col>
                 <EasyDragSort
-                  data={() => this.props.form.getFieldValue('req_headers')}
+                  data={() => this.formRef.current.getFieldValue('req_headers')}
                   onChange={this.handleDragMove('req_headers')}
                   onlyChild="easy_drag_sort_child"
                 >
@@ -1020,7 +1023,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 <Row
                   className={
                     'interface-edit-item '
-                    + (this.props.form.getFieldValue('req_body_type') === 'form' ? this.state.hideTabs.req.body : 'hide')
+                    + (this.formRef.current?.getFieldValue('req_body_type') === 'form' ? this.state.hideTabs.req.body : 'hide')
                   }
                 >
                   <Col style={{ minHeight: '50px' }}>
@@ -1039,7 +1042,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                     </Row>
 
                     <EasyDragSort
-                      data={() => this.props.form.getFieldValue('req_body_form')}
+                      data={() => this.formRef.current.getFieldValue('req_body_form')}
                       onChange={this.handleDragMove('req_body_form')}
                       onlyChild="easy_drag_sort_child"
                     >
@@ -1053,7 +1056,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
             <Row
               className={
                 'interface-edit-item '
-                + (this.props.form.getFieldValue('req_body_type') === 'json' ? this.state.hideTabs.req.body : 'hide')
+                + (this.formRef.current?.getFieldValue('req_body_type') === 'json' ? this.state.hideTabs.req.body : 'hide')
               }
             >
               <span>
@@ -1073,7 +1076,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
               </FormItem>
 
               <Col style={{ marginTop: '5px' }} className="interface-edit-json-info">
-                {!this.props.form.getFieldValue('req_body_is_json_schema') ? (
+                {!this.formRef.current?.getFieldValue('req_body_is_json_schema') ? (
                   <span>
                     基于 Json5, 参数描述信息用注释的方式实现{' '}
                     <Tooltip title={<pre>{Json5Example}</pre>}>
@@ -1098,7 +1101,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 {/* isMock={true} TODO !!!! */}
               </Col>
               <Col>
-                {!this.props.form.getFieldValue('req_body_is_json_schema') && (
+                {!this.formRef.current?.getFieldValue('req_body_is_json_schema') && (
                   <AceEditor
                     className="interface-editor"
                     data={this.state.req_body_other}
@@ -1109,7 +1112,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
               </Col>
             </Row>
 
-            {this.props.form.getFieldValue('req_body_type') === 'file' && this.state.hideTabs.req.body !== 'hide' ? (
+            {this.formRef.current?.getFieldValue('req_body_type') === 'file' && this.state.hideTabs.req.body !== 'hide' ? (
               <Row className="interface-edit-item">
                 <Col className="interface-edit-item-other-body">
                   <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
@@ -1118,7 +1121,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 </Col>
               </Row>
             ) : null}
-            {this.props.form.getFieldValue('req_body_type') === 'raw' && this.state.hideTabs.req.body !== 'hide' ? (
+            {this.formRef.current?.getFieldValue('req_body_type') === 'raw' && this.state.hideTabs.req.body !== 'hide' ? (
               <Row>
                 <Col>
                   <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
@@ -1160,7 +1163,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
             <Row
               className="interface-edit-item"
               style={{
-                display: this.props.form.getFieldValue('res_body_type') === 'json' ? 'block' : 'none',
+                display: this.formRef.current?.getFieldValue('res_body_type') === 'json' ? 'block' : 'none',
               }}
             >
               <Col>
@@ -1169,7 +1172,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                   <TabPane tab="预览" key="preview" />
                 </Tabs>
                 <div style={{ marginTop: '10px' }}>
-                  {!this.props.form.getFieldValue('res_body_is_json_schema') ? (
+                  {!this.formRef.current?.getFieldValue('res_body_is_json_schema') ? (
                     <div style={{ padding: '10px 0', fontSize: '15px' }}>
                       <span>
                         基于 mockjs 和 json5,使用注释方式写参数说明{' '}
@@ -1203,7 +1206,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                       {/* isMock={true} */}
                     </div>
                   )}
-                  {!this.props.form.getFieldValue('res_body_is_json_schema') && this.state.jsonType === 'tpl' && (
+                  {!this.formRef.current?.getFieldValue('res_body_is_json_schema') && this.state.jsonType === 'tpl' && (
                     <AceEditor
                       className="interface-editor"
                       data={this.state.res_body}
@@ -1228,7 +1231,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
             <Row
               className="interface-edit-item"
               style={{
-                display: this.props.form.getFieldValue('res_body_type') === 'raw' ? 'block' : 'none',
+                display: this.formRef.current?.getFieldValue('res_body_type') === 'raw' ? 'block' : 'none',
               }}
             >
               <Col>

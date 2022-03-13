@@ -107,6 +107,7 @@ class InterfaceEdit extends Component<PropTypes, StateTypes> {
           + this.props.match.params.actionId)
       s.onopen = () => {
         this.wsIns = s
+        console.log(this.wsIns)
       }
 
       s.onmessage = e => {
