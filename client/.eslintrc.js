@@ -531,8 +531,8 @@ module.exports = {
         'plugin:import/typescript', // this line does the trick
       ],
 
+      parser: '@typescript-eslint/parser',
       parserOptions: {
-        parser: '@typescript-eslint/parser',
       },
 
       plugins: [

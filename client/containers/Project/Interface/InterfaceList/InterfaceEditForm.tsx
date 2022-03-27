@@ -40,6 +40,7 @@ import { changeEditStatus } from '../../../../reducer/modules/interface.js'
 import '@common/tui-editor/dist/tui-editor.min.css' // editor ui
 import '@common/tui-editor/dist/tui-editor-contents.min.css' // editor content
 import './editor.css'
+import { TagItem } from './type.js'
 
 type ReqBodyForm = {
   name: string
@@ -185,6 +186,8 @@ type StateTypes = {
   visible: boolean
   bulkName: ParamName
   bulkValue: any
+
+  formValues: any
 }
 
 class InterfaceEditForm extends Component<PropTypes, StateTypes> {
@@ -270,6 +273,11 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
       api_opened: false,
       visible: false,
       ...curdata,
+
+      formValues: {
+        req_body_type: 'form',
+        req_body_is_json_schema: false,
+      },
     }
   }
 
@@ -279,6 +287,11 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
     const { curdata } = this.props
     // console.log('custom_field1', this.props.custom_field);
     this.state = this.initState(curdata)
+  }
+
+  handleFormValueChange = (changeVals: any, vals: any) => {
+    console.log(changeVals, vals)
+    this.setState({ formValues: vals })
   }
 
   handleFinish = (values: any) => {
@@ -684,9 +697,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
           <FormItem name={['req_headers', index, 'name']} initialValue={data.name}>
             <AutoComplete
               options={HTTP_REQUEST_HEADER}
-              filterOption={
-                (input, opt) => opt.value.toUpperCase().includes(input.toUpperCase())
-              }
+              filterOption={(input, opt) => opt.value.toUpperCase().includes(input.toUpperCase())}
               placeholder="参数名称"
             />
           </FormItem>
@@ -797,6 +808,8 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
 
     const requestBodyList = this.state.req_body_form.map((item: any, index: number) => requestBodyTpl(item, index))
 
+    console.log(this.formRef.current?.getFieldValue('req_body_type'))
+
     return (
       <div>
         <Modal
@@ -818,7 +831,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
         </Modal>
 
         {/* onValuesChange={EditFormContext.props.changeEditStatus(true)} */}
-        <Form onFinish={this.handleFinish} ref={this.formRef} >
+        <Form onValuesChange={this.handleFormValueChange} onFinish={this.handleFinish} ref={this.formRef}>
           <h2 className="interface-title" style={{ marginTop: 0 }}>
             基本设置
           </h2>
@@ -907,8 +920,8 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
               initialValue={this.state.tag}
             >
               <Select placeholder="请选择 tag " mode="multiple">
-                {projectMsg.tag.map((item: any) => (
-                  <Option value={item.name} key={item._id}>
+                {projectMsg.tag.map((item: TagItem) => (
+                  <Option title={item.desc} value={item.name} key={item._id}>
                     {item.name}
                   </Option>
                 ))}
@@ -919,6 +932,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 </Option>
               </Select>
             </FormItem>
+
             <FormItem
               className="interface-edit-item"
               {...formItemLayout}
@@ -946,7 +960,6 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
           </div>
 
           <h2 className="interface-title">请求参数设置</h2>
-
           <div className="container-radiogroup">
             <RadioGroup
               value={this.state.req_radio_type}
@@ -975,7 +988,6 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 </Col>
               </Row>
             </FormItem>
-
             <Row className={'interface-edit-item ' + this.state.hideTabs.req.query}>
               <Col>
                 <EasyDragSort
@@ -993,7 +1005,6 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 添加Header
               </Button>
             </FormItem>
-
             <Row className={'interface-edit-item ' + this.state.hideTabs.req.headers}>
               <Col>
                 <EasyDragSort
@@ -1005,6 +1016,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 </EasyDragSort>
               </Col>
             </Row>
+
             {HTTP_METHOD[this.state.method].request_body ? (
               <div>
                 <FormItem
@@ -1019,11 +1031,12 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                     <Radio value="raw">raw</Radio>
                   </RadioGroup>
                 </FormItem>
-
                 <Row
                   className={
                     'interface-edit-item '
-                    + (this.formRef.current?.getFieldValue('req_body_type') === 'form' ? this.state.hideTabs.req.body : 'hide')
+                    + (this.state.formValues.req_body_type === 'form'
+                      ? this.state.hideTabs.req.body
+                      : 'hide')
                   }
                 >
                   <Col style={{ minHeight: '50px' }}>
@@ -1056,7 +1069,9 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
             <Row
               className={
                 'interface-edit-item '
-                + (this.formRef.current?.getFieldValue('req_body_type') === 'json' ? this.state.hideTabs.req.body : 'hide')
+                + (this.state.formValues.req_body_type === 'json'
+                  ? this.state.hideTabs.req.body
+                  : 'hide')
               }
             >
               <span>
@@ -1076,7 +1091,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
               </FormItem>
 
               <Col style={{ marginTop: '5px' }} className="interface-edit-json-info">
-                {!this.formRef.current?.getFieldValue('req_body_is_json_schema') ? (
+                {!this.state.formValues.req_body_is_json_schema ? (
                   <span>
                     基于 Json5, 参数描述信息用注释的方式实现{' '}
                     <Tooltip title={<pre>{Json5Example}</pre>}>
@@ -1101,7 +1116,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 {/* isMock={true} TODO !!!! */}
               </Col>
               <Col>
-                {!this.formRef.current?.getFieldValue('req_body_is_json_schema') && (
+                {!this.state.formValues.req_body_is_json_schema && (
                   <AceEditor
                     className="interface-editor"
                     data={this.state.req_body_other}
@@ -1112,24 +1127,26 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
               </Col>
             </Row>
 
-            {this.formRef.current?.getFieldValue('req_body_type') === 'file' && this.state.hideTabs.req.body !== 'hide' ? (
-              <Row className="interface-edit-item">
-                <Col className="interface-edit-item-other-body">
-                  <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
-                    <TextArea placeholder="" autoSize={true} />
-                  </FormItem>
-                </Col>
-              </Row>
-            ) : null}
-            {this.formRef.current?.getFieldValue('req_body_type') === 'raw' && this.state.hideTabs.req.body !== 'hide' ? (
-              <Row>
-                <Col>
-                  <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
-                    <TextArea placeholder="" autoSize={{ minRows: 8 }} />
-                  </FormItem>
-                </Col>
-              </Row>
-            ) : null}
+            {this.state.formValues.req_body_type === 'file'
+            && this.state.hideTabs.req.body !== 'hide' ? (
+                <Row className="interface-edit-item">
+                  <Col className="interface-edit-item-other-body">
+                    <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
+                      <TextArea placeholder="" autoSize={true} />
+                    </FormItem>
+                  </Col>
+                </Row>
+              ) : null}
+            {this.state.formValues.req_body_type === 'raw'
+            && this.state.hideTabs.req.body !== 'hide' ? (
+                <Row>
+                  <Col>
+                    <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
+                      <TextArea placeholder="" autoSize={{ minRows: 8 }} />
+                    </FormItem>
+                  </Col>
+                </Row>
+              ) : null}
           </div>
 
           {/* ----------- Response ------------- */}
