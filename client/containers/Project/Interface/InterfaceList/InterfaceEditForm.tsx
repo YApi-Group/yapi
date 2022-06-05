@@ -18,6 +18,7 @@ import {
   FormInstance,
 } from 'antd'
 import axios from 'axios'
+import jSchema from 'json-schema-editor-visual'
 import json5 from 'json5'
 import PropTypes from 'prop-types'
 import React, { ChangeEvent, createRef, PureComponent as Component } from 'react'
@@ -27,15 +28,13 @@ import _ from 'underscore'
 import AceEditor from '@/components/AceEditor/AceEditor'
 import mockEditor from '@/components/AceEditor/mockEditor'
 import constants from '@/cons'
-import jSchema from '@/package'
+// import jSchema from '@/package'
 import { AnyFunc, HttpMethod } from '@/types'
 import Editor from '@common/tui-editor/dist/tui-editor-Editor-all.min.js'
 
 import { handlePath, nameLengthLimit } from '../../../../common.js'
 import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
 import { changeEditStatus } from '../../../../reducer/modules/interface.js'
-
-// const jSchema = require('json-schema-editor-visual')
 
 import '@common/tui-editor/dist/tui-editor.min.css' // editor ui
 import '@common/tui-editor/dist/tui-editor-contents.min.css' // editor content

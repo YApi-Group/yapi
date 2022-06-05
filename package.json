@@ -4,6 +4,8 @@
   "description": "YAPI",
   "main": "server/app.js",
   "scripts": {
+    "postinstall": "concurrently \"cd server && npm i\" \"cd client && npm i\"",
+    "clean": "rimraf ./node_modules/ ./server/node_modules/ ./client/node_modules/",
     "dev": "concurrently -k \"cd server && npm run dev\" \"cd client && npm run dev\"",
     "install-server": "node server/install.js",
     "start": "node server/app.js",
@@ -28,6 +30,7 @@
     "ajv": "^5.5.1",
     "ajv-i18n": "^2.2.0",
     "axios": "0.18.1",
+    "buffer": "^6.0.3",
     "compare-versions": "^3.4.0",
     "copy-to-clipboard": "3.0.8",
     "cpu-load": "^1.0.0",
@@ -53,7 +56,7 @@
     "nodemailer": "4.0.1",
     "qs": "^6.7.0",
     "request": "2.81.0",
-    "sha.js": "2.4.9",
+    "sha.js": "2.4.11",
     "sha1": "1.1.1",
     "swagger-client": "^3.5.1",
     "underscore": "1.8.3",
@@ -87,7 +90,6 @@
     "nodemon": "^2.0.12",
     "prop-types": "^15.5.10",
     "rewire": "^2.5.2",
-    "table-resolver": "^3.2.0",
     "typescript": "^4.3.4",
     "validate-commit-msg": "^2.12.2"
   },

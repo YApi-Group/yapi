@@ -6,17 +6,8 @@ import reducer from './modules/reducer'
 
 export default function createStore(initialState = {}) {
   const middleware = [promiseMiddleware, messageMiddleware]
-
-  // let finalCreateStore
-  // if (process.env.NODE_ENV === 'production') {
+  
   const finalCreateStore = applyMiddleware(...middleware)(_createStore)
-  // } else {
-  //   finalCreateStore = compose(
-  //     applyMiddleware(...middleware),
-  //     window.devToolsExtension ? window.devToolsExtension() : require('../containers/DevTools/DevTools').instrument()
-  //   )(_createStore);
-  // }
-
   const store = finalCreateStore(reducer, initialState)
 
   return store
