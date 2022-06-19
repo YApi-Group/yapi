@@ -5,7 +5,7 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
-import SubNav from '../../components/SubNav/SubNav.js'
+import SubNav from '../../components/SubNav/SubNav.tsx'
 import { getMockUrl } from '../../reducer/modules/news.js'
 
 import NewsTimeline from './NewsTimeline/NewsTimeline'

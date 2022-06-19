@@ -15,15 +15,15 @@ import { changeMenuItem } from '../../../reducer/modules/menu'
 import './Search.scss'
 
 type PropTypes = {
-  groupList: any[]
-  projectList: any[]
-  router: any
-  history: any
-  location: any
-  setCurrGroup: AnyFunc
-  changeMenuItem: AnyFunc
-  fetchInterfaceListMenu: AnyFunc
-  fetchGroupMsg: AnyFunc
+  groupList?: any[]
+  projectList?: any[]
+  router?: any
+  history?: any
+  location?: any
+  setCurrGroup?: AnyFunc
+  changeMenuItem?: AnyFunc
+  fetchInterfaceListMenu?: AnyFunc
+  fetchGroupMsg?: AnyFunc
 }
 
 type StateTypes = {
@@ -151,4 +151,4 @@ const actions = {
   fetchInterfaceListMenu,
 }
 
-export default connect(states, actions)(withRouter(Search as any))
+export default connect(states, actions)(withRouter(Search as any)) as any as typeof Search

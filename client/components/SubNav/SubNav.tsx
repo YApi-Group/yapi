@@ -1,17 +1,18 @@
-import './SubNav.scss'
 import { Menu } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { Link } from 'react-router-dom'
 
-class SubNav extends Component {
-  constructor(props) {
-    super(props)
-  }
+import './SubNav.scss'
 
-  static propTypes = {
-    data: PropTypes.array,
-    default: PropTypes.string,
+type PropTypes = {
+  data: any[]
+  default: string
+}
+
+class SubNav extends Component<PropTypes, any> {
+  handleClick: () => {
+    /* noop */
   }
 
   render() {
