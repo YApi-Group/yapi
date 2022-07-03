@@ -1,5 +1,6 @@
 import { LogoutOutlined, UserOutlined, SolutionOutlined, BarChartOutlined } from '@ant-design/icons'
 import { Menu } from 'antd'
+import { ItemType } from 'antd/lib/menu/hooks/useItems'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
@@ -17,8 +18,6 @@ type PropTypes = {
   relieveLink: AnyFunc
   logout: AnyFunc
 }
-
-type MenuNames = 'user' | 'solution' | 'statistic'
 
 const headerMenu = {
   user: {
@@ -43,40 +42,45 @@ const headerMenu = {
 
 plugin.emitHook('header_menu', headerMenu)
 
-const MenuUser = (props: PropTypes) => (
-  <Menu theme="dark" className="user-menu">
-    {Object.keys(headerMenu).map((key: MenuNames) => {
-      const item = headerMenu[key]
+const MenuUser = (props: PropTypes) => {
+  const menuItems: ItemType[] = []
 
-      const isAdmin = props.role === 'admin'
-      if (item.adminFlag && !isAdmin) {
-        return null
-      }
+  for (const [k, v] of Object.entries(headerMenu)) {
+    const isAdmin = props.role === 'admin'
+    if (v.adminFlag && !isAdmin) {
+      continue
+    }
 
-      return (
-        <Menu.Item key={key}>
-          {item.name === '个人中心' ? (
-            <Link to={item.path + `/${props.uid}`}>
-              <item.icon />
-              {item.name}
-            </Link>
-          ) : (
-            <Link to={item.path}>
-              <item.icon />
-              {item.name}
-            </Link>
-          )}
-        </Menu.Item>
+    let lb: JSX.Element = null
+    if (v.name === '个人中心') {
+      lb = (
+        <Link to={v.path + `/${props.uid}`}>
+          <v.icon />
+          {v.name}
+        </Link>
       )
-    })}
+    } else {
+      lb = (
+        <Link to={v.path}>
+          <v.icon />
+          {v.name}
+        </Link>
+      )
+    }
 
-    <Menu.Item key="9">
+    menuItems.push({ label: lb, key: k })
+  }
+
+  menuItems.push({
+    label: (
       <a onClick={props.logout}>
-        <LogoutOutlined />
-        退出
+        <LogoutOutlined /> 退出
       </a>
-    </Menu.Item>
-  </Menu>
-)
+    ),
+    key: 'unique-9',
+  })
+
+  return <Menu items={menuItems} theme="dark" className="user-menu" />
+}
 
 export { MenuUser }

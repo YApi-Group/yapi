@@ -14,19 +14,19 @@ import { setBreadcrumb } from '../../../reducer/modules/user'
 import './ProjectList.scss'
 
 type PropTypes = {
-  form: any
-  fetchProjectList: AnyFunc
-  addProject: AnyFunc
-  delProject: AnyFunc
+  form?: any
+  fetchProjectList?: AnyFunc
+  addProject?: AnyFunc
+  delProject?: AnyFunc
   // changeUpdateModal: AnyFunc,
-  projectList: any[]
-  userInfo: any
-  tableLoading: boolean
-  currGroup: any
-  setBreadcrumb: AnyFunc
-  currPage: number
-  studyTip: number
-  study: boolean
+  projectList?: any[]
+  userInfo?: any
+  tableLoading?: boolean
+  currGroup?: any
+  setBreadcrumb?: AnyFunc
+  currPage?: number
+  studyTip?: number
+  study?: boolean
 }
 
 type StateTypes = {
