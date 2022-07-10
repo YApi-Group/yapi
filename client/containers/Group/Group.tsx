@@ -10,7 +10,7 @@ import { AnyFunc } from '@/types'
 import { setCurrGroup } from '../../reducer/modules/group'
 import { fetchNewsData } from '../../reducer/modules/news.js'
 
-import GroupList from './GroupList/GroupList.js'
+import GroupList from './GroupList/GroupList'
 import GroupLog from './GroupLog/GroupLog'
 import GroupSetting from './GroupSetting/GroupSetting.js'
 import MemberList from './MemberList/MemberList.js'

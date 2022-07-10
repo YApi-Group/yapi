@@ -1,12 +1,14 @@
 import { FolderOutlined, UserOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { Modal, Input, message, Spin, Row, Menu, Col, Popover, Tooltip } from 'antd'
+import { ItemType } from 'antd/lib/menu/hooks/useItems'
 import axios from 'axios'
-import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
-import React, { PureComponent as Component } from 'react'
+import { MenuInfo } from 'rc-menu/lib/interface'
+import React, { ChangeEvent, PureComponent as Component, ReactNode } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import _ from 'underscore'
+
+import { AnyFunc } from '@/types.js'
 
 import GuideBtns from '../../../components/GuideBtns/GuideBtns.js'
 import UsernameAutoComplete from '../../../components/UsernameAutoComplete/UsernameAutoComplete.js'
@@ -22,48 +24,41 @@ const tip = (
   <div className="title-container">
     <h3 className="title">欢迎使用 YApi ~</h3>
     <p>
-      这里的 <b>“个人空间”</b>{' '}
+      这里的
+      <b>“个人空间”</b>
       是你自己才能看到的分组，你拥有这个分组的全部权限，可以在这个分组里探索 YApi 的功能。
     </p>
   </div>
 )
 
-@connect(
-  state => ({
-    groupList: state.group.groupList,
-    currGroup: state.group.currGroup,
-    curUserRole: state.user.role,
-    curUserRoleInGroup: state.group.currGroup.role || state.group.role,
-    studyTip: state.user.studyTip,
-    study: state.user.study,
-  }),
-  {
-    fetchGroupList,
-    setCurrGroup,
-    // setGroupList,
-    fetchNewsData,
-    fetchGroupMsg,
-  },
-)
-@withRouter
-export default class GroupList extends Component {
-  static propTypes = {
-    groupList: PropTypes.array,
-    currGroup: PropTypes.object,
-    fetchGroupList: PropTypes.func,
-    setCurrGroup: PropTypes.func,
-    // setGroupList: PropTypes.func,
-    match: PropTypes.object,
-    history: PropTypes.object,
-    curUserRole: PropTypes.string,
-    curUserRoleInGroup: PropTypes.string,
-    studyTip: PropTypes.number,
-    study: PropTypes.bool,
-    fetchNewsData: PropTypes.func,
-    fetchGroupMsg: PropTypes.func,
-  };
+type PropTypes = {
+  groupList?: any[]
+  currGroup?: any
+  match?: any
+  history?: any
+  curUserRole?: string
+  curUserRoleInGroup?: string
+  studyTip?: number
+  study?: boolean
+  fetchGroupList?: AnyFunc
+  setCurrGroup?: AnyFunc
+  // setGroupList?: AnyFunc,
+  fetchNewsData?: AnyFunc
+  fetchGroupMsg?: AnyFunc
+}
 
-  state = {
+type StateTypes = {
+  addGroupModalVisible: boolean
+  newGroupName: string
+  newGroupDesc: string
+  currGroupName: string
+  currGroupDesc: string
+  groupList: any[]
+  owner_uids: any[]
+}
+
+class GroupList extends Component<PropTypes, StateTypes> {
+  state: StateTypes = {
     addGroupModalVisible: false,
     newGroupName: '',
     newGroupDesc: '',
@@ -71,18 +66,12 @@ export default class GroupList extends Component {
     currGroupDesc: '',
     groupList: [],
     owner_uids: [],
-  };
-
-  constructor(props) {
-    super(props)
   }
 
   async UNSAFE_componentWillMount() {
-    const groupId = !isNaN(this.props.match.params.groupId)
-      ? parseInt(this.props.match.params.groupId)
-      : 0
+    const groupId = !isNaN(this.props.match.params.groupId) ? parseInt(this.props.match.params.groupId) : 0
     await this.props.fetchGroupList()
-    let currGroup = false
+    let currGroup: any
     if (this.props.groupList.length && groupId) {
       for (let i = 0; i < this.props.groupList.length; i++) {
         if (this.props.groupList[i]._id === groupId) {
@@ -100,29 +89,28 @@ export default class GroupList extends Component {
     this.props.setCurrGroup(currGroup)
   }
 
-  @autobind
-  showModal() {
+  showModal = () => {
     this.setState({
       addGroupModalVisible: true,
     })
   }
-  @autobind
-  hideModal() {
+
+  hideModal = () => {
     this.setState({
       newGroupName: '',
-      group_name: '',
+      // group_name: '',
       owner_uids: [],
       addGroupModalVisible: false,
     })
   }
-  @autobind
-  async addGroup() {
+
+  addGroup = async () => {
     const { newGroupName: group_name, newGroupDesc: group_desc, owner_uids } = this.state
     const res = await axios.post('/api/group/add', { group_name, group_desc, owner_uids })
     if (!res.data.errcode) {
       this.setState({
         newGroupName: '',
-        group_name: '',
+        // group_name: '',
         owner_uids: [],
         addGroupModalVisible: false,
       })
@@ -134,8 +122,8 @@ export default class GroupList extends Component {
       message.error(res.data.errmsg)
     }
   }
-  @autobind
-  async editGroup() {
+
+  editGroup = async () => {
     const { currGroupName: group_name, currGroupDesc: group_desc } = this.state
     const id = this.props.currGroup._id
     const res = await axios.post('/api/group/up', { group_name, group_desc, id })
@@ -145,7 +133,7 @@ export default class GroupList extends Component {
       await this.props.fetchGroupList()
 
       this.setState({ groupList: this.props.groupList })
-      const currGroup = _.find(this.props.groupList, group => Number(group._id) === Number(id))
+      const currGroup = this.props.groupList.find(group => Number(group._id) === Number(id))
 
       this.props.setCurrGroup(currGroup)
       // this.props.setCurrGroup({ group_name, group_desc, _id: id });
@@ -153,34 +141,31 @@ export default class GroupList extends Component {
       this.props.fetchNewsData(this.props.currGroup._id, 'group', 1, 10)
     }
   }
-  @autobind
-  inputNewGroupName(e) {
+
+  inputNewGroupName = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ newGroupName: e.target.value })
   }
-  @autobind
-  inputNewGroupDesc(e) {
+
+  inputNewGroupDesc = (e: ChangeEvent<HTMLTextAreaElement>) => {
     this.setState({ newGroupDesc: e.target.value })
   }
 
-  @autobind
-  selectGroup(e) {
+  selectGroup = (e: MenuInfo) => {
     const groupId = e.key
     // const currGroup = this.props.groupList.find((group) => { return +group._id === +groupId });
-    const currGroup = _.find(this.props.groupList, group => Number(group._id) === Number(groupId))
+    const currGroup = this.props.groupList.find(group => Number(group._id) === Number(groupId))
     this.props.setCurrGroup(currGroup)
     this.props.history.replace(`${currGroup._id}`)
     this.props.fetchNewsData(groupId, 'group', 1, 10)
   }
 
-  @autobind
-  onUserSelect(uids) {
+  onUserSelect = (uids: number[]) => {
     this.setState({
       owner_uids: uids,
     })
   }
 
-  @autobind
-  searchGroup(e, value) {
+  searchGroup = (e: ChangeEvent<HTMLInputElement>, value?: string) => {
     const v = value || e.target.value
     const { groupList } = this.props
     if (v === '') {
@@ -192,7 +177,7 @@ export default class GroupList extends Component {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
     // GroupSetting 组件设置的分组信息，通过redux同步到左侧分组菜单中
     if (this.props.groupList !== nextProps.groupList) {
       this.setState({
@@ -202,6 +187,40 @@ export default class GroupList extends Component {
   }
 
   render() {
+    const menuItems: ItemType[] = []
+
+    let label: ReactNode
+    for (const group of this.state.groupList) {
+      if (group.type === 'private') {
+        label = (
+          <div className="group-item" style={{ zIndex: this.props.studyTip === 0 ? 3 : 1 }}>
+            <UserOutlined />
+            <Popover
+              overlayClassName="popover-index"
+              content={<GuideBtns />}
+              title={tip}
+              placement="right"
+              visible={this.props.studyTip === 0 && !this.props.study}
+            >
+              {group.group_name}
+            </Popover>
+          </div>
+        )
+      } else {
+        label = (
+          <div className="group-item">
+            <FolderOpenOutlined />
+            {group.group_name}
+          </div>
+        )
+      }
+
+      menuItems.push({
+        label: label,
+        key: `${group._id}`,
+      })
+    }
+
     const { currGroup } = this.props
     return (
       <div className="m-group">
@@ -215,62 +234,33 @@ export default class GroupList extends Component {
                   <FolderOutlined className="btn" onClick={this.showModal} />
                 </a>
               </Tooltip>
-            
             </div>
             <div className="curr-group-desc">简介: {currGroup.group_desc}</div>
           </div>
 
           <div className="group-operate">
             <div className="search">
-              <Search
-                placeholder="搜索分类"
-                onChange={this.searchGroup}
-                onSearch={v => this.searchGroup(null, v)}
-              />
+              <Search placeholder="搜索分类" onChange={this.searchGroup} onSearch={v => this.searchGroup(null, v)} />
             </div>
           </div>
-          {this.state.groupList.length === 0 && <Spin style={{
-            marginTop: 20,
-            display: 'flex',
-            justifyContent: 'center',
-          }} />}
+          {this.state.groupList.length === 0 && (
+            <Spin
+              style={{
+                marginTop: 20,
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            />
+          )}
           <Menu
+            items={menuItems}
             className="group-list"
             mode="inline"
             onClick={this.selectGroup}
             selectedKeys={[`${currGroup._id}`]}
-          >
-            {this.state.groupList.map(group => {
-              if (group.type === 'private') {
-                return (
-                  <Menu.Item
-                    key={`${group._id}`}
-                    className="group-item"
-                    style={{ zIndex: this.props.studyTip === 0 ? 3 : 1 }}
-                  >
-                    <UserOutlined />
-                    <Popover
-                      overlayClassName="popover-index"
-                      content={<GuideBtns />}
-                      title={tip}
-                      placement="right"
-                      visible={this.props.studyTip === 0 && !this.props.study}
-                    >
-                      {group.group_name}
-                    </Popover>
-                  </Menu.Item>
-                )
-              } 
-              return (
-                <Menu.Item key={`${group._id}`} className="group-item">
-                  <FolderOpenOutlined />
-                  {group.group_name}
-                </Menu.Item>
-              )
-              
-            })}
-          </Menu>
+          />
         </div>
+
         {this.state.addGroupModalVisible ? (
           <Modal
             title="添加分组"
@@ -311,3 +301,22 @@ export default class GroupList extends Component {
     )
   }
 }
+
+const states = (state: any) => ({
+  groupList: state.group.groupList,
+  currGroup: state.group.currGroup,
+  curUserRole: state.user.role,
+  curUserRoleInGroup: state.group.currGroup.role || state.group.role,
+  studyTip: state.user.studyTip,
+  study: state.user.study,
+})
+
+const actions = {
+  fetchGroupList,
+  setCurrGroup,
+  // setGroupList,
+  fetchNewsData,
+  fetchGroupMsg,
+}
+
+export default connect(states, actions)(withRouter(GroupList as any)) as any as typeof GroupList
