@@ -641,4 +641,4 @@ const actions = {
   fetchInterfaceList,
 }
 
-export default connect(states, actions)(withRouter(InterfaceMenu as any)) as typeof InterfaceMenu
+export default connect(states, actions)(withRouter(InterfaceMenu as any)) as any as typeof InterfaceMenu

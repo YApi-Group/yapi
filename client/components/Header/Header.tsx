@@ -8,7 +8,7 @@ import { AnyFunc } from '@/types'
 
 import { changeMenuItem } from '../../reducer/modules/menu'
 import { checkLoginState, logoutActions, loginTypeAction } from '../../reducer/modules/user'
-import Breadcrumb from '../Breadcrumb/Breadcrumb.js'
+import Breadcrumb from '../Breadcrumb/Breadcrumb'
 import LogoSVG from '../LogoSVG/index.js'
 
 import { ToolUser } from './ToolUser'

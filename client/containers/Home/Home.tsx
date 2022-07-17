@@ -1,18 +1,20 @@
-import './Home.scss'
 import { AppstoreOutlined, ApiOutlined, DatabaseOutlined, TeamOutlined } from '@ant-design/icons'
 import { Row, Col, Button, Card } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
+
+import plugin from '@/plugin.js'
+import { AnyFunc } from '@/types.js'
 
 import LogoSVG from '../../components/LogoSVG/index.js'
 import { changeMenuItem } from '../../reducer/modules/menu'
 
-const plugin = require('@/plugin.js')
+import './Home.scss'
 
 const ThirdLogin = plugin.emitHook('third_login')
+
 const HomeGuest = () => (
   <div className="g-body">
     <div className="m-bg">
@@ -29,12 +31,7 @@ const HomeGuest = () => (
               <a href="#" className="item">
                 YAPI
               </a>
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://hellosean1025.github.io/yapi"
-                className="item"
-              >
+              <a target="_blank" rel="noopener noreferrer" href="https://hellosean1025.github.io/yapi" className="item">
                 使用文档
               </a>
             </div>
@@ -48,7 +45,8 @@ const HomeGuest = () => (
                 <span className="name">YAPI</span>
               </div>
               <div className="detail">
-                高效、易用、功能强大的API管理平台<br />
+                高效、易用、功能强大的API管理平台
+                <br />
                 <span className="desc">旨在为开发、产品、测试人员提供更优雅的接口管理服务</span>
               </div>
               <div className="btn-group">
@@ -62,9 +60,7 @@ const HomeGuest = () => (
             </div>
           </Col>
           <Col lg={15} xs={0} className="col-img">
-            <div className="img-container">
-              
-            </div>
+            <div className="img-container"></div>
           </Col>
         </Row>
       </div>
@@ -72,9 +68,7 @@ const HomeGuest = () => (
     <div className="feat-part section-feature">
       <div className="container home-section">
         <h3 className="title">为API开发者设计的管理平台</h3>
-        <span className="desc">
-          YApi让接口开发更简单高效，让接口的管理更具可读性、可维护性，让团队协作更合理。
-        </span>
+        <span className="desc">YApi让接口开发更简单高效，让接口的管理更具可读性、可维护性，让团队协作更合理。</span>
         <Row key="feat-motion-row">
           <Col span={8} className="section-item" key="feat-wrapper-1">
             <AppstoreOutlined className="img" />
@@ -109,12 +103,11 @@ const HomeGuest = () => (
           <Col lg={12} xs={24} className="section-card">
             <Card title="Mock 规则">
               <p className="mock-desc">
-                通过学习一些简单的 Mock
-                模板规则即可轻松编写接口，这将大大提高定义接口的效率，并且无需为编写 Mock 数据烦恼:
-                所有的数据都可以实时随机生成。
+                通过学习一些简单的 Mock 模板规则即可轻松编写接口，这将大大提高定义接口的效率，
+                并且无需为编写 Mock 数据烦恼: 所有的数据都可以实时随机生成。
               </p>
               <div className="code">
-                <ol start="1">
+                <ol start={1}>
                   <li className="item">
                     <span className="orderNum orderNum-first">1</span>
                     <span>
@@ -124,9 +117,7 @@ const HomeGuest = () => (
                   <li className="item">
                     <span className="orderNum">2</span>
                     <span>
-                      &ensp;&ensp;&ensp;&ensp;<span className="string">
-                        &quot;errcode|200-500&quot;
-                      </span>
+                      &ensp;&ensp;&ensp;&ensp;<span className="string">&quot;errcode|200-500&quot;</span>
                       <span>
                         :&ensp;<span className="number">200</span>,&ensp;&ensp;
                       </span>
@@ -151,9 +142,8 @@ const HomeGuest = () => (
                   <li className="item">
                     <span className="orderNum">5</span>
                     <span>
-                      &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<span className="string">
-                        &quot;boolean|1&quot;
-                      </span>
+                      &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;
+                      <span className="string">&quot;boolean|1&quot;</span>
                       <span>:&ensp;</span>
                       <span className="keyword">true</span>
                       <span>,&ensp;&ensp;</span>
@@ -162,22 +152,19 @@ const HomeGuest = () => (
                   <li className="item">
                     <span className="orderNum">6</span>
                     <span>
-                      &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<span className="string">
-                        &quot;array|2&quot;
-                      </span>
+                      &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;
+                      <span className="string">&quot;array|2&quot;</span>
                       <span>
-                        :&ensp;&#91;<span className="string">&quot;Bob&quot;</span>,&ensp;<span className="string">
-                          &quot;Jim&quot;
-                        </span>&#93;,&ensp;&ensp;
+                        :&ensp;&#91;<span className="string">&quot;Bob&quot;</span>,&ensp;
+                        <span className="string">&quot;Jim&quot;</span>&#93;,&ensp;&ensp;
                       </span>
                     </span>
                   </li>
                   <li className="item">
                     <span className="orderNum">7</span>
                     <span>
-                      &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<span className="string">
-                        &quot;combine&quot;
-                      </span>
+                      &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;
+                      <span className="string">&quot;combine&quot;</span>
                       <span>:&ensp;</span>
                       <span className="string">&quot;@boolean&ensp;&amp;&ensp;@array&quot;</span>
                       <span>&ensp;&ensp;</span>
@@ -198,11 +185,10 @@ const HomeGuest = () => (
           <Col lg={12} xs={24} className="section-card mock-after">
             <Card title="生成的 Mock 数据">
               <p className="mock-desc">
-                生成的 Mock 数据可以直接用 ajax
-                请求使用，也可以通过服务器代理使用（不需要修改项目一行代码）
+                生成的 Mock 数据可以直接用 ajax 请求使用，也可以通过服务器代理使用（不需要修改项目一行代码）
               </p>
               <div className="code">
-                <ol start="1">
+                <ol start={1}>
                   <li className="alt">
                     <span className="orderNum orderNum-first">1</span>
                     <span>
@@ -247,13 +233,10 @@ const HomeGuest = () => (
                     <span className="orderNum">6</span>
                     <span>
                       &ensp;&ensp;&ensp;&ensp;<span className="string">&quot;array&quot;</span>
-                      <span>
-                        :&ensp;
-                      </span>&#91;<span className="string">&quot;Bob&quot;</span>,&ensp;<span className="string">
-                        &quot;Jim&quot;
-                      </span>,&ensp;<span className="string">&quot;Bob&quot;</span>,&ensp;<span className="string">
-                        &quot;Jim&quot;
-                      </span>&#93;<span>,&ensp;&ensp;</span>
+                      <span>:&ensp;</span>&#91;<span className="string">&quot;Bob&quot;</span>,&ensp;
+                      <span className="string">&quot;Jim&quot;</span>,&ensp;
+                      <span className="string">&quot;Bob&quot;</span>,&ensp;
+                      <span className="string">&quot;Jim&quot;</span>&#93;<span>,&ensp;&ensp;</span>
                     </span>
                   </li>
                   <li className="alt">
@@ -261,9 +244,7 @@ const HomeGuest = () => (
                     <span>
                       &ensp;&ensp;&ensp;&ensp;<span className="string">&quot;combine&quot;</span>
                       <span>:&ensp;</span>
-                      <span className="string">
-                        &quot;true & Bob,&ensp;Jim,&ensp;Bob,&ensp;Jim&quot;
-                      </span>
+                      <span className="string">&quot;true & Bob,&ensp;Jim,&ensp;Bob,&ensp;Jim&quot;</span>
                       <span>&ensp;&ensp;</span>
                     </span>
                   </li>
@@ -313,8 +294,9 @@ const HomeGuest = () => (
               接口管理的逻辑较为复杂，操作频率高，层层审批将严重拖慢生产效率，因此传统的金字塔管理模式并不适用。
             </p>
             <p className="desc">
-              YAPI
-              将扁平化管理模式的思想引入到产品的权限管理中，超级管理员拥有最高的权限，并将权限分配给若干组长，超级管理员只需管理组长即可，实际上管理YAPI各大分组与项目的是“组长”。组长对分组或项目负责，一般由BU负责人/项目负责人担任。
+              YAPI 将扁平化管理模式的思想引入到产品的权限管理中，超级管理员拥有最高的权限，
+              并将权限分配给若干组长，超级管理员只需管理组长即可，实际上管理YAPI各大分组与项目的是“组长”。
+              组长对分组或项目负责，一般由BU负责人/项目负责人担任。
             </p>
           </Col>
         </Row>
@@ -322,44 +304,28 @@ const HomeGuest = () => (
     </div>
   </div>
 )
-HomeGuest.propTypes = {
-  introList: PropTypes.array,
+
+type PropTypes = {
+  login?: boolean
+  history?: string[]
+  changeMenuItem?: AnyFunc
 }
 
-@connect(
-  state => ({
-    login: state.user.isLogin,
-  }),
-  {
-    changeMenuItem,
-  },
-)
-@withRouter
-class Home extends Component {
-  constructor(props) {
-    super(props)
-  }
-
+class Home extends Component<PropTypes> {
   UNSAFE_componentWillMount() {
     if (this.props.login) {
       this.props.history.push('/group/261')
     }
   }
 
-  componentDidMount() {}
-  static propTypes = {
-    introList: PropTypes.array,
-    login: PropTypes.bool,
-    history: PropTypes.object,
-    changeMenuItem: PropTypes.func,
-  }
   toStart = () => {
     this.props.changeMenuItem('/group')
   }
+
   render() {
     return (
       <div className="home-main">
-        <HomeGuest introList={this.props.introList} />
+        <HomeGuest />
         <div className="row-tip">
           <div className="container">
             <div className="tip-title">
@@ -387,26 +353,12 @@ class Home extends Component {
   }
 }
 
-// Home.defaultProps={
-//   introList:[{
-//     title:"接口管理",
-//     des:"满足你的所有接口管理需求。不再需要为每个项目搭建独立的接口管理平台和编写离线的接口文档，其权限管理和项目日志让协作开发不再痛苦。",
-//     detail:[
-//       {title:"团队协作",des:"多成员协作，掌握项目进度",iconType:"team"},
-//       {title:"权限管理",des:"设置每个成员的操作权限",iconType:"usergroup-add"},
-//       {title:"项目日志",des:"推送项目情况，掌握更新动态",iconType:"schedule"}
-//     ],
-//     img:"./image/demo-img.jpg"
-//   },{
-//     title:"接口测试",
-//     des:"一键即可得到返回结果。根据用户的输入接口信息如协议、URL、接口名、请求头、请求参数、mock规则生成Mock接口，这些接口会自动生成模拟数据。",
-//     detail:[
-//       {title:"编辑接口",des:"团队开发时任何人都可以在权限许可下创建、修改接口",iconType:"tags-o"},
-//       {title:"mock请求",des:"创建者可以自由构造需要的数据，支持复杂的生成逻辑",iconType:"fork"}
-//     ],
-//     img:"./image/demo-img.jpg"
-//   }
-//   ]
-// };
+const states = (state: any) => ({
+  login: state.user.isLogin,
+})
 
-export default Home
+const actions = {
+  changeMenuItem,
+}
+
+export default connect(states, actions)(withRouter(Home as any)) as any as typeof Home

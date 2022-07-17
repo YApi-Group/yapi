@@ -1,4 +1,4 @@
-import Breadcrumb from './Breadcrumb/Breadcrumb.js'
+import Breadcrumb from './Breadcrumb/Breadcrumb'
 import Footer from './Footer/Footer.js'
 import Header from './Header/Header'
 import Intro from './Intro/Intro.js'

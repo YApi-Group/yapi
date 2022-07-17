@@ -7,20 +7,23 @@
     color: #fff;
     padding-left: 16px;
     line-height: unset;
-  
   }
+
   .ant-breadcrumb a {
     color: #fff;
+
     &:hover {
       color: $color-blue
     }
   }
-  .ant-breadcrumb > span:last-child {
-    color: #fff;
+
+  .ant-breadcrumb li:last-child {
+    color: inherit;
     font-weight: normal;
   }
+
   .ant-breadcrumb-separator {
-    color: #fff;
+    color: inherit;
     font-weight: normal;
   }
 }

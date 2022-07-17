@@ -3,7 +3,7 @@ import { MenuOutlined } from '@ant-design/icons'
 // import { useSortable, arrayMove, SortableContext,
 //  sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Table } from 'antd'
-import { ColumnsType } from 'antd/lib/table'
+import { ColumnsType, ColumnType } from 'antd/lib/table'
 import React, { Component } from 'react'
 import { SortableContainer, SortableElement, SortableHandle, SortEnd } from 'react-sortable-hoc'
 // import styles from './ct.module.less'
@@ -15,11 +15,12 @@ const SortableCon = SortableContainer((props: any) => <tbody {...props} />)
 // eslint-disable-next-line new-cap
 const SortableItem = SortableElement((props: any) => <tr {...props} />)
 
-const sortCol = {
+const sortCol: ColumnType<any> = {
   title: '排序',
   dataIndex: 'sort',
-  width: 30,
+  width: 50,
   className: 'drag-visible',
+  align: 'center',
   render: () => <DragHandle />,
 }
 
