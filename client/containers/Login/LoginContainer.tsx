@@ -1,7 +1,9 @@
-import React, { PureComponent as Component } from 'react';
-import Login from './LoginWrap';
-import { Row, Col, Card } from 'antd';
-import LogoSVG from '../../components/LogoSVG/index.js';
+import { Row, Col, Card } from 'antd'
+import React, { PureComponent as Component } from 'react'
+
+import LogoSVG from '../../components/LogoSVG/index.js'
+
+import LoginWrap from './LoginWrap'
 
 class LoginContainer extends Component {
   render() {
@@ -15,22 +17,22 @@ class LoginContainer extends Component {
         </div>
         <div className="main-one login-container">
           <div className="container">
-            <Row type="flex" justify="center">
+            <Row justify="center">
               <Col xs={20} sm={16} md={12} lg={8} className="container-login">
                 <Card className="card-login">
                   <h2 className="login-title">YAPI</h2>
                   <div className="login-logo">
                     <LogoSVG length="100px" />
                   </div>
-                  <Login />
+                  <LoginWrap />
                 </Card>
               </Col>
             </Row>
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
-export default LoginContainer;
+export default LoginContainer

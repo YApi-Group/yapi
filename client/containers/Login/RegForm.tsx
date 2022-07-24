@@ -5,6 +5,8 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
+import { AnyFunc } from '@/types'
+
 import { regActions } from '../../reducer/modules/user'
 
 const FormItem = Form.Item
@@ -16,45 +18,40 @@ const changeHeight = {
   height: '.42rem',
 }
 
-// @connect(
-//   state => ({
-//     loginData: state.user,
-//   }),
-//   {
-//     regActions,
-//   },
-// )
-// @withRouter
-class Reg extends Component {
-  constructor(props) {
+type PropTypes = {
+  form?: any
+  history?: any
+  regActions?: AnyFunc
+}
+
+type StateTypes = {
+  confirmDirty: boolean
+}
+
+class RegForm extends Component<PropTypes, StateTypes> {
+  constructor(props: PropTypes) {
     super(props)
     this.state = {
       confirmDirty: false,
     }
   }
 
-  static propTypes = {
-    form: PropTypes.object,
-    history: PropTypes.object,
-    regActions: PropTypes.func,
-  }
-
-  handleSubmit = e => {
-    e.preventDefault()
-    const form = this.props.form
-    form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        this.props.regActions(values).then(res => {
-          if (res.payload.data.errcode == 0) {
-            this.props.history.replace('/group')
-            message.success('注册成功! ')
-          }
-        })
+  handleSubmit = (values: any) => {
+    // e.preventDefault()
+    // const form = this.props.form
+    // form.validateFieldsAndScroll((err, values) => {
+    // if (!err) {
+    this.props.regActions(values).then((res:any) => {
+      if (res.payload.data.errcode === 0) {
+        this.props.history.replace('/group')
+        message.success('注册成功! ')
       }
     })
+    // }
+    // })
   }
 
-  checkPassword = (rule, value, callback) => {
+  checkPassword = (rule:any, value:any, callback:any) => {
     const form = this.props.form
     if (value && value !== form.getFieldValue('password')) {
       callback('两次输入的密码不一致啊!')
@@ -63,7 +60,7 @@ class Reg extends Component {
     }
   }
 
-  checkConfirm = (rule, value, callback) => {
+  checkConfirm = (rule:any, value:any, callback:any) => {
     const form = this.props.form
     if (value && this.state.confirmDirty) {
       form.validateFields(['confirm'], { force: true })
@@ -73,7 +70,7 @@ class Reg extends Component {
 
   render() {
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form onFinish={this.handleSubmit}>
         {/* 用户名 */}
         <FormItem style={formItemStyle} name="userName" rules={[{ required: true, message: '请输入用户名!' }]}>
           <Input style={changeHeight} prefix={<UserOutlined style={{ fontSize: 13 }} />} placeholder="Username" />
@@ -87,7 +84,7 @@ class Reg extends Component {
             {
               required: true,
               message: '请输入email!',
-              pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{1,})+$/,
+              pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{1,})+$/,
             },
           ]}
         >
@@ -133,7 +130,7 @@ class Reg extends Component {
   }
 }
 
-const states = state => ({
+const states = (state: any) => ({
   loginData: state.user,
 })
 
@@ -141,4 +138,4 @@ const actions = {
   regActions,
 }
 
-export default connect(states, actions)(withRouter(Reg))
+export default connect(states, actions)(withRouter(RegForm as any)) as any as typeof RegForm

@@ -1,9 +1,11 @@
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import { Form, Button, Input, message, Radio } from 'antd'
+import { Form, Button, Input, message, Radio, RadioChangeEvent } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+
+import { AnyFunc } from '@/types'
 
 import { loginActions, loginLdapActions } from '../../reducer/modules/user'
 
@@ -20,39 +22,38 @@ const changeHeight = {
   height: '.42rem',
 }
 
-// @connect(
-//   state => ({ //     loginData: state.user, //     isLDAP: state.user.isLDAP, //   }),
-//   { //     loginActions, //     loginLdapActions, //   },
-// )
-// @withRouter
-class Login extends Component {
-  constructor(props) {
+type PropTypes = {
+  form?: any
+  history?: any
+  loginActions?: AnyFunc
+  loginLdapActions?: AnyFunc
+  isLDAP?: boolean
+}
+
+type StateTypes = {
+  loginType: string
+}
+
+class LoginForm extends Component<PropTypes, StateTypes> {
+  constructor(props: PropTypes) {
     super(props)
     this.state = {
       loginType: 'ldap',
     }
   }
 
-  static propTypes = {
-    form: PropTypes.object,
-    history: PropTypes.object,
-    loginActions: PropTypes.func,
-    loginLdapActions: PropTypes.func,
-    isLDAP: PropTypes.bool,
-  }
-
-  handleSubmit = values => {
+  handleSubmit = (values: any) => {
     // console.log(values)
     if (this.props.isLDAP && this.state.loginType === 'ldap') {
-      this.props.loginLdapActions(values).then(res => {
-        if (res.payload.data.errcode == 0) {
+      this.props.loginLdapActions(values).then((res: any) => {
+        if (res.payload.data.errcode === 0) {
           this.props.history.replace('/group')
           message.success('登录成功! ')
         }
       })
     } else {
-      this.props.loginActions(values).then(res => {
-        if (res.payload.data.errcode == 0) {
+      this.props.loginActions(values).then((res: any) => {
+        if (res.payload.data.errcode === 0) {
           this.props.history.replace('/group')
           message.success('登录成功! ')
         }
@@ -64,21 +65,20 @@ class Login extends Component {
     // Qsso.attach('qsso-login','/api/user/login_by_token')
     console.log('isLDAP', this.props.isLDAP)
   }
-  handleFormLayoutChange = e => {
+  handleFormLayoutChange = (e: RadioChangeEvent) => {
     this.setState({ loginType: e.target.value })
   }
 
   render() {
     const { isLDAP } = this.props
 
-    const emailRule
-      = this.state.loginType === 'ldap'
-        ? {}
-        : {
-          required: true,
-          message: '请输入正确的email!',
-          pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{1,})+$/,
-        }
+    const emailRule = this.state.loginType === 'ldap'
+      ? {}
+      : {
+        required: true,
+        message: '请输入正确的email!',
+        pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{1,})+$/,
+      }
     return (
       <Form onFinish={this.handleSubmit}>
         {/* 登录类型 (普通登录／LDAP登录) */}
@@ -115,13 +115,14 @@ class Login extends Component {
         {/* <div className="qsso-breakline">
           <span className="qsso-breakword">或</span>
         </div>
-        <Button style={changeHeight} id="qsso-login" type="primary" className="login-form-button" size="large" ghost>QSSO登录</Button> */}
+        <Button style={changeHeight} id="qsso-login" type="primary" 
+        className="login-form-button" size="large" ghost>QSSO登录</Button> */}
       </Form>
     )
   }
 }
 
-const states = state => ({
+const states = (state:any) => ({
   loginData: state.user,
   isLDAP: state.user.isLDAP,
 })
@@ -131,5 +132,4 @@ const actions = {
   loginLdapActions,
 }
 
-export default connect(states, actions)(withRouter(Login))
-// export default Login
+export default connect(states, actions)(withRouter(LoginForm as any)) as any as typeof LoginForm

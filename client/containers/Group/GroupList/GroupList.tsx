@@ -1,4 +1,4 @@
-import { FolderOutlined, UserOutlined, FolderOpenOutlined } from '@ant-design/icons'
+import { FolderAddOutlined, UserOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { Modal, Input, message, Spin, Row, Menu, Col, Popover, Tooltip } from 'antd'
 import { ItemType } from 'antd/lib/menu/hooks/useItems'
 import axios from 'axios'
@@ -15,10 +15,11 @@ import UsernameAutoComplete from '../../../components/UsernameAutoComplete/Usern
 import { fetchGroupList, setCurrGroup, fetchGroupMsg } from '../../../reducer/modules/group.js'
 import { fetchNewsData } from '../../../reducer/modules/news.js'
 
+import style from './gl.module.less'
+
 import './GroupList.scss'
 
 const { TextArea } = Input
-const Search = Input.Search
 
 const tip = (
   <div className="title-container">
@@ -165,8 +166,8 @@ class GroupList extends Component<PropTypes, StateTypes> {
     })
   }
 
-  searchGroup = (e: ChangeEvent<HTMLInputElement>, value?: string) => {
-    const v = value || e.target.value
+  searchGroup = (e: ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value
     const { groupList } = this.props
     if (v === '') {
       this.setState({ groupList })
@@ -194,7 +195,7 @@ class GroupList extends Component<PropTypes, StateTypes> {
       if (group.type === 'private') {
         label = (
           <div className="group-item" style={{ zIndex: this.props.studyTip === 0 ? 3 : 1 }}>
-            <UserOutlined />
+            <UserOutlined className={style.itemIcon} />
             <Popover
               overlayClassName="popover-index"
               content={<GuideBtns />}
@@ -209,8 +210,8 @@ class GroupList extends Component<PropTypes, StateTypes> {
       } else {
         label = (
           <div className="group-item">
-            <FolderOpenOutlined />
-            {group.group_name}
+            <FolderOpenOutlined className={style.itemIcon} />
+            <span className={style.itemText} style={{ marginLeft: '10px' }}>{group.group_name}</span>
           </div>
         )
       }
@@ -231,7 +232,7 @@ class GroupList extends Component<PropTypes, StateTypes> {
               <span className="name">{currGroup.group_name}</span>
               <Tooltip title="添加分组">
                 <a className="editSet">
-                  <FolderOutlined className="btn" onClick={this.showModal} />
+                  <FolderAddOutlined className="btn" onClick={this.showModal} />
                 </a>
               </Tooltip>
             </div>
@@ -240,9 +241,10 @@ class GroupList extends Component<PropTypes, StateTypes> {
 
           <div className="group-operate">
             <div className="search">
-              <Search placeholder="搜索分类" onChange={this.searchGroup} onSearch={v => this.searchGroup(null, v)} />
+              <Input placeholder="搜索分类" onChange={this.searchGroup} />
             </div>
           </div>
+
           {this.state.groupList.length === 0 && (
             <Spin
               style={{
