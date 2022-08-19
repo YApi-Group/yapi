@@ -10,6 +10,7 @@ import ProjectMessage from './ProjectMessage/ProjectMessage'
 import ProjectMock from './ProjectMock/index.js'
 import ProjectRequest from './ProjectRequest/ProjectRequest'
 import ProjectToken from './ProjectToken/ProjectToken'
+import SwaggerAutoSync from './SwaggerAutoSync'
 
 const TabPane = Tabs.TabPane
 
@@ -26,6 +27,7 @@ class Setting extends Component<PropTypes> {
   render() {
     const id = this.props.match.params.id
     plugin.emitHook('sub_setting_nav', routers)
+
     return (
       <div className="g-row">
         <Tabs type="card" className="tabs-large" tabBarStyle={{ marginBottom: 0 }}>
@@ -46,6 +48,10 @@ class Setting extends Component<PropTypes> {
           <TabPane tab="全局mock脚本" key="5">
             <ProjectMock projectId={Number(id)} />
           </TabPane>
+          <TabPane tab="Swagger自动同步" key="6" >
+            <SwaggerAutoSync projectId={Number(id)} />
+          </TabPane>
+
           {Object.keys(routers).map(key => {
             const C: any = routers[key].component
             return (

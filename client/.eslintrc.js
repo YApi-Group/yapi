@@ -350,6 +350,12 @@ const jsRules = {
 
     // 禁止多个连续空行
     'no-multiple-empty-lines': ['warn', { max: 1 }],
+
+    // 禁止行末尾有无用的空格
+    'no-trailing-spaces': ['warn', { ignoreComments: true }],
+
+    // 大括号{}内部 第一行&最后一行 禁止为空行
+    'padded-blocks': ['warn', 'never'],
   },
 
   // ECMAScript 6: 这些规则只与 ES6 有关, 即通常所说的 ES2015

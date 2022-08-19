@@ -616,4 +616,4 @@ const actions = {
   fetchProjectList,
 }
 
-export default connect(states, actions)(withRouter(InterfaceColMenu as any)) as typeof InterfaceColMenu
+export default connect(states, actions)(withRouter(InterfaceColMenu as any)) as any as typeof InterfaceColMenu
