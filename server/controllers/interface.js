@@ -16,10 +16,11 @@ import interfaceCatModel from '../models/interfaceCat.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
 import * as commons from '../utils/commons'
+import * as inst from '../utils/inst'
 import * as modelUtils from '../utils/modelUtils'
 import yapi from '../yapi.js'
 
-import baseController from './base.js'
+import baseController from './base'
 
 const formattersHtml = jsondiffpatch.formatters.html
 
@@ -71,13 +72,13 @@ function handleHeaders(values) {
 class interfaceController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = cons.getInst(InterfaceModel)
-    this.catModel = cons.getInst(interfaceCatModel)
-    this.projectModel = cons.getInst(projectModel)
-    this.caseModel = cons.getInst(interfaceCaseModel)
-    this.FollowModel = cons.getInst(FollowModel)
-    this.UserModel = cons.getInst(UserModel)
-    this.GroupModel = cons.getInst(GroupModel)
+    this.Model = inst.getInst(InterfaceModel)
+    this.catModel = inst.getInst(interfaceCatModel)
+    this.projectModel = inst.getInst(projectModel)
+    this.caseModel = inst.getInst(interfaceCaseModel)
+    this.FollowModel = inst.getInst(FollowModel)
+    this.UserModel = inst.getInst(UserModel)
+    this.GroupModel = inst.getInst(GroupModel)
 
     const minLengthStringField = {
       type: 'string',
@@ -847,7 +848,7 @@ class interfaceController extends baseController {
 
       const result = await this.Model.get(id)
       if (result.edit_uid !== 0 && result.edit_uid !== this.getUid()) {
-        userInst = cons.getInst(UserModel)
+        userInst = inst.getInst(UserModel)
         userinfo = await userInst.findById(result.edit_uid)
         data = {
           errno: result.edit_uid,

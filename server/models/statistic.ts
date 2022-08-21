@@ -3,7 +3,7 @@
  */
 import * as commons from '../utils/commons'
 
-import BaseModel from './base.js'
+import BaseModel from './base'
 
 class StatisticModel extends BaseModel {
   getName() { return 'statistic' }
@@ -56,7 +56,6 @@ class StatisticModel extends BaseModel {
     ]).cursor({}).exec()
     await cursor.eachAsync((doc: any) => data.push(doc))
     return data
-
   }
 
   list() {

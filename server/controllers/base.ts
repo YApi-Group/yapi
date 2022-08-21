@@ -1,17 +1,30 @@
 import jwt from 'jsonwebtoken'
-import _ from 'underscore'
+import { Context } from 'koa'
 
 import cons from '../cons'
 import GroupModel from '../models/group.js'
 import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
-import tokenModel from '../models/token.js'
+import tokenModel from '../models/token'
 import UserModel from '../models/user.js'
 import * as commons from '../utils/commons'
+import * as inst from '../utils/inst'
 import { parseToken } from '../utils/token'
 
 class BaseController {
-  constructor(ctx) {
+  ctx: Context
+  // 网站上线后，role对象key是不能修改的，value可以修改
+  roles: any
+
+  tokenModel: any
+  projectModel: any
+
+  $uid: any
+  $auth: any
+  $user: any
+  $tokenAuth: any
+
+  constructor(ctx: Context) {
     this.ctx = ctx
     // 网站上线后，role对象key是不能修改的，value可以修改
     this.roles = {
@@ -20,10 +33,10 @@ class BaseController {
     }
   }
 
-  async init(ctx) {
+  async init(ctx: Context) {
     this.$user = null
-    this.tokenModel = cons.getInst(tokenModel)
-    this.projectModel = cons.getInst(projectModel)
+    this.tokenModel = inst.getInst(tokenModel)
+    this.projectModel = inst.getInst(projectModel)
     const ignoreRouter = [
       '/api/user/login_by_token',
       '/api/user/login',
@@ -62,7 +75,6 @@ class BaseController {
 
     // 如果前缀是 /api/open，执行 parse token 逻辑
     if (token && (openApiRouter.indexOf(ctx.path) > -1 || ctx.path.indexOf('/api/open/') === 0)) {
-
       const tokens = parseToken(token)
 
       const oldTokenUid = '999999'
@@ -71,7 +83,9 @@ class BaseController {
 
       if (!tokens) {
         const checkId = await this.getProjectIdByToken(token)
-        if (!checkId) { return }
+        if (!checkId) {
+          return
+        }
       } else {
         token = tokens.projectToken
         tokenUid = tokens.uid
@@ -104,7 +118,7 @@ class BaseController {
             username: 'system',
           }
         } else {
-          const userInst = cons.getInst(UserModel) // 创建user实体
+          const userInst = inst.getInst(UserModel) // 创建user实体
           result = await userInst.findById(tokenUid)
         }
 
@@ -114,7 +128,7 @@ class BaseController {
     }
   }
 
-  async getProjectIdByToken(token) {
+  async getProjectIdByToken(token: string) {
     const projectId = await this.tokenModel.findId(token)
     if (projectId) {
       return projectId.toObject().project_id
@@ -125,27 +139,28 @@ class BaseController {
     return parseInt(this.$uid, 10)
   }
 
-  async checkLogin(ctx) {
+  async checkLogin(ctx: Context) {
     const token = ctx.cookies.get('_yapi_token')
     const uid = ctx.cookies.get('_yapi_uid')
     try {
       if (!token || !uid) {
         return false
       }
-      const userInst = cons.getInst(UserModel) // 创建user实体
+      const userInst = inst.getInst(UserModel) // 创建user实体
       const result = await userInst.findById(uid)
       if (!result) {
         return false
       }
 
-      let decoded
+      let decoded: any
       try {
         decoded = jwt.verify(token, result.passsalt)
       } catch (err) {
         return false
       }
 
-      if (decoded.uid == uid) {
+      // console.log(JSON.stringify(decoded), JSON.stringify(uid))
+      if (String(decoded.uid) === uid) {
         this.$uid = uid
         this.$auth = true
         this.$user = result
@@ -165,7 +180,6 @@ class BaseController {
       return false
     }
     return true
-
   }
 
   checkLDAP() {
@@ -174,15 +188,10 @@ class BaseController {
       return false
     }
     return cons.WEB_CONFIG.ldapLogin.enable || false
-
   }
-  /**
-   *
-   * @param {*} ctx
-   */
 
-  async getLoginStatus(ctx) {
-    let body
+  async getLoginStatus(ctx: Context) {
+    let body: any
     if ((await this.checkLogin(ctx)) === true) {
       const result = commons.fieldSelect(this.$user, [
         '_id',
@@ -216,14 +225,14 @@ class BaseController {
     return this.$user.email
   }
 
-  async getProjectRole(id, type) {
-    const result = {}
+  async getProjectRole(id: number, type: any) {
+    const result: any = {}
     try {
       if (this.getRole() === 'admin') {
         return 'admin'
       }
       if (type === 'interface') {
-        const interfaceInst = cons.getInst(InterfaceModel)
+        const interfaceInst = inst.getInst(InterfaceModel)
         const interfaceData = await interfaceInst.get(id)
         result.interfaceData = interfaceData
         // 项目创建者相当于 owner
@@ -235,13 +244,13 @@ class BaseController {
       }
 
       if (type === 'project') {
-        const projectInst = cons.getInst(projectModel)
+        const projectInst = inst.getInst(projectModel)
         const projectData = await projectInst.get(id)
         if (projectData.uid === this.getUid()) {
           // 建立项目的人
           return 'owner'
         }
-        const memberData = _.find(projectData.members, m => {
+        const memberData = projectData.members.find((m: any) => {
           if (m && m.uid === this.getUid()) {
             return true
           }
@@ -254,25 +263,25 @@ class BaseController {
             return 'dev'
           }
           return 'guest'
-
         }
         type = 'group'
         id = projectData.group_id
       }
 
       if (type === 'group') {
-        const groupInst = cons.getInst(GroupModel)
+        const groupInst = inst.getInst(GroupModel)
         const groupData = await groupInst.get(id)
         // 建立分组的人
         if (groupData.uid === this.getUid()) {
           return 'owner'
         }
 
-        const groupMemberData = _.find(groupData.members, m => {
+        const groupMemberData = groupData.members.find((m: any) => {
           if (m.uid === this.getUid()) {
             return true
           }
         })
+
         if (groupMemberData && groupMemberData.role) {
           if (groupMemberData.role === 'owner') {
             return 'owner'
@@ -280,7 +289,6 @@ class BaseController {
             return 'dev'
           }
           return 'guest'
-
         }
       }
 
@@ -296,7 +304,7 @@ class BaseController {
    * @param {*} type enum[interface, project, group]
    * @param {*} action enum[ danger, edit, view ] danger只有owner或管理员才能操作,edit只要是dev或以上就能执行
    */
-  async checkAuth(id, type, action) {
+  async checkAuth(id: number, type: any, action: any) {
     const role = await this.getProjectRole(id, type)
 
     if (action === 'danger') {

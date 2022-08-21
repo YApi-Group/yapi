@@ -1,6 +1,7 @@
 import * as modelUtils from '../utils/modelUtils'
 import _ from 'underscore'
 
+import * as inst from '../utils/inst'
 import cons from '../cons'
 import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
@@ -9,15 +10,15 @@ import projectModel from '../models/project.js'
 import * as commons from '../utils/commons'
 import * as modelUtils from '../utils/modelUtils'
 
-import baseController from './base.js'
+import baseController from './base'
 
 class interfaceColController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.colModel = cons.getInst(interfaceColModel)
-    this.caseModel = cons.getInst(interfaceCaseModel)
-    this.InterfaceModel = cons.getInst(InterfaceModel)
-    this.projectModel = cons.getInst(projectModel)
+    this.colModel = inst.getInst(interfaceColModel)
+    this.caseModel = inst.getInst(interfaceCaseModel)
+    this.InterfaceModel = inst.getInst(InterfaceModel)
+    this.projectModel = inst.getInst(projectModel)
   }
 
   /**

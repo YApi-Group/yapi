@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-import BaseModel from './base.js'
+import BaseModel from './base'
 
 class StorageModel extends BaseModel {
   constructor() {
@@ -30,7 +30,6 @@ class StorageModel extends BaseModel {
     }
   }
   save(key, data = {}, isInsert = false) {
-
     const saveData = {
       key,
       data: JSON.stringify(data, null, 2),

@@ -1,6 +1,5 @@
 import _ from 'underscore'
 
-import cons from '../cons'
 import GroupModel from '../models/group.js'
 import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
@@ -8,9 +7,10 @@ import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
 import * as commons from '../utils/commons'
+import * as inst from '../utils/inst'
 import * as modelUtils from '../utils/modelUtils'
 
-import baseController from './base.js'
+import baseController from './base'
 
 const rolename = {
   owner: '组长',
@@ -102,7 +102,7 @@ class groupController extends baseController {
   async get(ctx) {
     const params = ctx.params
 
-    const groupInst = cons.getInst(GroupModel)
+    const groupInst = inst.getInst(GroupModel)
     let result = await groupInst.getGroupById(params.id)
     if (result) {
       result = result.toObject()
@@ -152,7 +152,7 @@ class groupController extends baseController {
       }
     }
 
-    const groupInst = cons.getInst(GroupModel)
+    const groupInst = inst.getInst(GroupModel)
 
     const checkRepeat = await groupInst.checkRepeat(params.group_name)
 
@@ -199,7 +199,7 @@ class groupController extends baseController {
 
   async getUserData(uid, role) {
     role = role || 'dev'
-    const userInst = cons.getInst(UserModel)
+    const userInst = inst.getInst(UserModel)
     const userData = await userInst.findById(uid)
     if (!userData) {
       return null
@@ -214,7 +214,7 @@ class groupController extends baseController {
   }
 
   async getMyGroup(ctx) {
-    const groupInst = cons.getInst(GroupModel)
+    const groupInst = inst.getInst(GroupModel)
     let privateGroup = await groupInst.getByPrivateUid(this.getUid())
     if (!privateGroup) {
       privateGroup = await groupInst.save({
@@ -246,7 +246,7 @@ class groupController extends baseController {
    */
   async addMember(ctx) {
     const params = ctx.params
-    const groupInst = cons.getInst(GroupModel)
+    const groupInst = inst.getInst(GroupModel)
 
     params.role = ['owner', 'dev', 'guest'].find(v => v === params.role) || 'dev'
     const add_members = []
@@ -302,7 +302,7 @@ class groupController extends baseController {
    */
   async changeMemberRole(ctx) {
     const params = ctx.request.body
-    const groupInst = cons.getInst(GroupModel)
+    const groupInst = inst.getInst(GroupModel)
 
     const check = await groupInst.checkMemberRepeat(params.id, params.member_uid)
     if (check === 0) {
@@ -342,7 +342,7 @@ class groupController extends baseController {
 
   async getMemberList(ctx) {
     const params = ctx.params
-    const groupInst = cons.getInst(GroupModel)
+    const groupInst = inst.getInst(GroupModel)
     const group = await groupInst.get(params.id)
     ctx.body = commons.resReturn(group.members)
   }
@@ -361,7 +361,7 @@ class groupController extends baseController {
 
   async delMember(ctx) {
     const params = ctx.params
-    const groupInst = cons.getInst(GroupModel)
+    const groupInst = inst.getInst(GroupModel)
     const check = await groupInst.checkMemberRepeat(params.id, params.member_uid)
     if (check === 0) {
       return (ctx.body = commons.resReturn(null, 400, '分组成员不存在'))
@@ -395,8 +395,8 @@ class groupController extends baseController {
    * @example ./api/group/list.json
    */
   async list(ctx) {
-    const groupInst = cons.getInst(GroupModel)
-    const projectInst = cons.getInst(projectModel)
+    const groupInst = inst.getInst(GroupModel)
+    const projectInst = inst.getInst(projectModel)
 
     let privateGroup = await groupInst.getByPrivateUid(this.getUid())
     const newResult = []
@@ -471,11 +471,11 @@ class groupController extends baseController {
       return (ctx.body = commons.resReturn(null, 401, '没有权限'))
     }
 
-    const groupInst = cons.getInst(GroupModel)
-    const projectInst = cons.getInst(projectModel)
-    const interfaceInst = cons.getInst(InterfaceModel)
-    const interfaceColInst = cons.getInst(interfaceColModel)
-    const interfaceCaseInst = cons.getInst(interfaceCaseModel)
+    const groupInst = inst.getInst(GroupModel)
+    const projectInst = inst.getInst(projectModel)
+    const interfaceInst = inst.getInst(InterfaceModel)
+    const interfaceColInst = inst.getInst(interfaceColModel)
+    const interfaceCaseInst = inst.getInst(interfaceCaseModel)
     const id = ctx.params.id
 
     const projectList = await projectInst.list(id, true)
@@ -505,7 +505,7 @@ class groupController extends baseController {
    * @example ./api/group/up.json
    */
   async up(ctx) {
-    const groupInst = cons.getInst(GroupModel)
+    const groupInst = inst.getInst(GroupModel)
     const params = ctx.params
 
     if ((await this.checkAuth(params.id, 'group', 'danger')) !== true) {

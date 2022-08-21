@@ -1,6 +1,7 @@
 import koaRouter from 'koa-router'
 
 // import cons from './cons'
+import SyncController from './controllers/autoSync'
 import followController from './controllers/follow.js'
 import groupController from './controllers/group.js'
 import interfaceController from './controllers/interface.js'
@@ -8,7 +9,7 @@ import interfaceColController from './controllers/interfaceCol.js'
 import logController from './controllers/log.js'
 import openController from './controllers/open.js'
 import projectController from './controllers/project.js'
-import StatisticController from './controllers/statistic'
+import statisticController from './controllers/statistic'
 import testController from './controllers/test.js'
 import userController from './controllers/user.js'
 import { createAction } from './utils/commons.js'
@@ -55,7 +56,11 @@ const INTERFACE_CONFIG = {
   },
   statistic: {
     prefix: '/statismock/',
-    controller: StatisticController,
+    controller: statisticController,
+  },
+  autoSync: {
+    prefix: '/autoSync/',
+    controller: SyncController,
   },
 }
 
@@ -604,6 +609,18 @@ const routerConfig = {
       method: 'get',
       path: 'group_data_statis',
       action: 'groupDataStatis',
+    },
+  ],
+  autoSync: [
+    {
+      method: 'get',
+      path: 'get',
+      action: 'getSync',
+    },
+    {
+      method: 'post',
+      path: 'save',
+      action: 'upSync',
     },
   ],
 }

@@ -3,6 +3,11 @@
   "adminAccount": "admin@admin.com",
   "adminPassword": "ymfe.org",
   "timeout": 120000,
+  "passsalt": "",
+  "closeRegister": false,
+  "ldapLogin": {
+    "enable": false
+  },
   "db": {
     "servername": "127.0.0.1",
     "DATABASE": "yapi",

@@ -11,24 +11,25 @@ import interfaceCatModel from '../models/interfaceCat.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import LogModel from '../models/log.js'
 import projectModel from '../models/project.js'
-import tokenModel from '../models/token.js'
+import tokenModel from '../models/token'
 import UserModel from '../models/user.js'
 import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst'
 import * as modelUtils from '../utils/modelUtils'
 import { getToken } from '../utils/token'
 import yapi from '../yapi.js'
 
-import baseController from './base.js'
+import baseController from './base'
 
 class projectController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = cons.getInst(projectModel)
-    this.GroupModel = cons.getInst(GroupModel)
-    this.LogModel = cons.getInst(LogModel)
-    this.FollowModel = cons.getInst(FollowModel)
-    this.tokenModel = cons.getInst(tokenModel)
-    this.InterfaceModel = cons.getInst(InterfaceModel)
+    this.Model = inst.getInst(projectModel)
+    this.GroupModel = inst.getInst(GroupModel)
+    this.LogModel = inst.getInst(LogModel)
+    this.FollowModel = inst.getInst(FollowModel)
+    this.tokenModel = inst.getInst(tokenModel)
+    this.InterfaceModel = inst.getInst(InterfaceModel)
 
     const id = 'number'
     const member_uid = ['number']
@@ -227,8 +228,8 @@ class projectController extends baseController {
     }
 
     const result = await this.Model.save(data)
-    const colInst = cons.getInst(interfaceColModel)
-    const catInst = cons.getInst(interfaceCatModel)
+    const colInst = inst.getInst(interfaceColModel)
+    const catInst = inst.getInst(interfaceCatModel)
     if (result._id) {
       await colInst.save({
         name: '公共测试集',
@@ -304,8 +305,8 @@ class projectController extends baseController {
 
       delete data._id
       const result = await this.Model.save(data)
-      const colInst = cons.getInst(interfaceColModel)
-      const catInst = cons.getInst(interfaceCatModel)
+      const colInst = inst.getInst(interfaceColModel)
+      const catInst = inst.getInst(interfaceCatModel)
 
       // 增加集合
       if (result._id) {
@@ -466,7 +467,7 @@ class projectController extends baseController {
 
       const result = await this.Model.delMember(params.id, params.member_uid)
       const username = this.getUsername()
-      cons.getInst(UserModel)
+      inst.getInst(UserModel)
         .findById(params.member_uid)
         .then(member => {
           modelUtils.saveLog({
@@ -531,7 +532,7 @@ class projectController extends baseController {
       }
     }
     result = result.toObject()
-    const catInst = cons.getInst(interfaceCatModel)
+    const catInst = inst.getInst(interfaceCatModel)
     const cat = await catInst.list(params.id)
     result.cat = cat
     if (result.env.length === 0) {
@@ -619,9 +620,9 @@ class projectController extends baseController {
       return (ctx.body = commons.resReturn(null, 405, '没有权限'))
     }
 
-    const interfaceInst = cons.getInst(InterfaceModel)
-    const interfaceColInst = cons.getInst(interfaceColModel)
-    const interfaceCaseInst = cons.getInst(interfaceCaseModel)
+    const interfaceInst = inst.getInst(InterfaceModel)
+    const interfaceColInst = inst.getInst(interfaceColModel)
+    const interfaceCaseInst = inst.getInst(interfaceCaseModel)
     await interfaceInst.delByProjectId(id)
     await interfaceCaseInst.delByProjectId(id)
     await interfaceColInst.delByProjectId(id)
@@ -644,7 +645,7 @@ class projectController extends baseController {
    */
   async changeMemberRole(ctx) {
     const params = ctx.request.body
-    const projectInst = cons.getInst(projectModel)
+    const projectInst = inst.getInst(projectModel)
 
     const check = await projectInst.checkMemberRepeat(params.id, params.member_uid)
     if (check === 0) {
@@ -696,7 +697,7 @@ class projectController extends baseController {
   async changeMemberEmailNotice(ctx) {
     try {
       const params = ctx.request.body
-      const projectInst = cons.getInst(projectModel)
+      const projectInst = inst.getInst(projectModel)
       const check = await projectInst.checkMemberRepeat(params.id, params.member_uid)
       if (check === 0) {
         return (ctx.body = commons.resReturn(null, 400, '项目成员不存在'))

@@ -1,6 +1,6 @@
 import * as commons from '../utils/commons'
 
-import BaseModel from './base.js'
+import BaseModel from './base'
 
 class GroupModel extends BaseModel {
   getName() {
@@ -158,7 +158,6 @@ class GroupModel extends BaseModel {
       }],
     }).select(' _id group_name group_desc add_time up_time type uid custom_field1')
       .exec()
-    
   }
 
   findByGroups(ids = []) {

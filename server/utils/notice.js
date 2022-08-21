@@ -1,5 +1,6 @@
 import cons from '../cons'
 import * as commons from '../utils/commons'
+import * as inst from '../utils/inst'
 import yapi from '../yapi.js'
 
 function arrUnique(arr1, arr2) {
@@ -30,9 +31,9 @@ yapi.commons.sendNotice = async function (projectId, data) {
   const UserModel = require('../models/user.js')
   const FollowModel = require('../models/follow.js')
 
-  const followInst = cons.getInst(FollowModel)
-  const userInst = cons.getInst(UserModel)
-  const projectInst = cons.getInst(projectModel)
+  const followInst = inst.getInst(FollowModel)
+  const userInst = inst.getInst(UserModel)
+  const projectInst = inst.getInst(projectModel)
   const list = await followInst.listByProjectId(projectId)
   const starUsers = list.map(item => item.uid)
 

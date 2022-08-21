@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, { Model, Schema } from 'mongoose'
 
 import * as commons from '../utils/commons'
 import db from '../utils/db'
@@ -8,6 +8,10 @@ import autoIncrement from '../utils/mongoose-auto-increment'
  * 所有的model都需要继承baseModel, 且需要 getSchema和getName方法，不然会报错
  */
 class BaseModel {
+  schema: Schema
+  name: string
+  model: Model<any>
+
   constructor() {
     this.schema = new mongoose.Schema(this.getSchema())
     this.name = this.getName()
@@ -38,11 +42,11 @@ class BaseModel {
   /**
    * 获取collection的schema结构
    */
-  getSchema() {
+  getSchema(): any {
     commons.log('Model Class need getSchema function', 'error')
   }
 
-  getName() {
+  getName(): any {
     commons.log('Model Class need name', 'error')
   }
 }

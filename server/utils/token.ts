@@ -2,24 +2,20 @@ import crypto from 'crypto'
 
 import cons from '../cons'
 
-/* 下面是使用加密算法 */
-
-// 创建加密算法
-const aseEncode = function (data, password) {
-
+/** 创建加密算法 */
+const aseEncode = function (data: string, password: string) {
   // 如下方法使用指定的算法与密码来创建cipher对象
   const cipher = crypto.createCipher('aes192', password)
 
   // 使用该对象的update方法来指定需要被加密的数据
-  let crypted = cipher.update(data, 'utf-8', 'hex')
+  let encrypted = cipher.update(data, 'utf-8', 'hex')
+  encrypted += cipher.final('hex')
 
-  crypted += cipher.final('hex')
-
-  return crypted
+  return encrypted
 }
 
-// 创建解密算法
-const aseDecode = function (data, password) {
+/** 创建解密算法 */
+const aseDecode = function (data: string, password: string) {
   /* 
    该方法使用指定的算法与密码来创建 decipher对象, 第一个算法必须与加密数据时所使用的算法保持一致;
    第二个参数用于指定解密时所使用的密码，其参数值为一个二进制格式的字符串或一个Buffer对象，该密码同样必须与加密该数据时所使用的密码保持一致
@@ -32,26 +28,34 @@ const aseDecode = function (data, password) {
    第三个参数用于指定输出解密数据时使用的编码格式，可选参数值为 'utf-8', 'ascii' 或 'binary';
   */
   let decrypted = decipher.update(data, 'hex', 'utf-8')
-
   decrypted += decipher.final('utf-8')
+
   return decrypted
 }
 
 const defaultSalt = 'abcde'
 
-export function getToken(token, uid) {
-  if (!token) { throw new Error('token 不能为空') }
+export function getToken(token: string, uid: string | number) {
+  if (!token) {
+    throw new Error('token 不能为空')
+  }
+
   cons.WEB_CONFIG.passsalt = cons.WEB_CONFIG.passsalt || defaultSalt
   return aseEncode(uid + '|' + token, cons.WEB_CONFIG.passsalt)
 }
 
-export function parseToken(token) {
-  if (!token) { throw new Error('token 不能为空') }
+export function parseToken(token: string) {
+  if (!token) {
+    throw new Error('token 不能为空')
+  }
+
   cons.WEB_CONFIG.passsalt = cons.WEB_CONFIG.passsalt || defaultSalt
   let tokens
   try {
     tokens = aseDecode(token, cons.WEB_CONFIG.passsalt)
-  } catch (e) { /* noop */ }
+  } catch (e) {
+    /* noop */
+  }
 
   if (tokens && typeof tokens === 'string' && tokens.indexOf('|') > 0) {
     tokens = tokens.split('|')
@@ -61,5 +65,4 @@ export function parseToken(token) {
     }
   }
   return false
-
 }

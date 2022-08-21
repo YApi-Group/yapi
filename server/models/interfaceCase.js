@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 import * as commons from '../utils/commons'
 
-import BaseModel from './base.js'
+import BaseModel from './base'
 
 const Schema = mongoose.Schema
 

@@ -1,12 +1,13 @@
 import cons from '../cons'
 import storageModel from '../models/storage.js'
+import * as inst from '../utils/inst'
 
 export default function storageCreator(id) {
   const defaultData = {}
 
   return {
     getItem: async (name = '') => {
-      const inst = cons.getInst(storageModel)
+      const inst = inst.getInst(storageModel)
       let data = await inst.get(id)
       data = data || defaultData
       if (name) { return data[name] }
@@ -14,7 +15,7 @@ export default function storageCreator(id) {
     },
 
     setItem: async (name, value) => {
-      const inst = cons.getInst(storageModel)
+      const inst = inst.getInst(storageModel)
       const curData = await inst.get(id)
       const data = curData || defaultData
       let result

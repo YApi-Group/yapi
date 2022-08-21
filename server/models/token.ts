@@ -1,4 +1,4 @@
-import BaseModel from './base.js'
+import BaseModel from './base'
 
 class TokenModel extends BaseModel {
   getName() {
@@ -12,18 +12,18 @@ class TokenModel extends BaseModel {
     }
   }
 
-  save(data) {
+  save(data: any) {
     const m = new this.model(data)
     return m.save()
   }
 
-  get(project_id) {
+  get(project_id: number) {
     return this.model.findOne({
       project_id: project_id,
     })
   }
 
-  findId(token) {
+  findId(token: string) {
     return this.model
       .findOne({
         token: token,
@@ -32,7 +32,7 @@ class TokenModel extends BaseModel {
       .exec()
   }
 
-  up(project_id, token) {
+  up(project_id: number, token: string) {
     return this.model.update(
       {
         project_id: project_id,

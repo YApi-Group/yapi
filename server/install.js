@@ -7,6 +7,7 @@ import cons from './cons'
 import UserModel from './models/user.js'
 import * as commons from './utils/commons.js'
 import dbModule from './utils/db.js'
+import * as inst from './utils/inst'
 import yapi from './yapi.js'
 
 const connect = dbModule.connect()
@@ -24,7 +25,7 @@ function install() {
   // }
   // function setupSql() {
 
-  const userInst = cons.getInst(UserModel)
+  const userInst = inst.getInst(UserModel)
   const passsalt = commons.randStr()
   const result = userInst.save({
     username: cons.WEB_CONFIG.adminAccount.substr(0, cons.WEB_CONFIG.adminAccount.indexOf('@')),

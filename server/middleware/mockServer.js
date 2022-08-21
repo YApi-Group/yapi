@@ -11,6 +11,7 @@ import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import StatisticModel from '../models/statistic'
 import * as commons from '../utils/commons'
+import * as inst from '../utils/inst'
 import yapi from '../yapi.js'
 
 /**
@@ -67,7 +68,6 @@ function matchApi(apiPath, apiRule) {
         return false
       }
       pathParams.__weight++
-
     }
   }
   return pathParams
@@ -174,7 +174,7 @@ export default async (ctx, next) => {
     return (ctx.body = commons.resReturn(null, 400, 'projectId不能为空'))
   }
 
-  let projectInst = cons.getInst(projectModel),
+  let projectInst = inst.getInst(projectModel),
     project
   try {
     project = await projectInst.get(projectId)
@@ -187,7 +187,7 @@ export default async (ctx, next) => {
   }
 
   let interfaceData, newpath
-  const interfaceInst = cons.getInst(InterfaceModel)
+  const interfaceInst = inst.getInst(InterfaceModel)
 
   try {
     newpath = path.substr(project.basepath.length)
@@ -195,7 +195,6 @@ export default async (ctx, next) => {
     const queryPathInterfaceData = await interfaceInst.getByQueryPath(project._id, newpath, ctx.method)
     // 处理query_path情况  url 中有 ?params=xxx
     if (!interfaceData || interfaceData.length !== queryPathInterfaceData.length) {
-
       let i,
         l,
         j,
@@ -225,7 +224,6 @@ export default async (ctx, next) => {
         // if (i === l - 1) {
         //   interfaceData = [];
         // }
-
       }
     }
 
@@ -353,7 +351,7 @@ export default async (ctx, next) => {
         ip: ip,
         date: commons.formatYMD(new Date()),
       }
-      const inst = cons.getInst(StatisticModel)
+      const inst = inst.getInst(StatisticModel)
 
       try {
         inst.save(data).then()

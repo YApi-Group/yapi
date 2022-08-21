@@ -4,16 +4,17 @@ import InterfaceModel from '../models/interface'
 import LogModel from '../models/log.js'
 import projectModel from '../models/project'
 import * as commons from '../utils/commons'
+import * as inst from '../utils/inst'
 
-import baseController from './base.js'
+import baseController from './base'
 
 class logController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = cons.getInst(LogModel)
-    this.GroupModel = cons.getInst(GroupModel)
-    this.projectModel = cons.getInst(projectModel)
-    this.InterfaceModel = cons.getInst(InterfaceModel)
+    this.Model = inst.getInst(LogModel)
+    this.GroupModel = inst.getInst(GroupModel)
+    this.projectModel = inst.getInst(projectModel)
+    this.InterfaceModel = inst.getInst(InterfaceModel)
     this.schemaMap = {
       listByUpdate: {
         '*type': 'string',

@@ -14,11 +14,12 @@ import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
 import * as commons from '../utils/commons'
+import * as inst from '../utils/inst'
 import * as modelUtils from '../utils/modelUtils'
 import renderToHtml from '../utils/reportHtml'
 import yapi from '../yapi.js'
 
-import baseController from './base.js'
+import baseController from './base'
 
 /**
  * {
@@ -31,13 +32,13 @@ yapi.emitHook('import_data', importDataModule)
 class openController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.projectModel = cons.getInst(projectModel)
-    this.interfaceColModel = cons.getInst(interfaceColModel)
-    this.interfaceCaseModel = cons.getInst(interfaceCaseModel)
-    this.InterfaceModel = cons.getInst(InterfaceModel)
-    this.interfaceCatModel = cons.getInst(interfaceCatModel)
-    this.FollowModel = cons.getInst(FollowModel)
-    this.UserModel = cons.getInst(UserModel)
+    this.projectModel = inst.getInst(projectModel)
+    this.interfaceColModel = inst.getInst(interfaceColModel)
+    this.interfaceCaseModel = inst.getInst(interfaceCaseModel)
+    this.InterfaceModel = inst.getInst(InterfaceModel)
+    this.interfaceCatModel = inst.getInst(interfaceCatModel)
+    this.FollowModel = inst.getInst(FollowModel)
+    this.UserModel = inst.getInst(UserModel)
     this.handleValue = this.handleValue.bind(this)
     this.schemaMap = {
       runAutoTest: {
@@ -109,7 +110,7 @@ class openController extends baseController {
             }
           })
         })
-      } 
+      }
       if (ctx.params.url) {
         content = await syncGet(ctx.params.url)
       } else if (content.indexOf('http://') === 0 || content.indexOf('https://') === 0) {
@@ -287,9 +288,8 @@ class openController extends baseController {
     }
     if (ctx.params.mode === 'json') {
       return (ctx.body = reportsResult)
-    } 
+    }
     return (ctx.body = renderToHtml(reportsResult))
-    
   }
 
   async handleTest(interfaceData) {
@@ -328,7 +328,7 @@ class openController extends baseController {
       const validRes = []
 
       const responseData = {
-        
+
         status: res.status,
         body: res.body,
         header: res.header,
@@ -358,7 +358,6 @@ class openController extends baseController {
   }
 
   async handleScriptTest(interfaceData, response, validRes, requestParams) {
-    
     try {
       const test = await modelUtils.runCaseScript({
         response: response,

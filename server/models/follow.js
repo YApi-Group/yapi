@@ -1,4 +1,4 @@
-import BaseModel from './base.js'
+import BaseModel from './base'
 
 class FollowModel extends BaseModel {
   getName() {

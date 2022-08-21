@@ -1,6 +1,6 @@
 import * as commons from '../utils/commons'
 
-import BaseModel from './base.js'
+import BaseModel from './base'
 
 console.log(BaseModel)
 

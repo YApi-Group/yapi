@@ -3,8 +3,6 @@
  */
 import os from 'os'
 
-// @ts-ignore
-import cpu from 'cpu-load'
 import { Context } from 'koa'
 
 import cons from '../cons'
@@ -14,8 +12,9 @@ import InterfaceCaseModel from '../models/interfaceCase.js'
 import ProjectModel from '../models/project.js'
 import StatisticModel from '../models/statistic'
 import * as commons from '../utils/commons'
+import * as inst from '../utils/inst'
 
-import BaseController from './base.js'
+import BaseController from './base'
 
 class StatisticController extends BaseController {
   private statInst: any = null
@@ -27,11 +26,11 @@ class StatisticController extends BaseController {
   constructor(ctx: Context) {
     super(ctx)
 
-    this.statInst = cons.getInst(StatisticModel)
-    this.groupInst = cons.getInst(GroupModel)
-    this.projectInst = cons.getInst(ProjectModel)
-    this.interfaceInst = cons.getInst(InterfaceModel)
-    this.interfaceCaseInst = cons.getInst(InterfaceCaseModel)
+    this.statInst = inst.getInst(StatisticModel)
+    this.groupInst = inst.getInst(GroupModel)
+    this.projectInst = inst.getInst(ProjectModel)
+    this.interfaceInst = inst.getInst(InterfaceModel)
+    this.interfaceCaseInst = inst.getInst(InterfaceCaseModel)
   }
 
   /**
@@ -173,9 +172,18 @@ class StatisticController extends BaseController {
 
   cupLoad(): Promise<number> {
     return new Promise(resolve => {
-      cpu(1000, function (load: number) {
-        resolve(load)
-      })
+      const start = os.cpus()
+
+      setTimeout(function avgCpuLoadCompare() {
+        const totals = os.cpus().reduce(function (totals, end, i) {
+          const busy = end.times.user + end.times.sys - start[i].times.user - start[i].times.sys
+          totals.total += busy + end.times.idle - start[i].times.idle
+          totals.busy += busy
+          return totals
+        }, { busy: 0, total: 0 })
+
+        resolve(totals.busy / totals.total)
+      }, 1000)
     })
   }
 }

@@ -10,15 +10,16 @@ import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
 import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst'
 import * as ldap from '../utils/ldap.js'
 import yapi from '../yapi.js'
 
-import baseController from './base.js'
+import baseController from './base'
 
 class userController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = cons.getInst(UserModel)
+    this.Model = inst.getInst(UserModel)
   }
   /**
    * 用户登录接口
@@ -33,7 +34,7 @@ class userController extends baseController {
    */
   async login(ctx) {
     // 登录
-    const userInst = cons.getInst(UserModel) // 创建user实体
+    const userInst = inst.getInst(UserModel) // 创建user实体
     let email = ctx.request.body.email
     email = (email || '').trim()
     const password = ctx.request.body.password
@@ -68,7 +69,6 @@ class userController extends baseController {
       ))
     }
     return (ctx.body = commons.resReturn(null, 405, '密码错误'))
-
   }
 
   /**
@@ -98,7 +98,7 @@ class userController extends baseController {
    */
 
   async upStudy(ctx) {
-    const userInst = cons.getInst(UserModel) // 创建user实体
+    const userInst = inst.getInst(UserModel) // 创建user实体
     const data = {
       up_time: commons.time(),
       study: true,
@@ -152,7 +152,7 @@ class userController extends baseController {
       const login = await this.handleThirdLogin(emailParams, username)
 
       if (login === true) {
-        const userInst = cons.getInst(UserModel) // 创建user实体
+        const userInst = inst.getInst(UserModel) // 创建user实体
         const result = await userInst.findByEmail(emailParams)
         return (ctx.body = commons.resReturn(
           {
@@ -178,7 +178,7 @@ class userController extends baseController {
   // 处理第三方登录
   async handleThirdLogin(email, username) {
     let user, data, passsalt
-    const userInst = cons.getInst(UserModel)
+    const userInst = inst.getInst(UserModel)
 
     try {
       user = await userInst.findByEmail(email)
@@ -225,7 +225,7 @@ class userController extends baseController {
    */
   async changePassword(ctx) {
     const params = ctx.request.body
-    const userInst = cons.getInst(UserModel)
+    const userInst = inst.getInst(UserModel)
 
     if (!params.uid) {
       return (ctx.body = commons.resReturn(null, 400, 'uid不能为空'))
@@ -265,7 +265,7 @@ class userController extends baseController {
   }
 
   async handlePrivateGroup(uid) {
-    const groupInst = cons.getInst(GroupModel)
+    const groupInst = inst.getInst(GroupModel)
     await groupInst.save({
       uid: uid,
       group_name: 'User-' + uid,
@@ -305,7 +305,7 @@ class userController extends baseController {
     if (cons.WEB_CONFIG.closeRegister) {
       return (ctx.body = commons.resReturn(null, 400, '禁止注册，请联系管理员'))
     }
-    const userInst = cons.getInst(UserModel)
+    const userInst = inst.getInst(UserModel)
     let params = ctx.request.body // 获取请求的参数,检查是否存在用户名和密码
 
     params = commons.handleParams(params, {
@@ -384,7 +384,7 @@ class userController extends baseController {
     const page = ctx.request.query.page || 1,
       limit = ctx.request.query.limit || 10
 
-    const userInst = cons.getInst(UserModel)
+    const userInst = inst.getInst(UserModel)
     try {
       const user = await userInst.listWithPaging(page, limit)
       const count = await userInst.listCount()
@@ -411,7 +411,7 @@ class userController extends baseController {
   async findById(ctx) {
     // 根据id获取用户信息
     try {
-      const userInst = cons.getInst(UserModel)
+      const userInst = inst.getInst(UserModel)
       const id = ctx.request.query.id
 
       if (this.getRole() !== 'admin' && id !== this.getUid()) {
@@ -459,7 +459,7 @@ class userController extends baseController {
         return (ctx.body = commons.resReturn(null, 402, 'Without permission.'))
       }
 
-      const userInst = cons.getInst(UserModel)
+      const userInst = inst.getInst(UserModel)
       const id = ctx.request.body.id
       if (id === this.getUid()) {
         return (ctx.body = commons.resReturn(null, 403, '禁止删除管理员'))
@@ -503,7 +503,7 @@ class userController extends baseController {
         return (ctx.body = commons.resReturn(null, 401, '没有权限'))
       }
 
-      const userInst = cons.getInst(UserModel)
+      const userInst = inst.getInst(UserModel)
       const id = params.uid
 
       if (!id) {
@@ -534,9 +534,9 @@ class userController extends baseController {
         username: data.username || userData.username,
         email: data.email || userData.email,
       }
-      const groupInst = cons.getInst(GroupModel)
+      const groupInst = inst.getInst(GroupModel)
       await groupInst.updateMember(member)
-      const projectInst = cons.getInst(projectModel)
+      const projectInst = inst.getInst(projectModel)
       await projectInst.updateMember(member)
 
       const result = await userInst.update(id, data)
@@ -579,7 +579,7 @@ class userController extends baseController {
         return (ctx.body = commons.resReturn(null, 400, '图片大小不能超过200kb'))
       }
 
-      const avatarInst = cons.getInst(AvatarModel)
+      const avatarInst = inst.getInst(AvatarModel)
       const result = await avatarInst.up(this.getUid(), basecode, type)
       ctx.body = commons.resReturn(result)
     } catch (e) {
@@ -600,7 +600,7 @@ class userController extends baseController {
   async avatar(ctx) {
     try {
       const uid = ctx.query.uid ? ctx.query.uid : this.getUid()
-      const avatarInst = cons.getInst(AvatarModel)
+      const avatarInst = inst.getInst(AvatarModel)
       const data = await avatarInst.get(uid)
       let dataBuffer, type
       if (!data || !data.basecode) {
@@ -679,7 +679,7 @@ class userController extends baseController {
     const result = {}
     try {
       if (type === 'interface') {
-        const interfaceInst = cons.getInst(InterfaceModel)
+        const interfaceInst = inst.getInst(InterfaceModel)
         const interfaceData = await interfaceInst.get(id)
         result.interface = interfaceData
         type = 'project'
@@ -687,7 +687,7 @@ class userController extends baseController {
       }
 
       if (type === 'project') {
-        const projectInst = cons.getInst(projectModel)
+        const projectInst = inst.getInst(projectModel)
         const projectData = await projectInst.get(id)
         result.project = projectData.toObject()
         let ownerAuth = await this.checkAuth(id, 'project', 'danger'),
@@ -707,7 +707,7 @@ class userController extends baseController {
       }
 
       if (type === 'group') {
-        const groupInst = cons.getInst(GroupModel)
+        const groupInst = inst.getInst(GroupModel)
         const groupData = await groupInst.get(id)
         result.group = groupData.toObject()
         let ownerAuth = await this.checkAuth(id, 'group', 'danger'),

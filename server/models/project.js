@@ -1,6 +1,6 @@
 import * as commons from '../utils/commons'
 
-import BaseModel from './base.js'
+import BaseModel from './base'
 
 class ProjectModel extends BaseModel {
   getName() {
@@ -52,7 +52,7 @@ class ProjectModel extends BaseModel {
         global: [{
           name: String,
           value: String,
-        }], 
+        }],
       }],
       icon: String,
       color: String,
@@ -103,7 +103,7 @@ class ProjectModel extends BaseModel {
         return item
       })
     }
-    
+
     if (isFix) {
       this.model.update(
         {

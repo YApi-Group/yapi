@@ -4,7 +4,7 @@ import path from 'path'
 import cons from '../cons'
 import * as commons from '../utils/commons'
 
-import baseController from './base.js'
+import baseController from './base'
 
 class interfaceColController extends baseController {
   /**

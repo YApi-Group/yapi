@@ -1,11 +1,11 @@
 import { schemaValidator } from '../../common/utils.js'
-import cons from '../cons'
 import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import LogModel from '../models/log.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
+import * as inst from '../utils/inst'
 
 import * as commons from './commons'
 
@@ -24,10 +24,10 @@ function convertString(variable: any) {
 }
 
 export async function getCaseList(id: any) {
-  const caseInst = cons.getInst(interfaceCaseModel)
-  const colInst = cons.getInst(interfaceColModel)
-  const projectInst = cons.getInst(projectModel)
-  const interfaceInst = cons.getInst(InterfaceModel)
+  const caseInst = inst.getInst(interfaceCaseModel)
+  const colInst = inst.getInst(interfaceColModel)
+  const projectInst = inst.getInst(projectModel)
+  const interfaceInst = inst.getInst(InterfaceModel)
 
   let resultList = await caseInst.list(id, 'all')
   const colData = await colInst.get(id)
@@ -57,7 +57,7 @@ export async function getCaseList(id: any) {
 }
 
 export async function runCaseScript(params: any, colId: any, interfaceId: any) {
-  const colInst = cons.getInst(interfaceColModel)
+  const colInst = inst.getInst(interfaceColModel)
   const colData = await colInst.get(colId)
   const logs = []
   const context = {
@@ -74,28 +74,27 @@ export async function runCaseScript(params: any, colId: any, interfaceId: any) {
 
   let result: any = {}
   try {
-
     if (colData.checkHttpCodeIs200) {
       const status = Number(params.response.status)
       if (status !== 200) {
-        throw ('Http status code 不是 200，请检查(该规则来源于于 [测试集->通用规则配置] )')
+        throw new Error('Http status code 不是 200，请检查(该规则来源于于 [测试集->通用规则配置] )')
       }
     }
 
     if (colData.checkResponseField.enable) {
       if (params.response.body[colData.checkResponseField.name] !== colData.checkResponseField.value) {
-        throw (`返回json ${colData.checkResponseField.name} 值不是${colData.checkResponseField.value}，请检查(该规则来源于于 [测试集->通用规则配置] )`)
+        throw new Error(`返回json ${colData.checkResponseField.name} 值不是${colData.checkResponseField.value}，请检查(该规则来源于于 [测试集->通用规则配置] )`)
       }
     }
 
     if (colData.checkResponseSchema) {
-      const interfaceInst = cons.getInst(InterfaceModel)
+      const interfaceInst = inst.getInst(InterfaceModel)
       const interfaceData = await interfaceInst.get(interfaceId)
       if (interfaceData.res_body_is_json_schema && interfaceData.res_body) {
         const schema = JSON.parse(interfaceData.res_body)
         const result = schemaValidator(schema, context.body)
         if (!result.valid) {
-          throw (`返回Json 不符合 response 定义的数据结构,原因: ${result.message}
+          throw new Error(`返回Json 不符合 response 定义的数据结构,原因: ${result.message}
                   数据结构如下：
                   ${JSON.stringify(schema, null, 2)}`)
         }
@@ -129,7 +128,7 @@ export async function runCaseScript(params: any, colId: any, interfaceId: any) {
 
 export function saveLog(logData: any) {
   try {
-    const logInst = cons.getInst(LogModel)
+    const logInst = inst.getInst(LogModel)
     const data = {
       content: logData.content,
       type: logData.type,
@@ -147,7 +146,7 @@ export function saveLog(logData: any) {
 
 export async function getUserData(uid: any, role: any) {
   role = role || 'dev'
-  const userInst = cons.getInst(UserModel)
+  const userInst = inst.getInst(UserModel)
   const userData = await userInst.findById(uid)
   if (!userData) {
     return null

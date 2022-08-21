@@ -28,7 +28,7 @@ const defaultOptions = {
 }
 
 export function rand(min, max) {
-  return Math.floor(Math.random() * (max - min) + min) 
+  return Math.floor(Math.random() * (max - min) + min)
 }
 
 /**
@@ -385,7 +385,6 @@ export const createAction = (router, baseurl, routerController, action, path, me
       await inst.init(ctx)
       ctx.params = { ...ctx.request.query, ...ctx.request.body, ...ctx.params }
       if (inst.schemaMap && typeof inst.schemaMap === 'object' && inst.schemaMap[action]) {
-
         const validResult = validateParams(inst.schemaMap[action], ctx.params)
 
         if (!validResult.valid) {
