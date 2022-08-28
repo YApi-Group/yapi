@@ -2,7 +2,7 @@ import cons from '../cons'
 import FollowModel from '../models/follow'
 import projectModel from '../models/project'
 import * as inst from '../utils/inst'
-import yapi from '../yapi.js'
+import yapi from '../yapi'
 
 import baseController from './base'
 

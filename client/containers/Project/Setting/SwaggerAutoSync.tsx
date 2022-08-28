@@ -56,6 +56,12 @@ type StateTypes = {
   }
 }
 
+const syncModeOpts = [
+  { value: 'normal', label: '普通模式' },
+  { value: 'good', label: '智能合并' },
+  { value: 'merge', label: '完全覆盖' },
+]
+
 class ProjectInterfaceSync extends Component<PropTypes, StateTypes> {
   formRef = createRef<FormInstance>()
 
@@ -63,7 +69,7 @@ class ProjectInterfaceSync extends Component<PropTypes, StateTypes> {
     super(props)
     this.state = {
       // 默认每份钟同步一次,取一个随机数
-      random_corn: '*/2 * * * *',
+      random_corn: '*/10 * * * *',
 
       // 查询同步任务
       sync_data: {
@@ -90,7 +96,7 @@ class ProjectInterfaceSync extends Component<PropTypes, StateTypes> {
       .validateFields()
       .then(async (values: any[]) => {
         const assignValue = Object.assign(params, values)
-        await axios.post('/api/plugin/autoSync/save', assignValue).then(res => {
+        await axios.post('/api/autoSync/save', assignValue).then(res => {
           if (res.data.errcode === 0) {
             message.success('保存成功')
           } else {
@@ -117,7 +123,7 @@ class ProjectInterfaceSync extends Component<PropTypes, StateTypes> {
 
   async getSyncData() {
     const projectId = this.props.projectMsg._id
-    const result = await axios.get('/api/plugin/autoSync/get?project_id=' + projectId)
+    const result = await axios.get('/api/autoSync/get?project_id=' + projectId)
     if (result.data.errcode === 0) {
       if (result.data.data) {
         this.setState({
@@ -161,9 +167,7 @@ class ProjectInterfaceSync extends Component<PropTypes, StateTypes> {
             {this.state.sync_data.last_sync_time != null ? (
               <div>
                 上次更新时间:
-                <span className="logtime">
-                  {formatTime(this.state.sync_data.last_sync_time)}
-                </span>
+                <span className="logtime">{formatTime(this.state.sync_data.last_sync_time)}</span>
               </div>
             ) : null}
           </FormItem>
@@ -196,16 +200,12 @@ class ProjectInterfaceSync extends Component<PropTypes, StateTypes> {
               initialValue={this.state.sync_data.sync_mode}
               rules={[{ required: true, message: '请选择同步方式!' }]}
             >
-              <Select>
-                <Option value="normal">普通模式</Option>
-                <Option value="good">智能合并</Option>
-                <Option value="merge">完全覆盖</Option>
-              </Select>
+              <Select options={syncModeOpts} />
             </FormItem>
 
             <FormItem
               {...formItemLayout}
-              label="项目的swagger json地址"
+              label="项目的 swagger json 地址"
               name="sync_json_url"
               rules={[{ required: true, message: '输入swagger地址' }, { validator: this.validSwaggerUrl }]}
               validateTrigger="onBlur"
@@ -218,8 +218,10 @@ class ProjectInterfaceSync extends Component<PropTypes, StateTypes> {
               {...formItemLayout}
               label={
                 <span>
-                  类cron风格表达式(默认10分钟更新一次)&nbsp;
+                  类cron风格表达式
                   <a href="https://blog.csdn.net/shouldnotappearcalm/article/details/89469047">参考</a>
+                  <br />
+                  (默认10分钟更新一次)
                 </span>
               }
               name="sync_cron"

@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Context } from 'koa'
 
 import cons from '../cons'
@@ -152,9 +152,9 @@ class BaseController {
         return false
       }
 
-      let decoded: any
+      let decoded: JwtPayload
       try {
-        decoded = jwt.verify(token, result.passsalt)
+        decoded = jwt.verify(token, result.passsalt) as JwtPayload
       } catch (err) {
         return false
       }
@@ -169,7 +169,7 @@ class BaseController {
 
       return false
     } catch (e) {
-      commons.log(e, 'error')
+      console.error(e)
       return false
     }
   }

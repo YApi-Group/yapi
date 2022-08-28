@@ -18,7 +18,7 @@ import UserModel from '../models/user.js'
 import * as commons from '../utils/commons'
 import * as inst from '../utils/inst'
 import * as modelUtils from '../utils/modelUtils'
-import yapi from '../yapi.js'
+import yapi from '../yapi'
 
 import baseController from './base'
 

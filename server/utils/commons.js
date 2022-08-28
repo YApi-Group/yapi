@@ -377,7 +377,7 @@ export const validateParams = (schema2, params) => {
  * @param {*} action controller action_name
  * @param {*} ws enable ws
  */
-export const createAction = (router, baseurl, routerController, action, path, method, ws) => {
+export const createAction = (router, baseurl, routerController, action, path, method, ws = false) => {
   router[method](baseurl + path, async ctx => {
     // eslint-disable-next-line new-cap
     const inst = new routerController(ctx)

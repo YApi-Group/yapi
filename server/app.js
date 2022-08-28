@@ -7,12 +7,12 @@ import websockify from 'koa-websocket'
 
 import cons from './cons'
 import mockServer from './middleware/mockServer.js'
-import router from './router.js'
+import router from './router'
 import * as commons from './utils/commons.js'
 import dbModule from './utils/db.js'
 import storageCreator from './utils/storage.js'
 import websocket from './websocket.js'
-import yapi from './yapi.js'
+import yapi from './yapi'
 
 // import  bodyParser from 'koa-bodyparser'
 // TODO 重新设计 plugin 机制 ，不使用 dynamic-require

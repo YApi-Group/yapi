@@ -2,8 +2,6 @@ import * as commons from '../utils/commons'
 
 import BaseModel from './base'
 
-console.log(BaseModel)
-
 class InterfaceModel extends BaseModel {
   getName() {
     return 'interface'

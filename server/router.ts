@@ -1,6 +1,5 @@
-import koaRouter from 'koa-router'
+import KoaRouter from '@koa/router'
 
-// import cons from './cons'
 import SyncController from './controllers/autoSync'
 import followController from './controllers/follow.js'
 import groupController from './controllers/group.js'
@@ -13,9 +12,22 @@ import statisticController from './controllers/statistic'
 import testController from './controllers/test.js'
 import userController from './controllers/user.js'
 import { createAction } from './utils/commons.js'
-import yapi from './yapi.js'
+import yapi from './yapi'
 
-const router = koaRouter()
+const router = new KoaRouter()
+
+export type CtrlType =
+  | 'group'
+  | 'user'
+  | 'project'
+  | 'interface'
+  | 'log'
+  | 'follow'
+  | 'col'
+  | 'test'
+  | 'open'
+  | 'statistic'
+  | 'autoSync'
 
 const INTERFACE_CONFIG = {
   interface: {
@@ -62,7 +74,7 @@ const INTERFACE_CONFIG = {
     prefix: '/autoSync/',
     controller: SyncController,
   },
-}
+} as const
 
 const routerConfig = {
   group: [
@@ -71,7 +83,6 @@ const routerConfig = {
       path: 'get_mygroup',
       method: 'get',
     },
-
     {
       action: 'list',
       path: 'list',
@@ -623,11 +634,11 @@ const routerConfig = {
       action: 'upSync',
     },
   ],
-}
+} as const
 
-const pluginsRouterPath = []
+const pluginsRouterPath: string[] = []
 
-function addPluginRouter(config) {
+function addPluginRouter(config: any) {
   if (!config.path || !config.controller || !config.action) {
     throw new Error('Plugin Route config Error')
   }
@@ -644,7 +655,7 @@ function addPluginRouter(config) {
 
 yapi.emitHook('add_router', addPluginRouter)
 
-for (const ctrl of Object.keys(routerConfig)) {
+for (const ctrl of (Object.keys(routerConfig) as CtrlType[])) {
   const actions = routerConfig[ctrl]
   actions.forEach(item => {
     const routerController = INTERFACE_CONFIG[ctrl].controller

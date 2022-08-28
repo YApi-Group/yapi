@@ -8,7 +8,7 @@ import UserModel from './models/user.js'
 import * as commons from './utils/commons.js'
 import dbModule from './utils/db.js'
 import * as inst from './utils/inst'
-import yapi from './yapi.js'
+import yapi from './yapi'
 
 const connect = dbModule.connect()
 

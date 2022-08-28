@@ -17,7 +17,7 @@ import * as commons from '../utils/commons.js'
 import * as inst from '../utils/inst'
 import * as modelUtils from '../utils/modelUtils'
 import { getToken } from '../utils/token'
-import yapi from '../yapi.js'
+import yapi from '../yapi'
 
 import baseController from './base'
 

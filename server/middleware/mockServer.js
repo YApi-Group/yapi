@@ -12,7 +12,7 @@ import projectModel from '../models/project.js'
 import StatisticModel from '../models/statistic'
 import * as commons from '../utils/commons'
 import * as inst from '../utils/inst'
-import yapi from '../yapi.js'
+import yapi from '../yapi'
 
 /**
  *

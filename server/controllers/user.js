@@ -12,7 +12,7 @@ import UserModel from '../models/user.js'
 import * as commons from '../utils/commons.js'
 import * as inst from '../utils/inst'
 import * as ldap from '../utils/ldap.js'
-import yapi from '../yapi.js'
+import yapi from '../yapi'
 
 import baseController from './base'
 

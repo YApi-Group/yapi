@@ -1,10 +1,10 @@
-import koaRouter from 'koa-router'
+import KoaRouter from '@koa/router'
 
 import interfaceController from './controllers/interface.js'
 import { createAction } from './utils/commons.js'
-import yapi from './yapi.js'
+import yapi from './yapi'
 
-const router = koaRouter()
+const router = new KoaRouter()
 
 const pluginsRouterPath = []
 
