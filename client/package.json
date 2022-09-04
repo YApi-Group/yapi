@@ -63,6 +63,7 @@
     "request": "2.81.0",
     "sha.js": "2.4.11",
     "sha1": "1.1.1",
+    "swagger-client": "^3.18.5",
     "table-resolver": "^4.1.1",
     "underscore": "1.13.4",
     "url": "0.11.0",

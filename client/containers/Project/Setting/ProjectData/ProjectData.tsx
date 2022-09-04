@@ -29,13 +29,21 @@ import { saveImportData } from '../../../../reducer/modules/interface'
 import { fetchUpdateLogData } from '../../../../reducer/modules/news.js'
 import { handleSwaggerUrlData } from '../../../../reducer/modules/project'
 
+import jsonImport from './jsonImport'
+import swaggerImport from './swaggerImport'
+
 import './ProjectData.scss'
 
 const Dragger = Upload.Dragger
 const Option = Select.Option
 const confirm = Modal.confirm
 const RadioGroup = Radio.Group
-const importDataModule: { [K: string]: any } = {}
+
+const importDataModule: { [K: string]: any } = {
+  swagger: swaggerImport,
+  json: jsonImport,
+}
+
 const exportDataModule: { [K: string]: any } = {}
 
 function handleExportRouteParams(url: string, status: string, isWiki: boolean) {
@@ -48,6 +56,12 @@ function handleExportRouteParams(url: string, status: string, isWiki: boolean) {
     query,
   })
 }
+
+const dataSYncOpts = [
+  { value: 'normal', label: '普通模式' },
+  { value: 'good', label: '智能合并' },
+  { value: 'merge', label: '完全覆盖' },
+]
 
 type PropsType = {
   match?: any
@@ -387,22 +401,20 @@ class ProjectData extends Component<PropsType, StateTyPe> {
                     <QuestionCircleOutlined />
                   </Tooltip>{' '}
                 </span>
-                <Select value={this.state.dataSync} onChange={this.onChange}>
-                  <Option value="normal">普通模式</Option>
-                  <Option value="good">智能合并</Option>
-                  <Option value="merge">完全覆盖</Option>
-                </Select>
+
+                <Select value={this.state.dataSync} options={dataSYncOpts} onChange={this.onChange} />
 
                 {/* <Switch checked={this.state.dataSync} onChange={this.onChange} /> */}
               </div>
+
               {this.state.curImportType === 'swagger' && (
                 <div className="dataSync">
                   <span className="label">
                     开启url导入&nbsp;
                     <Tooltip title="swagger url 导入">
                       <QuestionCircleOutlined />
-                    </Tooltip>{' '}
-                    &nbsp;&nbsp;
+                    </Tooltip>
+                    &nbsp;
                   </span>
 
                   <Switch checked={this.state.isSwaggerUrl} onChange={this.handleUrlChange} />
@@ -527,4 +539,4 @@ const actions = {
   handleSwaggerUrlData,
 }
 
-export default connect(states, actions)(ProjectData) as typeof ProjectData
+export default connect(states, actions)(ProjectData) as any as typeof ProjectData

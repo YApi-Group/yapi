@@ -9,7 +9,6 @@ import { handleSwaggerUrlData } from '@/reducer/modules/project'
 import { AnyFunc } from '@/types'
 
 const FormItem = Form.Item
-const Option = Select.Option
 
 // layout
 const formItemLayout = {

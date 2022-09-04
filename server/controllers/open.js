@@ -17,6 +17,7 @@ import * as commons from '../utils/commons'
 import * as inst from '../utils/inst'
 import * as modelUtils from '../utils/modelUtils'
 import renderToHtml from '../utils/reportHtml'
+import swaggerImport from '../utils/swaggerImport'
 import yapi from '../yapi'
 
 import baseController from './base'
@@ -26,7 +27,16 @@ import baseController from './base'
  *    postman: require('./m')
  * }
  */
-const importDataModule = {}
+const importDataModule = {
+  swagger: async res => {
+    try {
+      return await swaggerImport(res)
+    } catch (err) {
+      commons.log(err, 'error')
+      return false
+    }
+  },
+}
 yapi.emitHook('import_data', importDataModule)
 
 class openController extends baseController {
