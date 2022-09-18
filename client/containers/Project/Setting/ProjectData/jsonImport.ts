@@ -1,8 +1,10 @@
 import { message } from 'antd'
 
-function run(res: string) {
+import { RunFuncReturn } from './type'
+
+function run(res: string): RunFuncReturn {
   try {
-    const interfaceData: any = { apis: [], cats: [] }
+    const interfaceData: RunFuncReturn = { apis: [], cats: [] }
     const resAry: any[] = JSON.parse(res)
     resAry.forEach(item => {
       interfaceData.cats.push({
@@ -24,7 +26,7 @@ function run(res: string) {
 }
 
 export default {
-  name: 'json',
+  name: 'Yapi Json',
   run: run,
   desc: 'YApi接口 json数据导入',
 }

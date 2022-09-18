@@ -30,7 +30,9 @@ import { fetchUpdateLogData } from '../../../../reducer/modules/news.js'
 import { handleSwaggerUrlData } from '../../../../reducer/modules/project'
 
 import jsonImport from './jsonImport'
+import postmanImport from './postmanImport'
 import swaggerImport from './swaggerImport'
+import { ImportDataPart } from './type'
 
 import './ProjectData.scss'
 
@@ -39,15 +41,18 @@ const Option = Select.Option
 const confirm = Modal.confirm
 const RadioGroup = Radio.Group
 
-const importDataModule: { [K: string]: any } = {
+const importDataModule: { [K: string]: ImportDataPart } = {
   swagger: swaggerImport,
   json: jsonImport,
+  postman: postmanImport,
 }
 
 const exportDataModule: { [K: string]: any } = {}
 
 function handleExportRouteParams(url: string, status: string, isWiki: boolean) {
-  if (!url) { return }
+  if (!url) {
+    return
+  }
 
   const urlObj = URL.parse(url, true)
   const query = { ...urlObj.query, status, isWiki }
@@ -164,13 +169,13 @@ class ProjectData extends Component<PropsType, StateTyPe> {
       const reader = new FileReader()
       reader.readAsText(info.file)
       reader.onload = async res => {
-        res = await importDataModule[this.state.curImportType].run(res.target.result)
+        const rst = await importDataModule[this.state.curImportType].run(res.target.result as string)
         if (this.state.dataSync === 'merge') {
           // 开启同步
-          this.showConfirm(res)
+          this.showConfirm(rst)
         } else {
           // 未开启同步
-          await this.handleAddInterface(res)
+          await this.handleAddInterface(rst)
         }
       }
     } else {
@@ -300,8 +305,6 @@ class ProjectData extends Component<PropsType, StateTyPe> {
   }
 
   /**
-   *
-   *
    * @returns
    * @memberof ProjectData
    */
@@ -315,15 +318,15 @@ class ProjectData extends Component<PropsType, StateTyPe> {
       onChange: this.uploadChange,
     }
 
-    const exportUrl
-      = this.state.curExportType
+    const exportUrl = this.state.curExportType
       && exportDataModule[this.state.curExportType]
       && exportDataModule[this.state.curExportType].route
-    const exportHref = handleExportRouteParams(
-      exportUrl,
-      this.state.exportContent,
-      this.state.isWiki,
-    )
+    const exportHref = handleExportRouteParams(exportUrl, this.state.exportContent, this.state.isWiki)
+
+    const selectOpts = Object.entries(importDataModule).map(([k, v]) => ({
+      value: k,
+      label: v.name,
+    }))
 
     // console.log('inter', this.state.exportContent);
     return (
@@ -350,15 +353,8 @@ class ProjectData extends Component<PropsType, StateTyPe> {
                   placeholder="请选择导入数据的方式"
                   value={this.state.curImportType}
                   onChange={this.handleImportType}
-                >
-                  {
-                    Object.keys(importDataModule).map(key => (
-                      <Option key={key} value={key}>
-                        {importDataModule[key].name}
-                      </Option>
-                    ))
-                  }
-                </Select>
+                  options={selectOpts}
+                />
               </div>
               <div className="catidSelect">
                 <Select
@@ -388,10 +384,7 @@ class ProjectData extends Component<PropsType, StateTyPe> {
                         <p>不导入已存在的接口</p>
                         <br />
                         <h3 style={{ color: 'white' }}>智能合并</h3>
-                        <p>
-                          已存在的接口，将合并返回数据的 response，适用于导入了 swagger
-                          数据，保留对数据结构的改动
-                        </p>
+                        <p>已存在的接口，将合并返回数据的 response，适用于导入了 swagger 数据，保留对数据结构的改动</p>
                         <br />
                         <h3 style={{ color: 'white' }}>完全覆盖</h3>
                         <p>不保留旧数据，完全使用新数据，适用于接口定义完全交给后端定义</p>
@@ -449,9 +442,7 @@ class ProjectData extends Component<PropsType, StateTyPe> {
                           e.stopPropagation()
                         }}
                         dangerouslySetInnerHTML={{
-                          __html: this.state.curImportType
-                            ? importDataModule[this.state.curImportType]?.desc
-                            : null,
+                          __html: this.state.curImportType ? importDataModule[this.state.curImportType]?.desc : null,
                         }}
                       />
                     </Dragger>
@@ -490,10 +481,7 @@ class ProjectData extends Component<PropsType, StateTyPe> {
                 {this.state.curExportType ? (
                   <div>
                     <p className="export-desc">{exportDataModule[this.state.curExportType].desc}</p>
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={exportHref}>
+                    <a target="_blank" rel="noopener noreferrer" href={exportHref}>
                       <Button className="export-button" type="primary" size="large">
                         {' '}
                         导出{' '}

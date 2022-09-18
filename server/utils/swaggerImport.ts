@@ -1,11 +1,17 @@
 import compareVersions from 'compare-versions'
-import _ from 'lodash-es'
+import _ from 'lodash'
+// @ts-ignore
 import swagger from 'swagger-client'
 
-let SwaggerData, isOAS3
-function handlePath(path) {
-  if (path === '/') { return path }
-  if (path.charAt(0) != '/') {
+import { DefaultParamType, RunFuncReturn } from './type'
+
+let SwaggerData: any
+
+function handlePath(path: string): string {
+  if (path === '/') {
+    return path
+  }
+  if (path.charAt(0) !== '/') {
     path = '/' + path
   }
   if (path.charAt(path.length - 1) === '/') {
@@ -14,42 +20,37 @@ function handlePath(path) {
   return path
 }
 
-function openapi2swagger(data) {
+function openapi2swagger(data: any) {
   data.swagger = '2.0'
   _.each(data.paths, apis => {
     _.each(apis, api => {
       _.each(api.responses, res => {
-        if (
-          res.content
-            && res.content['application/json']
-            && typeof res.content['application/json'] === 'object'
-        ) {
+        if (res.content && res.content['application/json'] && typeof res.content['application/json'] === 'object') {
           Object.assign(res, res.content['application/json'])
           delete res.content
         }
         if (
           res.content
-            && res.content['application/hal+json']
-            && typeof res.content['application/hal+json'] === 'object'
+          && res.content['application/hal+json']
+          && typeof res.content['application/hal+json'] === 'object'
         ) {
           Object.assign(res, res.content['application/hal+json'])
           delete res.content
         }
-        if (
-          res.content
-            && res.content['*/*']
-            && typeof res.content['*/*'] === 'object'
-        ) {
+        if (res.content && res.content['*/*'] && typeof res.content['*/*'] === 'object') {
           Object.assign(res, res.content['*/*'])
           delete res.content
         }
       })
       if (api.requestBody) {
-        if (!api.parameters) { api.parameters = [] }
+        if (!api.parameters) {
+          api.parameters = []
+        }
         const body = {
           type: 'object',
           name: 'body',
           in: 'body',
+          schema: {} as any,
         }
         try {
           body.schema = api.requestBody.content['application/json'].schema
@@ -65,20 +66,21 @@ function openapi2swagger(data) {
   return data
 }
 
-async function handleSwaggerData(res) {
-  return await new Promise(resolve => {
+function handleSwaggerData(res: any) {
+  return new Promise(resolve => {
     const data = swagger({
       spec: res,
     })
 
-    data.then(res => {
+    data.then((res: any) => {
       resolve(res.spec)
     })
   })
 }
 
-async function run(res) {
-  const interfaceData = { apis: [], cats: [] }
+async function run(res: any): Promise<RunFuncReturn> {
+  const interfaceData: RunFuncReturn = { apis: [], cats: [] }
+
   if (typeof res === 'string' && res) {
     try {
       res = JSON.parse(res)
@@ -87,17 +89,18 @@ async function run(res) {
     }
   }
 
-  isOAS3 = res.openapi && compareVersions(res.openapi, '3.0.0') >= 0
+  const isOAS3 = res.openapi && compareVersions(res.openapi, '3.0.0') >= 0
   if (isOAS3) {
     res = openapi2swagger(res)
   }
+
   res = await handleSwaggerData(res)
   SwaggerData = res
 
   interfaceData.basePath = res.basePath || ''
 
   if (res.tags && Array.isArray(res.tags)) {
-    res.tags.forEach(tag => {
+    res.tags.forEach((tag: any) => {
       interfaceData.cats.push({
         name: tag.name,
         desc: tag.description,
@@ -113,7 +116,7 @@ async function run(res) {
     _.each(apis, (api, method) => {
       api.path = path
       api.method = method
-      let data = null
+      let data: any = null
       try {
         data = handleSwagger(api, res.tags)
         if (data.catname) {
@@ -143,17 +146,18 @@ async function run(res) {
   return interfaceData
 }
 
-function handleSwagger(data, originTags = []) {
-  const api = {}
+function handleSwagger(data: any, originTags: any[] = []) {
+  const api: any = {}
   // 处理基本信息
   api.method = data.method.toUpperCase()
   api.title = data.summary || data.path
   api.desc = data.description
   api.catname = null
+
   if (data.tags && Array.isArray(data.tags)) {
     api.tag = data.tags
     for (let i = 0; i < data.tags.length; i++) {
-      if (/v[0-9\.]+/.test(data.tags[i])) {
+      if (/v[0-9.]+/.test(data.tags[i])) {
         continue
       }
 
@@ -186,7 +190,7 @@ function handleSwagger(data, originTags = []) {
   if (data.consumes && Array.isArray(data.consumes)) {
     if (
       data.consumes.indexOf('application/x-www-form-urlencoded') > -1
-        || data.consumes.indexOf('multipart/form-data') > -1
+      || data.consumes.indexOf('multipart/form-data') > -1
     ) {
       api.req_body_type = 'form'
     } else if (data.consumes.indexOf('application/json') > -1) {
@@ -205,7 +209,7 @@ function handleSwagger(data, originTags = []) {
     api.res_body_type = 'raw'
   }
   // 处理参数
-  function simpleJsonPathParse(key, json) {
+  function simpleJsonPathParse(key: string, json: any) {
     if (!key || typeof key !== 'string' || key.indexOf('#/') !== 0 || key.length <= 2) {
       return null
     }
@@ -223,11 +227,11 @@ function handleSwagger(data, originTags = []) {
   }
 
   if (data.parameters && Array.isArray(data.parameters)) {
-    data.parameters.forEach(param => {
+    data.parameters.forEach((param: any) => {
       if (param && typeof param === 'object' && param.$ref) {
         param = simpleJsonPathParse(param.$ref, { parameters: SwaggerData.parameters })
       }
-      const defaultParam = {
+      const defaultParam: DefaultParamType = {
         name: param.name,
         desc: param.description,
         required: param.required ? '1' : '0',
@@ -242,7 +246,7 @@ function handleSwagger(data, originTags = []) {
             api.req_query.push(defaultParam)
             break
           case 'body':
-            handleBodyPamras(param.schema, api)
+            handleBodyParams(param.schema, api)
             break
           case 'formData':
             defaultParam.type = param.type === 'file' ? 'file' : 'text'
@@ -254,6 +258,9 @@ function handleSwagger(data, originTags = []) {
           case 'header':
             api.req_headers.push(defaultParam)
             break
+          default: {
+            /* noop */
+          }
         }
       } else {
         api.req_query.push(defaultParam)
@@ -264,7 +271,7 @@ function handleSwagger(data, originTags = []) {
   return api
 }
 
-function isJson(json) {
+function isJson(json: string) {
   try {
     return JSON.parse(json)
   } catch (e) {
@@ -272,7 +279,7 @@ function isJson(json) {
   }
 }
 
-function handleBodyPamras(data, api) {
+function handleBodyParams(data: any, api: any) {
   api.req_body_other = JSON.stringify(data, null, 2)
   if (isJson(api.req_body_other)) {
     api.req_body_type = 'json'
@@ -280,7 +287,7 @@ function handleBodyPamras(data, api) {
   }
 }
 
-function handleResponse(api) {
+function handleResponse(api: any) {
   let res_body = ''
   if (!api || typeof api !== 'object') {
     return res_body
@@ -290,7 +297,9 @@ function handleResponse(api) {
   if (codes.length > 0) {
     if (codes.indexOf('200') > -1) {
       curCode = '200'
-    } else { curCode = codes[0] }
+    } else {
+      curCode = codes[0]
+    }
 
     const res = api[curCode]
     if (res && typeof res === 'object') {
