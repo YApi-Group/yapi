@@ -21,3 +21,9 @@ export type DefaultParamType = {
   desc: string
   required: '0' | '1'
 }
+
+export type ExportDefine = {
+  name: string
+  route: string
+  desc: string
+}

@@ -1,6 +1,7 @@
 import KoaRouter from '@koa/router'
 
 import SyncController from './controllers/autoSync'
+import DataController from './controllers/data'
 import followController from './controllers/follow.js'
 import groupController from './controllers/group.js'
 import interfaceController from './controllers/interface.js'
@@ -73,6 +74,10 @@ const INTERFACE_CONFIG = {
   autoSync: {
     prefix: '/autoSync/',
     controller: SyncController,
+  },
+  data: {
+    prefix: '/data/',
+    controller: DataController,
   },
 } as const
 
@@ -634,6 +639,13 @@ const routerConfig = {
       action: 'upSync',
     },
   ],
+  data: [
+    {
+      method: 'get',
+      path: 'export',
+      action: 'exportData',
+    },
+  ],
 } as const
 
 const pluginsRouterPath: string[] = []
@@ -655,7 +667,7 @@ function addPluginRouter(config: any) {
 
 yapi.emitHook('add_router', addPluginRouter)
 
-for (const ctrl of (Object.keys(routerConfig) as CtrlType[])) {
+for (const ctrl of Object.keys(routerConfig) as CtrlType[]) {
   const actions = routerConfig[ctrl]
   actions.forEach(item => {
     const routerController = INTERFACE_CONFIG[ctrl].controller

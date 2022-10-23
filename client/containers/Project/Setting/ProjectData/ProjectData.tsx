@@ -32,7 +32,7 @@ import { handleSwaggerUrlData } from '../../../../reducer/modules/project'
 import jsonImport from './jsonImport'
 import postmanImport from './postmanImport'
 import swaggerImport from './swaggerImport'
-import { ImportDataPart } from './type'
+import { ExportDefine, ImportDataPart } from './type'
 
 import './ProjectData.scss'
 
@@ -47,7 +47,7 @@ const importDataModule: { [K: string]: ImportDataPart } = {
   postman: postmanImport,
 }
 
-const exportDataModule: { [K: string]: any } = {}
+const exportDataModule: { [K: string]: ExportDefine } = {}
 
 function handleExportRouteParams(url: string, status: string, isWiki: boolean) {
   if (!url) {
@@ -116,7 +116,9 @@ class ProjectData extends Component<PropsType, StateTyPe> {
   }
 
   UNSAFE_componentWillMount() {
-    axios.get(`/api/interface/getCatMenu?project_id=${this.props.match.params.id}`).then(data => {
+    const pid = this.props.match.params.id
+
+    axios.get(`/api/interface/getCatMenu?project_id=${pid}`).then(data => {
       if (data.data.errcode === 0) {
         const menuList = data.data.data
         this.setState({
@@ -126,7 +128,23 @@ class ProjectData extends Component<PropsType, StateTyPe> {
       }
     })
     plugin.emitHook('import_data', importDataModule)
-    plugin.emitHook('export_data', exportDataModule, this.props.match.params.id)
+    plugin.emitHook('export_data', exportDataModule, pid)
+
+    exportDataModule.html = {
+      name: 'html',
+      route: `/api/data/export?type=html&pid=${pid}`,
+      desc: '导出项目接口文档为 html 文件',
+    }
+    exportDataModule.markdown = {
+      name: 'markdown',
+      route: `/api/data/export?type=markdown&pid=${pid}`,
+      desc: '导出项目接口文档为 markdown 文件',
+    }
+    exportDataModule.json = {
+      name: 'json',
+      route: `/api/data/export?type=json&pid=${pid}`,
+      desc: '导出项目接口文档为 json 文件,可使用该文件导入接口数据',
+    }
   }
 
   selectChange(value: number) {
@@ -309,15 +327,6 @@ class ProjectData extends Component<PropsType, StateTyPe> {
    * @memberof ProjectData
    */
   render() {
-    const uploadMess = {
-      name: 'interfaceData',
-      multiple: true,
-      showUploadList: false,
-      action: '/api/interface/interUpload',
-      customRequest: this.handleFile,
-      onChange: this.uploadChange,
-    }
-
     const exportUrl = this.state.curExportType
       && exportDataModule[this.state.curExportType]
       && exportDataModule[this.state.curExportType].route
@@ -431,7 +440,14 @@ class ProjectData extends Component<PropsType, StateTyPe> {
               ) : (
                 <div className="import-content">
                   <Spin spinning={this.state.showLoading} tip="上传中...">
-                    <Dragger {...uploadMess}>
+                    <Dragger
+                      name="interfaceData"
+                      multiple={true}
+                      showUploadList= {false}
+                      action= "/api/interface/interUpload"
+                      customRequest={this.handleFile}
+                      onChange= {this.uploadChange}
+                    >
                       <p className="ant-upload-drag-icon">
                         <InboxOutlined />
                       </p>

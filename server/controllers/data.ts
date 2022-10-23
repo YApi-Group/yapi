@@ -1,31 +1,39 @@
-const baseController = require('controllers/base.js')
-const markdownIt = require('markdown-it')
-const markdownItAnchor = require('markdown-it-anchor')
-const markdownItTableOfContents = require('markdown-it-table-of-contents')
-const InterfaceModel = require('models/interface.js')
-const interfaceCatModel = require('models/interfaceCat.js')
-const projectModel = require('models/project.js')
+import { Context } from 'koa'
+import markdownIt from 'markdown-it'
+import markdownItAnchor from 'markdown-it-anchor'
+// @ts-ignore 考虑替换为 https://www.npmjs.com/package/@mdit-vue/plugin-toc
+import markdownItTableOfContents from 'markdown-it-table-of-contents'
+
+import md from '../../common/markdown'
+import InterfaceModel from '../models/interface'
+import InterfaceCatModel from '../models/interfaceCat'
+import ProjectModel from '../models/project'
+import * as commons from '../utils/commons'
+import * as inst from '../utils/inst'
+
+import BaseController from './base'
+import defaultTheme from './defaultTheme'
+
 // const wikiModel = require('../yapi-plugin-wiki/wikiModel.js');
-const yapi = require('yapi.js')
-
-const md = require('../../common/markdown')
-
-const defaultTheme = require('./defaultTheme.js')
 
 // const htmlToPdf = require("html-pdf");
-class exportController extends baseController {
-  constructor(ctx) {
+export default class ExportController extends BaseController {
+  catModel: any
+  interModel: any
+  projectModel: any
+
+  constructor(ctx: Context) {
     super(ctx)
-    this.catModel = yapi.getInst(interfaceCatModel)
-    this.interModel = yapi.getInst(InterfaceModel)
-    this.projectModel = yapi.getInst(projectModel)
-    
+    this.catModel = inst.getInst(InterfaceCatModel)
+    this.interModel = inst.getInst(InterfaceModel)
+    this.projectModel = inst.getInst(ProjectModel)
   }
 
-  async handleListClass(pid, status) {
-    const result = await this.catModel.list(pid),
-      newResult = []
-    for (let i = 0, item, list; i < result.length; i++) {
+  async handleListClass(pid: string, status: string) {
+    const result = await this.catModel.list(pid)
+
+    const newResult: any[] = []
+    for (let i = 0, item: any, list: any[]; i < result.length; i++) {
       item = result[i].toObject()
       list = await this.interModel.listByInterStatus(item._id, status)
       list = list.sort((a, b) => a.index - b.index)
@@ -34,13 +42,14 @@ class exportController extends baseController {
         newResult.push(item)
       }
     }
-    
     return newResult
   }
 
-  handleExistId(data) {
-    function delArrId(arr, fn) {
-      if (!Array.isArray(arr)) { return }
+  handleExistId(data: any) {
+    function delArrId(arr: any, fn?: any) {
+      if (!Array.isArray(arr)) {
+        return
+      }
       arr.forEach(item => {
         delete item._id
         delete item.__v
@@ -49,12 +58,14 @@ class exportController extends baseController {
         delete item.catid
         delete item.project_id
 
-        if (typeof fn === 'function') { fn(item) }
+        if (typeof fn === 'function') {
+          fn(item)
+        }
       })
     }
 
-    delArrId(data, function (item) {
-      delArrId(item.list, function (api) {
+    delArrId(data, function (item: any) {
+      delArrId(item.list, function (api: any) {
         delArrId(api.req_body_form)
         delArrId(api.req_params)
         delArrId(api.req_query)
@@ -68,29 +79,32 @@ class exportController extends baseController {
     return data
   }
 
-  async exportData(ctx) {
-    const pid = ctx.request.query.pid
+  async exportData(ctx: Context) {
+    const pid = ctx.request.query.pid as string
     const type = ctx.request.query.type
-    const status = ctx.request.query.status
+    const status = ctx.request.query.status as string
     const isWiki = ctx.request.query.isWiki
 
     if (!pid) {
-      ctx.body = yapi.commons.resReturn(null, 200, 'pid 不为空')
+      ctx.body = commons.resReturn(null, 200, 'pid 不为空')
     }
-    let curProject, wikiData
+    let curProject: any, wikiData: any
     let tp = ''
     try {
       curProject = await this.projectModel.get(pid)
-      if (isWiki === 'true') {
-        const wikiModel = require('../yapi-plugin-wiki/wikiModel.js')
-        wikiData = await yapi.getInst(wikiModel).get(pid)
-      }
+
+      // TODO 完善它吧 - ZS - 20221023
+      // if (isWiki === 'true') {
+      //   const wikiModel = require('../yapi-plugin-wiki/wikiModel.js')
+      //   wikiData = await inst.getInst(wikiModel).get(pid)
+      // }
+
       ctx.set('Content-Type', 'application/octet-stream')
       const list = await this.handleListClass(pid, status)
 
       switch (type) {
         case 'markdown': {
-          tp = await createMarkdown.bind(this)(list, false)
+          tp = await createMarkdown(list, false)
           ctx.set('Content-Disposition', 'attachment; filename=api.md')
           return (ctx.body = tp)
         }
@@ -108,12 +122,12 @@ class exportController extends baseController {
         }
       }
     } catch (error) {
-      yapi.commons.log(error, 'error')
-      ctx.body = yapi.commons.resReturn(null, 502, '下载出错')
+      commons.log(error, 'error')
+      ctx.body = commons.resReturn(null, 502, '下载出错')
     }
 
-    async function createHtml(list) {
-      const md = await createMarkdown.bind(this)(list, true)
+    async function createHtml(list: any) {
+      const md = await createMarkdown(list, true)
       const markdown = markdownIt({ html: true, breaks: true })
       markdown.use(markdownItAnchor) // Optional, but makes sense as you really want to link to something
       markdown.use(markdownItTableOfContents, {
@@ -136,7 +150,7 @@ class exportController extends baseController {
       return createHtml5(left || '', content)
     }
 
-    function createHtml5(left, tp) {
+    function createHtml5(left: string, tp: string) {
       // html5模板
       const html = `<!DOCTYPE html>
       <html>
@@ -168,7 +182,7 @@ class exportController extends baseController {
       return html
     }
 
-    function createMarkdown(list, isToc) {
+    function createMarkdown(list: any, isToc: boolean) {
       // 拼接markdown
       // 模板
       let mdTemplate = ''
@@ -179,11 +193,9 @@ class exportController extends baseController {
         mdTemplate += md.createClassMarkdown(curProject, list, isToc)
         return mdTemplate
       } catch (e) {
-        yapi.commons.log(e, 'error')
-        ctx.body = yapi.commons.resReturn(null, 502, '下载出错')
+        commons.log(e, 'error')
+        ctx.body = commons.resReturn(null, 502, '下载出错')
       }
     }
   }
 }
-
-module.exports = exportController

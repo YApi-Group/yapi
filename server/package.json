@@ -86,6 +86,7 @@
     "@types/koa-websocket": "^5.0.6",
     "@types/lodash": "^4.14.185",
     "@types/lodash-es": "^4.17.6",
+    "@types/markdown-it": "^12.2.3",
     "@types/md5": "^2.3.2",
     "@types/node-schedule": "^2.1.0",
     "@types/nodemailer": "^6.4.4",
