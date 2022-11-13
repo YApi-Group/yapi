@@ -12,11 +12,15 @@
     "ladp",
     "LDAP",
     "openapi",
+    "Parens",
     "passsalt",
     "stylelint",
+    "upfile",
     "userinfo",
     "websockify",
-    "yapi"
+    "xlink",
+    "yapi",
+    "YMFE"
   ],
   "prettier.tabWidth": 2,
   "i18n-ally.indent": 2,

@@ -27,6 +27,6 @@ function run(res: string): RunFuncReturn {
 
 export default {
   name: 'Yapi Json',
-  run: run,
   desc: 'YApi接口 json数据导入',
+  run: run,
 }

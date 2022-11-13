@@ -322,6 +322,11 @@ function handleResponse(api: any) {
 
 export default {
   name: 'Swagger',
+  desc: `<p>Swagger数据导入（ 支持 v2.0+ ）</p>
+      <p>
+        <a target="_blank" href="https://hellosean1025.github.io/yapi/documents/data.html#通过命令行导入接口数据">通过命令行导入接口数据</a>
+      </p>
+      `,
   run: async function (res: string): Promise<RunFuncReturn> {
     try {
       return await run(res)
@@ -330,9 +335,4 @@ export default {
       message.error('解析失败')
     }
   },
-  desc: `<p>Swagger数据导入（ 支持 v2.0+ ）</p>
-      <p>
-        <a target="_blank" href="https://hellosean1025.github.io/yapi/documents/data.html#通过命令行导入接口数据">通过命令行导入接口数据</a>
-      </p>
-      `,
 }

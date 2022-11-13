@@ -29,6 +29,7 @@ import { saveImportData } from '../../../../reducer/modules/interface'
 import { fetchUpdateLogData } from '../../../../reducer/modules/news.js'
 import { handleSwaggerUrlData } from '../../../../reducer/modules/project'
 
+import harImport from './harImport'
 import jsonImport from './jsonImport'
 import postmanImport from './postmanImport'
 import swaggerImport from './swaggerImport'
@@ -45,6 +46,7 @@ const importDataModule: { [K: string]: ImportDataPart } = {
   swagger: swaggerImport,
   json: jsonImport,
   postman: postmanImport,
+  har: harImport,
 }
 
 const exportDataModule: { [K: string]: ExportDefine } = {}
@@ -144,6 +146,11 @@ class ProjectData extends Component<PropsType, StateTyPe> {
       name: 'json',
       route: `/api/data/export?type=json&pid=${pid}`,
       desc: '导出项目接口文档为 json 文件,可使用该文件导入接口数据',
+    }
+    exportDataModule.swagger = {
+      name: 'swagger',
+      route: `/api/data/export?type=swagger&pid=${pid}`,
+      desc: '导出项目接口文档为(Swagger 2.0)Json文件',
     }
   }
 

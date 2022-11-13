@@ -259,6 +259,6 @@ function transformJsonToSchema(json: any) {
 
 export default {
   name: 'Postman',
-  run: run,
   desc: '注意：只支持json格式数据',
+  run: run,
 }
