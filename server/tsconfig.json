@@ -43,6 +43,6 @@
     // }
   },
 
-  "include": ["./app.js", "./install.js"],
+  "include": ["./app.js", "./install.js", "**/*.ts"],
   "exclude": ["node_modules", "dist", "dist-*"]
 }

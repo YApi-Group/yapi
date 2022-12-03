@@ -604,6 +604,11 @@ const routerConfig = {
       path: 'import_data',
       method: 'post',
     },
+    {
+      action: 'exportFullData',
+      path: 'export-full',
+      method: 'get',
+    },
   ],
   statistic: [
     {

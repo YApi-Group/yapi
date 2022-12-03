@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 
 import plugin from '@/plugin.js'
 
+import { GenTsService } from './GenTsService'
 import ProjectEnv from './ProjectEnv'
 import ProjectMessage from './ProjectMessage/ProjectMessage'
 import ProjectMock from './ProjectMock/index.js'
@@ -48,7 +49,12 @@ class Setting extends Component<PropTypes> {
           <TabPane tab="全局mock脚本" key="5">
             <ProjectMock projectId={Number(id)} />
           </TabPane>
-          <TabPane tab="Swagger自动同步" key="6" >
+
+          <TabPane tab="生成 ts services" key="6" >
+            <GenTsService projectId={Number(id)} />
+          </TabPane>
+
+          <TabPane tab="Swagger自动同步" key="7" >
             <SwaggerAutoSync projectId={Number(id)} />
           </TabPane>
 
