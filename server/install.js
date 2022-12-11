@@ -92,15 +92,25 @@ function install() {
       statCol.createIndex({ time: 1 })
       statCol.createIndex({ date: 1 })
 
+      const mockCol = mongoose.connection.db.collection('adv_mock')
+      mockCol.createIndex({ interface_id: 1 })
+      mockCol.createIndex({ project_id: 1 })
+
+      const caseCol = mongoose.connection.db.collection('adv_mock_case')
+      caseCol.createIndex({ interface_id: 1 })
+      caseCol.createIndex({ project_id: 1 })
+
       result.then(
         function () {
           fs.ensureFileSync(path.join(cons.WEB_ROOT, 'init.lock'))
-          console.log(`初始化管理员账号成功,账号名："${cons.WEB_CONFIG.adminAccount}"，密码："${cons.WEB_CONFIG.adminPassword}"`)
+          console.log(
+            `初始化管理员账号成功,账号名："${cons.WEB_CONFIG.adminAccount}"，密码："${cons.WEB_CONFIG.adminPassword}"`
+          )
           process.exit(0)
         },
         function (err) {
           throw new Error(`初始化管理员账号 "${cons.WEB_CONFIG.adminAccount}" 失败, ${err.message}`); // eslint-disable-line
-        },
+        }
       )
     })
     .catch(function (err) {

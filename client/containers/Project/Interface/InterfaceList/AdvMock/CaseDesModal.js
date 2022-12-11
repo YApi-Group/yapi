@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import {
   Form,
   Select,
@@ -12,31 +12,31 @@ import {
   Button,
   Icon,
   AutoComplete,
-  Modal
-} from 'antd';
-const Option = Select.Option;
-const FormItem = Form.Item;
-import { safeAssign } from 'client/common.js';
-import AceEditor from 'client/components/AceEditor/AceEditor';
-import constants from 'client/cons';
-import { httpCodes } from '../index.js';
-import './CaseDesModal.scss';
-import { connect } from 'react-redux';
-import json5 from 'json5';
+  Modal,
+} from 'antd'
+const Option = Select.Option
+const FormItem = Form.Item
+import { safeAssign } from 'client/common.js'
+import AceEditor from 'client/components/AceEditor/AceEditor'
+import constants from 'client/cons'
+
+import './CaseDesModal.scss'
+import json5 from 'json5'
+import { connect } from 'react-redux'
+
+import { httpCodes } from '../../../../../../exts/yapi-plugin-advanced-mock/index.js'
 
 const formItemLayout = {
   labelCol: { span: 5 },
-  wrapperCol: { span: 12 }
-};
+  wrapperCol: { span: 12 },
+}
 const formItemLayoutWithOutLabel = {
-  wrapperCol: { span: 12, offset: 5 }
-};
+  wrapperCol: { span: 12, offset: 5 },
+}
 
-@connect(state => {
-  return {
-    currInterface: state.inter.curdata
-  };
-})
+@connect(state => ({
+  currInterface: state.inter.curdata,
+}))
 class CaseDesForm extends Component {
   static propTypes = {
     form: PropTypes.object,
@@ -45,14 +45,14 @@ class CaseDesForm extends Component {
     onOk: PropTypes.func,
     onCancel: PropTypes.func,
     isAdd: PropTypes.bool,
-    visible: PropTypes.bool
-  };
+    visible: PropTypes.bool,
+  }
   // 初始化输入数据
   preProcess = caseData => {
     try {
-      caseData = JSON.parse(JSON.stringify(caseData));
+      caseData = JSON.parse(JSON.stringify(caseData))
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
 
     const initCaseData = {
@@ -65,168 +65,166 @@ class CaseDesForm extends Component {
       paramsArr: [{ name: '', value: '' }],
       params: {},
       res_body: '',
-      paramsForm: 'form'
-    };
-    caseData.params = caseData.params || {};
+      paramsForm: 'form',
+    }
+    caseData.params = caseData.params || {}
     const paramsArr = Object.keys(caseData.params).length
       ? Object.keys(caseData.params)
-          .map(key => {
-            return { name: key, value: caseData.params[key] };
-          })
-          .filter(item => {
-            if (typeof item.value === 'object') {
-              // this.setState({ paramsForm: 'json' })
-              caseData.paramsForm = 'json';
-            }
-            return typeof item.value !== 'object';
-          })
-      : [{ name: '', value: '' }];
-    const headers =
-      caseData.headers && caseData.headers.length ? caseData.headers : [{ name: '', value: '' }];
-    caseData.code = '' + caseData.code;
-    caseData.params = JSON.stringify(caseData.params, null, 2);
+        .map(key => ({ name: key, value: caseData.params[key] }))
+        .filter(item => {
+          if (typeof item.value === 'object') {
+            // this.setState({ paramsForm: 'json' })
+            caseData.paramsForm = 'json'
+          }
+          return typeof item.value !== 'object'
+        })
+      : [{ name: '', value: '' }]
+    const headers
+      = caseData.headers && caseData.headers.length ? caseData.headers : [{ name: '', value: '' }]
+    caseData.code = String(caseData.code)
+    caseData.params = JSON.stringify(caseData.params, null, 2)
 
-    caseData = safeAssign(initCaseData, { ...caseData, headers, paramsArr });
+    caseData = safeAssign(initCaseData, { ...caseData, headers, paramsArr })
 
-    return caseData;
-  };
+    return caseData
+  }
 
   constructor(props) {
-    super(props);
-    const { caseData } = this.props;
-    this.state = this.preProcess(caseData);
+    super(props)
+    const { caseData } = this.props
+    this.state = this.preProcess(caseData)
   }
 
   // 处理request_body编译器
   handleRequestBody = d => {
-    this.setState({ res_body: d.text });
-  };
+    this.setState({ res_body: d.text })
+  }
 
   // 处理参数编译器
   handleParams = d => {
-    this.setState({ params: d.text });
-  };
+    this.setState({ params: d.text })
+  }
 
   // 增加参数信息
   addValues = key => {
-    const { getFieldValue } = this.props.form;
-    let values = getFieldValue(key);
-    values = values.concat({ name: '', value: '' });
-    this.setState({ [key]: values });
-  };
+    const { getFieldValue } = this.props.form
+    let values = getFieldValue(key)
+    values = values.concat({ name: '', value: '' })
+    this.setState({ [key]: values })
+  }
 
   // 删除参数信息
   removeValues = (key, index) => {
-    const { setFieldsValue, getFieldValue } = this.props.form;
-    let values = getFieldValue(key);
-    values = values.filter((val, index2) => index !== index2);
-    setFieldsValue({ [key]: values });
-    this.setState({ [key]: values });
-  };
+    const { setFieldsValue, getFieldValue } = this.props.form
+    let values = getFieldValue(key)
+    values = values.filter((val, index2) => index !== index2)
+    setFieldsValue({ [key]: values })
+    this.setState({ [key]: values })
+  }
 
   // 处理参数
   getParamsKey = () => {
-    let {
+    const {
       req_query,
       req_body_form,
       req_body_type,
       method,
       req_body_other,
       req_body_is_json_schema,
-      req_params
-    } = this.props.currInterface;
-    let keys = [];
-    req_query &&
-      Array.isArray(req_query) &&
-      req_query.forEach(item => {
-        keys.push(item.name);
-      });
-    req_params &&
-      Array.isArray(req_params) &&
-      req_params.forEach(item => {
-        keys.push(item.name);
-      });
+      req_params,
+    } = this.props.currInterface
+    let keys = []
+    req_query
+      && Array.isArray(req_query)
+      && req_query.forEach(item => {
+        keys.push(item.name)
+      })
+    req_params
+      && Array.isArray(req_params)
+      && req_params.forEach(item => {
+        keys.push(item.name)
+      })
 
     if (constants.HTTP_METHOD[method.toUpperCase()].request_body && req_body_type === 'form') {
-      req_body_form &&
-        Array.isArray(req_body_form) &&
-        req_body_form.forEach(item => {
-          keys.push(item.name);
-        });
+      req_body_form
+        && Array.isArray(req_body_form)
+        && req_body_form.forEach(item => {
+          keys.push(item.name)
+        })
     } else if (
-      constants.HTTP_METHOD[method.toUpperCase()].request_body &&
-      req_body_type === 'json' &&
-      req_body_other
+      constants.HTTP_METHOD[method.toUpperCase()].request_body
+      && req_body_type === 'json'
+      && req_body_other
     ) {
-      let bodyObj;
+      let bodyObj
       try {
         // 针对json-schema的处理
         if (req_body_is_json_schema) {
-          bodyObj = json5.parse(this.props.caseData.req_body_other);
+          bodyObj = json5.parse(this.props.caseData.req_body_other)
         } else {
-          bodyObj = json5.parse(req_body_other);
+          bodyObj = json5.parse(req_body_other)
         }
 
-        keys = keys.concat(Object.keys(bodyObj));
+        keys = keys.concat(Object.keys(bodyObj))
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
     }
-    return keys;
-  };
+    return keys
+  }
 
   endProcess = caseData => {
-    const headers = [];
-    const params = {};
-    const { paramsForm } = this.state;
-    caseData.headers &&
-      Array.isArray(caseData.headers) &&
-      caseData.headers.forEach(item => {
+    const headers = []
+    const params = {}
+    const { paramsForm } = this.state
+    caseData.headers
+      && Array.isArray(caseData.headers)
+      && caseData.headers.forEach(item => {
         if (item.name) {
           headers.push({
             name: item.name,
-            value: item.value
-          });
+            value: item.value,
+          })
         }
-      });
-    caseData.paramsArr &&
-      Array.isArray(caseData.paramsArr) &&
-      caseData.paramsArr.forEach(item => {
+      })
+    caseData.paramsArr
+      && Array.isArray(caseData.paramsArr)
+      && caseData.paramsArr.forEach(item => {
         if (item.name) {
-          params[item.name] = item.value;
+          params[item.name] = item.value
         }
-      });
-    caseData.headers = headers;
+      })
+    caseData.headers = headers
     if (paramsForm === 'form') {
-      caseData.params = params;
+      caseData.params = params
     } else {
       try {
-        caseData.params = json5.parse(caseData.params);
+        caseData.params = json5.parse(caseData.params)
       } catch (error) {
-        console.log(error);
-        message.error('请求参数 json 格式有误，请修改');
-        return false;
+        console.log(error)
+        message.error('请求参数 json 格式有误，请修改')
+        return false
       }
     }
-    delete caseData.paramsArr;
+    delete caseData.paramsArr
 
-    return caseData;
-  };
+    return caseData
+  }
 
   handleOk = () => {
-    const form = this.props.form;
+    const form = this.props.form
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.res_body = this.state.res_body;
-        values.params = this.state.params;
-        this.props.onOk(this.endProcess(values));
+        values.res_body = this.state.res_body
+        values.params = this.state.params
+        this.props.onOk(this.endProcess(values))
       }
-    });
-  };
+    })
+  }
 
   render() {
-    const { getFieldDecorator, getFieldValue } = this.props.form;
-    const { isAdd, visible, onCancel } = this.props;
+    const { getFieldDecorator, getFieldValue } = this.props.form
+    const { isAdd, visible, onCancel } = this.props
     const {
       name,
       code,
@@ -237,13 +235,13 @@ class CaseDesForm extends Component {
       paramsArr,
       paramsForm,
       res_body,
-      delay
-    } = this.state;
+      delay,
+    } = this.state
 
-    this.props.form.initialValue;
+    this.props.form.initialValue
     const valuesTpl = (values, title) => {
-      const dataSource = this.getParamsKey();
-      const display = paramsForm === 'json' ? 'none' : '';
+      const dataSource = this.getParamsKey()
+      const display = paramsForm === 'json' ? 'none' : ''
       return values.map((item, index) => (
         <div key={index} className="paramsArr" style={{ display }}>
           <FormItem
@@ -254,22 +252,17 @@ class CaseDesForm extends Component {
             <Row gutter={8}>
               <Col span={10}>
                 <FormItem>
-                  {getFieldDecorator(`paramsArr[${index}].name`, { initialValue: item.name })(
-                    <AutoComplete
-                      dataSource={dataSource}
-                      placeholder="参数名称"
-                      filterOption={(inputValue, option) =>
-                        option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                      }
-                    />
-                  )}
+                  {getFieldDecorator(`paramsArr[${index}].name`, { initialValue: item.name })(<AutoComplete
+                    dataSource={dataSource}
+                    placeholder="参数名称"
+                    filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                    }
+                  />)}
                 </FormItem>
               </Col>
               <Col span={10}>
                 <FormItem>
-                  {getFieldDecorator(`paramsArr[${index}].value`, { initialValue: item.value })(
-                    <Input placeholder="参数值" />
-                  )}
+                  {getFieldDecorator(`paramsArr[${index}].value`, { initialValue: item.value })(<Input placeholder="参数值" />)}
                 </FormItem>
               </Col>
               <Col span={4}>
@@ -284,10 +277,10 @@ class CaseDesForm extends Component {
             </Row>
           </FormItem>
         </div>
-      ));
-    };
+      ))
+    }
     const headersTpl = (values, title) => {
-      const dataSource = constants.HTTP_REQUEST_HEADER;
+      const dataSource = constants.HTTP_REQUEST_HEADER
       return values.map((item, index) => (
         <div key={index} className="headers">
           <FormItem
@@ -298,22 +291,17 @@ class CaseDesForm extends Component {
             <Row gutter={8}>
               <Col span={10}>
                 <FormItem>
-                  {getFieldDecorator(`headers[${index}].name`, { initialValue: item.name })(
-                    <AutoComplete
-                      dataSource={dataSource}
-                      placeholder="参数名称"
-                      filterOption={(inputValue, option) =>
-                        option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                      }
-                    />
-                  )}
+                  {getFieldDecorator(`headers[${index}].name`, { initialValue: item.name })(<AutoComplete
+                    dataSource={dataSource}
+                    placeholder="参数名称"
+                    filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                    }
+                  />)}
                 </FormItem>
               </Col>
               <Col span={10}>
                 <FormItem>
-                  {getFieldDecorator(`headers[${index}].value`, { initialValue: item.value })(
-                    <Input placeholder="参数值" />
-                  )}
+                  {getFieldDecorator(`headers[${index}].value`, { initialValue: item.value })(<Input placeholder="参数值" />)}
                 </FormItem>
               </Col>
               <Col span={4}>
@@ -328,8 +316,8 @@ class CaseDesForm extends Component {
             </Row>
           </FormItem>
         </div>
-      ));
-    };
+      ))
+    }
     return (
       <Modal
         title={isAdd ? '添加期望' : '编辑期望'}
@@ -348,7 +336,7 @@ class CaseDesForm extends Component {
           <FormItem {...formItemLayout} label="期望名称">
             {getFieldDecorator('name', {
               initialValue: name,
-              rules: [{ required: true, message: '请输入期望名称！' }]
+              rules: [{ required: true, message: '请输入期望名称！' }],
             })(<Input placeholder="请输入期望名称" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="IP 过滤" className="ip-filter">
@@ -357,7 +345,7 @@ class CaseDesForm extends Component {
                 {getFieldDecorator('ip_enable', {
                   initialValue: ip_enable,
                   valuePropName: 'checked',
-                  rules: [{ type: 'boolean' }]
+                  rules: [{ type: 'boolean' }],
                 })(<Switch />)}
               </FormItem>
             </Col>
@@ -368,16 +356,16 @@ class CaseDesForm extends Component {
                     'ip',
                     getFieldValue('ip_enable')
                       ? {
-                          initialValue: ip,
-                          rules: [
-                            {
-                              pattern: constants.IP_REGEXP,
-                              message: '请填写正确的 IP 地址',
-                              required: true
-                            }
-                          ]
-                        }
-                      : {}
+                        initialValue: ip,
+                        rules: [
+                          {
+                            pattern: constants.IP_REGEXP,
+                            message: '请填写正确的 IP 地址',
+                            required: true,
+                          },
+                        ],
+                      }
+                      : {},
                   )(<Input placeholder="请输入过滤的 IP 地址" />)}
                 </FormItem>
               </div>
@@ -391,7 +379,7 @@ class CaseDesForm extends Component {
                 unCheckedChildren="JSON"
                 checked={paramsForm === 'json'}
                 onChange={bool => {
-                  this.setState({ paramsForm: bool ? 'json' : 'form' });
+                  this.setState({ paramsForm: bool ? 'json' : 'form' })
                 }}
               />
             </Col>
@@ -422,32 +410,30 @@ class CaseDesForm extends Component {
                 'params',
                 paramsForm === 'json'
                   ? {
-                      rules: [
-                        { validator: this.jsonValidator, message: '请输入正确的 JSON 字符串！' }
-                      ]
-                    }
-                  : {}
+                    rules: [
+                      { validator: this.jsonValidator, message: '请输入正确的 JSON 字符串！' },
+                    ],
+                  }
+                  : {},
               )(<Input style={{ display: 'none' }} />)}
             </FormItem>
           </FormItem>
           <h2 className="sub-title">响应</h2>
           <FormItem {...formItemLayout} required label="HTTP Code">
             {getFieldDecorator('code', {
-              initialValue: code
-            })(
-              <Select showSearch>
-                {httpCodes.map(code => (
-                  <Option key={'' + code} value={'' + code}>
-                    {'' + code}
-                  </Option>
-                ))}
-              </Select>
-            )}
+              initialValue: code,
+            })(<Select showSearch>
+              {httpCodes.map(code => (
+                <Option key={String(code)} value={String(code)}>
+                  {String(code)}
+                </Option>
+              ))}
+            </Select>)}
           </FormItem>
           <FormItem {...formItemLayout} label="延时">
             {getFieldDecorator('delay', {
               initialValue: delay,
-              rules: [{ required: true, message: '请输入延时时间！', type: 'integer' }]
+              rules: [{ required: true, message: '请输入延时时间！', type: 'integer' }],
             })(<InputNumber placeholder="请输入延时时间" min={0} />)}
             <span>ms</span>
           </FormItem>
@@ -474,9 +460,9 @@ class CaseDesForm extends Component {
           </FormItem>
         </Form>
       </Modal>
-    );
+    )
   }
 }
 
-const CaseDesModal = Form.create()(CaseDesForm);
-export default CaseDesModal;
+const CaseDesModal = Form.create()(CaseDesForm)
+export default CaseDesModal

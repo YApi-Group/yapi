@@ -8,6 +8,7 @@ import group from './group.js'
 import inter from './interface.js'
 import interfaceCol from './interfaceCol.js'
 import menu from './menu.js'
+import mockCol from './mockCol.js'
 import news from './news.js'
 import project from './project'
 import user from './user.js'
@@ -22,7 +23,7 @@ const reducerModules = {
   addInterface,
   menu,
   follow,
+  mockCol,
 }
-emitHook('add_reducer', reducerModules)
 
 export default combineReducers(reducerModules)

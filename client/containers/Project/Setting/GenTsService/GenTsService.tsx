@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { getToken } from '@/reducer/modules/project'
 import { AnyFunc } from '@/types'
 
-import './GenTsService.scss'
+import styles from './gts.module.less'
 
 type PropTypes = {
   projectId: number
@@ -22,7 +22,7 @@ class GenTsService extends Component<PropTypes> {
   render() {
     const id = this.props.projectId
     return (
-      <div className="project-services">
+      <div className={styles.psMain}>
         <section className="news-box m-panel">
           <div className="token">
             <h5>安装工具</h5>

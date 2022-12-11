@@ -51,11 +51,10 @@ function connect(callback) {
     if (typeof callback === 'function') {
       callback.call(db)
     }
+  }).catch(err => {
+    // console.log(err)
+    commons.log(err + ', mongodb Authentication failed', 'error')
   })
-    .catch(err => {
-      // console.log(err)
-      commons.log(err + ', mongodb Authentication failed', 'error')
-    })
 
   autoIncrement.initialize(db)
   return db

@@ -6,12 +6,14 @@ import _ from 'underscore'
 import mockExtra from '../../common/mock-extra.js'
 import { schemaValidator } from '../../common/utils.js'
 import variable from '../../variable.js'
-import cons from '../cons'
+import AdvMockModel from '../models/advMockModel.js'
+import CaseModel from '../models/caseModel.js'
 import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import StatisticModel from '../models/statistic'
 import * as commons from '../utils/commons'
 import * as inst from '../utils/inst'
+import * as lib from '../utils/lib.js'
 import yapi from '../yapi'
 
 /**
@@ -35,19 +37,11 @@ function matchApi(apiPath, apiRule) {
     } else {
       continue
     }
-    if (
-      apiRules[i].length > 2
-      && apiRules[i][0] === '{'
-      && apiRules[i][apiRules[i].length - 1] === '}'
-    ) {
+    if (apiRules[i].length > 2 && apiRules[i][0] === '{' && apiRules[i][apiRules[i].length - 1] === '}') {
       pathParams[apiRules[i].substr(1, apiRules[i].length - 2)] = apiPaths[i]
     } else if (apiRules[i].indexOf(':') === 0) {
       pathParams[apiRules[i].substr(1)] = apiPaths[i]
-    } else if (
-      apiRules[i].length > 2
-      && apiRules[i].indexOf('{') > -1
-      && apiRules[i].indexOf('}') > -1
-    ) {
+    } else if (apiRules[i].length > 2 && apiRules[i].indexOf('{') > -1 && apiRules[i].indexOf('}') > -1) {
       const params = []
       apiRules[i] = apiRules[i].replace(/\{(.+?)\}/g, function (src, match) {
         params.push(match)
@@ -67,7 +61,7 @@ function matchApi(apiPath, apiRule) {
       if (apiRules[i] !== apiPaths[i]) {
         return false
       }
-      pathParams.__weight++
+      pathParams.__weight += 1
     }
   }
   return pathParams
@@ -95,11 +89,8 @@ function handleCorsRequest(ctx) {
 }
 // 必填字段是否填写好
 function mockValidator(interfaceData, ctx) {
-  let i,
-    j,
-    l,
-    len,
-    noRequiredArr = []
+  let i, j, l, len
+  const noRequiredArr = []
   const method = interfaceData.method.toUpperCase() || 'GET'
   // query 判断
   for (i = 0, l = interfaceData.req_query.length; i < l; i++) {
@@ -116,9 +107,9 @@ function mockValidator(interfaceData, ctx) {
       const curForm = interfaceData.req_body_form[j]
       if (curForm && typeof curForm === 'object' && curForm.required === '1') {
         if (
-          ctx.request.body[curForm.name]
-          || (ctx.request.body.fields && ctx.request.body.fields[curForm.name])
-          || (ctx.request.body.files && ctx.request.body.files[curForm.name])
+          ctx.request.body[curForm.name] ||
+          (ctx.request.body.fields && ctx.request.body.fields[curForm.name]) ||
+          (ctx.request.body.files && ctx.request.body.files[curForm.name])
         ) {
           continue
         }
@@ -129,7 +120,11 @@ function mockValidator(interfaceData, ctx) {
   }
   let validResult
   // json schema 判断
-  if (variable.HTTP_METHOD[method].request_body && interfaceData.req_body_type === 'json' && interfaceData.req_body_is_json_schema === true) {
+  if (
+    variable.HTTP_METHOD[method].request_body &&
+    interfaceData.req_body_type === 'json' &&
+    interfaceData.req_body_is_json_schema === true
+  ) {
     const schema = commons.json_parse(interfaceData.req_body_other)
     const params = commons.json_parse(ctx.request.body)
     validResult = schemaValidator(schema, params)
@@ -156,7 +151,9 @@ export default async (ctx, next) => {
   const header = ctx.request.header
 
   if (path.indexOf('/mock/') !== 0) {
-    if (next) { await next() }
+    if (next) {
+      await next()
+    }
     return true
   }
 
@@ -174,8 +171,8 @@ export default async (ctx, next) => {
     return (ctx.body = commons.resReturn(null, 400, 'projectId不能为空'))
   }
 
-  let projectInst = inst.getInst(projectModel),
-    project
+  const projectInst = inst.getInst(projectModel)
+  let project
   try {
     project = await projectInst.get(projectId)
   } catch (e) {
@@ -255,8 +252,7 @@ export default async (ctx, next) => {
         return (ctx.body = commons.resReturn(
           null,
           404,
-          `不存在的api, 当前请求path为 ${newpath}， 请求方法为 ${ctx.method
-          } ，请确认是否定义此请求。`,
+          `不存在的api, 当前请求path为 ${newpath}， 请求方法为 ${ctx.method} ，请确认是否定义此请求。`
         ))
       }
       interfaceData = [await interfaceInst.get(findInterface._id)]
@@ -271,11 +267,7 @@ export default async (ctx, next) => {
     if (project.strice) {
       const validResult = mockValidator(interfaceData, ctx)
       if (!validResult.valid) {
-        return (ctx.body = commons.resReturn(
-          null,
-          404,
-          `接口字段验证不通过, ${validResult.message}`,
-        ))
+        return (ctx.body = commons.resReturn(null, 404, `接口字段验证不通过, ${validResult.message}`))
       }
     }
 
@@ -295,8 +287,8 @@ export default async (ctx, next) => {
           // 处理 format-data
 
           if (
-            _.isString(ctx.request.header['content-type'])
-            && ctx.request.header['content-type'].indexOf('multipart/form-data') > -1
+            _.isString(ctx.request.header['content-type']) &&
+            ctx.request.header['content-type'].indexOf('multipart/form-data') > -1
           ) {
             ctx.request.body = ctx.request.body.fields
           }
@@ -334,10 +326,9 @@ export default async (ctx, next) => {
         commons.handleMockScript(script, context)
       }
 
-      await yapi.emitHook('mock_after', context)
+      await onMockAfter(context)
 
       // MockServer生成mock数据后触发
-      // this.bindHook('mock_after', function(context) {
       const interfaceId = context.interfaceData._id
       const projectId = context.projectData._id
       const groupId = context.projectData.group_id
@@ -351,14 +342,13 @@ export default async (ctx, next) => {
         ip: ip,
         date: commons.formatYMD(new Date()),
       }
-      const inst = inst.getInst(StatisticModel)
+      const smInst = inst.getInst(StatisticModel)
 
       try {
-        inst.save(data).then()
+        smInst.save(data).then()
       } catch (e) {
         commons.log('mockStatisError', e)
       }
-      // });
 
       const handleMock = new Promise(resolve => {
         setTimeout(() => {
@@ -410,4 +400,112 @@ export default async (ctx, next) => {
     commons.log(e, 'error')
     return (ctx.body = commons.resReturn(null, 409, e.message))
   }
+}
+
+function arrToObj(arr) {
+  const obj = { 'Set-Cookie': [] }
+  arr.forEach(item => {
+    if (item.name === 'Set-Cookie') {
+      obj['Set-Cookie'].push(item.value)
+    } else {
+      obj[item.name] = item.value
+    }
+  })
+  return obj
+}
+
+async function checkCase(ctx, interfaceId) {
+  const reqParams = { ...ctx.query, ...ctx.request.body }
+  const caseInst = yapi.getInst(CaseModel)
+
+  // let ip = ctx.ip.match(/\d+.\d+.\d+.\d+/)[0];
+  // request.ip
+
+  const ip = yapi.commons.getIp(ctx)
+  //   数据库信息查询
+  // 过滤 开启IP
+  const listWithIp = await caseInst.model
+    .find({
+      interface_id: interfaceId,
+      ip_enable: true,
+      ip: ip,
+    })
+    .select('_id params case_enable')
+
+  const matchList = []
+  listWithIp.forEach(item => {
+    const params = item.params
+    if (item.case_enable && lib.isDeepMatch(reqParams, params)) {
+      matchList.push(item)
+    }
+  })
+
+  // 其他数据
+  if (matchList.length === 0) {
+    const list = await caseInst.model
+      .find({
+        interface_id: interfaceId,
+        ip_enable: false,
+      })
+      .select('_id params case_enable')
+    list.forEach(item => {
+      const params = item.params
+      if (item.case_enable && lib.isDeepMatch(reqParams, params)) {
+        matchList.push(item)
+      }
+    })
+  }
+
+  if (matchList.length > 0) {
+    const maxItem = _.max(matchList, item => (item.params && Object.keys(item.params).length) || 0)
+    return maxItem
+  }
+  return null
+}
+
+async function handleByCase(caseData) {
+  const caseInst = yapi.getInst(CaseModel)
+  const result = await caseInst.get({
+    _id: caseData._id,
+  })
+  return result
+}
+
+async function onMockAfter(context) {
+  const interfaceId = context.interfaceData._id
+  const caseData = await checkCase(context.ctx, interfaceId)
+
+  // 只有开启高级mock才可用
+  if (caseData && caseData.case_enable) {
+    // 匹配到高级mock
+    const data = await handleByCase(caseData)
+
+    context.mockJson = commons.json_parse(data.res_body)
+    try {
+      context.mockJson = Mock.mock(
+        mockExtra(context.mockJson, {
+          query: context.ctx.query,
+          body: context.ctx.request.body,
+          params: { ...context.ctx.query, ...context.ctx.request.body },
+        })
+      )
+    } catch (err) {
+      commons.log(err, 'error')
+    }
+
+    context.resHeader = arrToObj(data.headers)
+    context.httpCode = data.code
+    context.delay = data.delay
+    return true
+  }
+  const mockInst = inst.getInst(AdvMockModel)
+  const data = await mockInst.get(interfaceId)
+
+  if (!data || !data.enable || !data.mock_script) {
+    return context
+  }
+
+  // mock 脚本
+  const script = data.mock_script
+  commons.handleMockScript(script, context)
 }

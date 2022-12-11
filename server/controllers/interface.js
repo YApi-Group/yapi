@@ -8,6 +8,7 @@ import _ from 'underscore'
 import showDiffMsg from '../../common/diff-view.js'
 import mergeJsonSchema from '../../common/mergeJsonSchema'
 import cons from '../cons'
+import AdvMockModel from '../models/advMockModel'
 import FollowModel from '../models/follow.js'
 import GroupModel from '../models/group.js'
 import InterfaceModel from '../models/interface.js'
@@ -72,13 +73,14 @@ function handleHeaders(values) {
 class interfaceController extends baseController {
   constructor(ctx) {
     super(ctx)
-    this.Model = inst.getInst(InterfaceModel)
+    this.model = inst.getInst(InterfaceModel)
     this.catModel = inst.getInst(interfaceCatModel)
     this.projectModel = inst.getInst(projectModel)
     this.caseModel = inst.getInst(interfaceCaseModel)
-    this.FollowModel = inst.getInst(FollowModel)
-    this.UserModel = inst.getInst(UserModel)
-    this.GroupModel = inst.getInst(GroupModel)
+    this.followModel = inst.getInst(FollowModel)
+    this.userModel = inst.getInst(UserModel)
+    this.advMockModel = inst.getInst(AdvMockModel)
+    this.groupModel = inst.getInst(GroupModel)
 
     const minLengthStringField = {
       type: 'string',
@@ -221,11 +223,7 @@ class interfaceController extends baseController {
     const http_path = url.parse(params.path, true)
 
     if (!commons.verifyPath(http_path.pathname)) {
-      return (ctx.body = commons.resReturn(
-        null,
-        400,
-        'path第一位必需为 /, 只允许由 字母数字-/_:.! 组成',
-      ))
+      return (ctx.body = commons.resReturn(null, 400, 'path第一位必需为 /, 只允许由 字母数字-/_:.! 组成'))
     }
 
     handleHeaders(params)
@@ -240,13 +238,13 @@ class interfaceController extends baseController {
       })
     })
 
-    const checkRepeat = await this.Model.checkRepeat(params.project_id, params.path, params.method)
+    const checkRepeat = await this.model.checkRepeat(params.project_id, params.path, params.method)
 
     if (checkRepeat > 0) {
       return (ctx.body = commons.resReturn(
         null,
         40022,
-        '已存在的接口:' + params.path + '[' + params.method + ']',
+        '已存在的接口:' + params.path + '[' + params.method + ']'
       ))
     }
 
@@ -278,12 +276,14 @@ class interfaceController extends baseController {
       }
     }
 
-    const result = await this.Model.save(data)
+    const result = await this.model.save(data)
     yapi.emitHook('interface_add', result).then()
     this.catModel.get(params.catid).then(cate => {
       const username = this.getUsername()
-      const title = `<a href="/user/profile/${this.getUid()}">${username}</a> 为分类 <a href="/project/${params.project_id
-      }/interface/api/cat_${params.catid}">${cate.name}</a> 添加了接口 <a href="/project/${params.project_id
+      const title = `<a href="/user/profile/${this.getUid()}">${username}</a> 为分类 <a href="/project/${
+        params.project_id
+      }/interface/api/cat_${params.catid}">${cate.name}</a> 添加了接口 <a href="/project/${
+        params.project_id
       }/interface/api/${result._id}">${data.title}</a> `
 
       modelUtils.saveLog({
@@ -341,14 +341,10 @@ class interfaceController extends baseController {
     const http_path = url.parse(params.path, true)
 
     if (!commons.verifyPath(http_path.pathname)) {
-      return (ctx.body = commons.resReturn(
-        null,
-        400,
-        'path第一位必需为 /, 只允许由 字母数字-/_:.! 组成',
-      ))
+      return (ctx.body = commons.resReturn(null, 400, 'path第一位必需为 /, 只允许由 字母数字-/_:.! 组成'))
     }
 
-    const result = await this.Model.getByPath(params.project_id, params.path, params.method, '_id res_body')
+    const result = await this.model.getByPath(params.project_id, params.path, params.method, '_id res_body')
 
     if (result.length > 0) {
       result.forEach(async item => {
@@ -365,7 +361,9 @@ class interfaceController extends baseController {
               const new_res_body = commons.json_parse(params.res_body)
               const old_res_body = commons.json_parse(item.res_body)
               data.params.res_body = JSON.stringify(mergeJsonSchema(old_res_body, new_res_body), null, 2)
-            } catch (err) { /* noop */ }
+            } catch (err) {
+              /* noop */
+            }
           }
           await this.up(data)
         } else {
@@ -403,7 +401,7 @@ class interfaceController extends baseController {
     }
 
     try {
-      let result = await this.Model.get(params.id)
+      let result = await this.model.get(params.id)
       if (this.$tokenAuth) {
         if (params.project_id !== result.project_id) {
           ctx.body = commons.resReturn(null, 400, 'token有误')
@@ -414,7 +412,7 @@ class interfaceController extends baseController {
       if (!result) {
         return (ctx.body = commons.resReturn(null, 490, '不存在的'))
       }
-      const userinfo = await this.UserModel.findById(result.uid)
+      const userinfo = await this.userModel.findById(result.uid)
       const project = await this.projectModel.getBaseInfo(result.project_id)
       if (project.project_type === 'private') {
         if ((await this.checkAuth(project._id, 'project', 'view')) !== true) {
@@ -466,8 +464,8 @@ class interfaceController extends baseController {
     try {
       let result, count
       if (limit === 'all') {
-        result = await this.Model.list(project_id)
-        count = await this.Model.listCount({ project_id })
+        result = await this.model.list(project_id)
+        count = await this.model.listCount({ project_id })
       } else {
         const option = { project_id }
         if (status) {
@@ -485,8 +483,8 @@ class interfaceController extends baseController {
           }
         }
 
-        result = await this.Model.listByOptionWithPage(option, page, limit)
-        count = await this.Model.listCount(option)
+        result = await this.model.listByOptionWithPage(option, page, limit)
+        count = await this.model.listCount(option)
       }
 
       ctx.body = commons.resReturn({
@@ -544,9 +542,9 @@ class interfaceController extends baseController {
         }
       }
 
-      const result = await this.Model.listByOptionWithPage(option, page, limit)
+      const result = await this.model.listByOptionWithPage(option, page, limit)
 
-      const count = await this.Model.listCount(option)
+      const count = await this.model.listCount(option)
 
       ctx.body = commons.resReturn({
         count: count,
@@ -579,7 +577,7 @@ class interfaceController extends baseController {
         newResult = []
       for (let i = 0, item, list; i < result.length; i++) {
         item = result[i].toObject()
-        list = await this.Model.listByCatid(item._id)
+        list = await this.model.listByCatid(item._id)
         for (let j = 0; j < list.length; j++) {
           list[j] = list[j].toObject()
         }
@@ -637,7 +635,7 @@ class interfaceController extends baseController {
 
     handleHeaders(params)
 
-    const interfaceData = await this.Model.get(id)
+    const interfaceData = await this.model.get(id)
     if (!interfaceData) {
       return (ctx.body = commons.resReturn(null, 400, '不存在的接口'))
     }
@@ -657,11 +655,7 @@ class interfaceController extends baseController {
       const http_path = url.parse(params.path, true)
 
       if (!commons.verifyPath(http_path.pathname)) {
-        return (ctx.body = commons.resReturn(
-          null,
-          400,
-          'path第一位必需为 /, 只允许由 字母数字-/_:.! 组成',
-        ))
+        return (ctx.body = commons.resReturn(null, 400, 'path第一位必需为 /, 只允许由 字母数字-/_:.! 组成'))
       }
       params.query_path = {}
       params.query_path.path = http_path.pathname
@@ -675,20 +669,13 @@ class interfaceController extends baseController {
       data.query_path = params.query_path
     }
 
-    if (
-      params.path
-      && (params.path !== interfaceData.path || params.method !== interfaceData.method)
-    ) {
-      const checkRepeat = await this.Model.checkRepeat(
-        interfaceData.project_id,
-        params.path,
-        params.method,
-      )
+    if (params.path && (params.path !== interfaceData.path || params.method !== interfaceData.method)) {
+      const checkRepeat = await this.model.checkRepeat(interfaceData.project_id, params.path, params.method)
       if (checkRepeat > 0) {
         return (ctx.body = commons.resReturn(
           null,
           401,
-          '已存在的接口:' + params.path + '[' + params.method + ']',
+          '已存在的接口:' + params.path + '[' + params.method + ']'
         ))
       }
     }
@@ -701,9 +688,9 @@ class interfaceController extends baseController {
         data.req_params = []
       }
     }
-    const result = await this.Model.up(id, data)
+    const result = await this.model.up(id, data)
     const username = this.getUsername()
-    const CurrentInterfaceData = await this.Model.get(id)
+    const CurrentInterfaceData = await this.model.get(id)
     const logData = {
       interface_id: id,
       cat_id: data.catid,
@@ -718,10 +705,12 @@ class interfaceController extends baseController {
       }
       modelUtils.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 
-                    更新了分类 <a href="/project/${cate.project_id}/interface/api/cat_${data.catid
-}">${cate.name}</a> 
-                    下的接口 <a href="/project/${cate.project_id}/interface/api/${id}">${interfaceData.title
-}</a><p>${params.message}</p>`,
+                    更新了分类 <a href="/project/${cate.project_id}/interface/api/cat_${data.catid}">${
+          cate.name
+        }</a> 
+                    下的接口 <a href="/project/${cate.project_id}/interface/api/${id}">${
+          interfaceData.title
+        }</a><p>${params.message}</p>`,
         type: 'project',
         uid: this.getUid(),
         username: username,
@@ -734,21 +723,17 @@ class interfaceController extends baseController {
     if (params.switch_notice === true) {
       const diffView = showDiffMsg(jsondiffpatch, formattersHtml, logData)
       const annotatedCss = fs.readFileSync(
-        path.resolve(
-          cons.WEB_ROOT,
-          'node_modules/jsondiffpatch/dist/formatters-styles/annotated.css',
-        ),
-        'utf8',
+        path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/dist/formatters-styles/annotated.css'),
+        'utf8'
       )
       const htmlCss = fs.readFileSync(
         path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/dist/formatters-styles/html.css'),
-        'utf8',
+        'utf8'
       )
 
       const project = await this.projectModel.getBaseInfo(interfaceData.project_id)
 
-      const interfaceUrl = `${ctx.request.origin}/project/${interfaceData.project_id
-      }/interface/api/${id}`
+      const interfaceUrl = `${ctx.request.origin}/project/${interfaceData.project_id}/interface/api/${id}`
 
       commons.sendNotice(interfaceData.project_id, {
         title: `${username} 更新了接口`,
@@ -781,10 +766,12 @@ class interfaceController extends baseController {
       return '<span style="color: #555">没有改动，该操作未改动Api数据</span>'
     }
 
-    return html.map(item => `<div>
+    return html.map(
+      item => `<div>
       <h4 class="title">${item.title}</h4>
       <div>${item.content}</div>
-    </div>`)
+    </div>`
+    )
   }
 
   /**
@@ -806,7 +793,7 @@ class interfaceController extends baseController {
         return (ctx.body = commons.resReturn(null, 400, '接口id不能为空'))
       }
 
-      const data = await this.Model.get(id)
+      const data = await this.model.get(id)
 
       // eslint-disable-next-line eqeqeq
       if (data.uid != this.getUid()) {
@@ -816,14 +803,17 @@ class interfaceController extends baseController {
         }
       }
 
-      // let inter = await this.Model.get(id);
-      const result = await this.Model.del(id)
-      yapi.emitHook('interface_del', id).then()
+      // let inter = await this.model.get(id);
+      const result = await this.model.del(id)
+
+      await this.advMockModel.delByInterfaceId(id)
       await this.caseModel.delByInterfaceId(id)
+
       const username = this.getUsername()
       this.catModel.get(data.catid).then(cate => {
         modelUtils.saveLog({
-          content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分类 <a href="/project/${cate.project_id
+          content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分类 <a href="/project/${
+            cate.project_id
           }/interface/api/cat_${data.catid}">${cate.name}</a> 下的接口 "${data.title}"`,
           type: 'project',
           uid: this.getUid(),
@@ -846,7 +836,7 @@ class interfaceController extends baseController {
         return ctx.websocket.send('id 参数有误')
       }
 
-      const result = await this.Model.get(id)
+      const result = await this.model.get(id)
       if (result.edit_uid !== 0 && result.edit_uid !== this.getUid()) {
         userInst = inst.getInst(UserModel)
         userinfo = await userInst.findById(result.edit_uid)
@@ -855,7 +845,7 @@ class interfaceController extends baseController {
           data: { uid: result.edit_uid, username: userinfo.username },
         }
       } else {
-        this.Model.upEditUid(id, this.getUid()).then()
+        this.model.upEditUid(id, this.getUid()).then()
         data = {
           errno: 0,
           data: result,
@@ -863,7 +853,7 @@ class interfaceController extends baseController {
       }
       ctx.websocket.send(JSON.stringify(data))
       ctx.websocket.on('close', () => {
-        this.Model.upEditUid(id, 0).then()
+        this.model.upEditUid(id, 0).then()
       })
     } catch (err) {
       commons.log(err, 'error')
@@ -904,7 +894,8 @@ class interfaceController extends baseController {
 
       const username = this.getUsername()
       modelUtils.saveLog({
-        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 添加了分类  <a href="/project/${params.project_id
+        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 添加了分类  <a href="/project/${
+          params.project_id
         }/interface/api/cat_${result._id}">${params.name}</a>`,
         type: 'project',
         uid: this.getUid(),
@@ -937,7 +928,8 @@ class interfaceController extends baseController {
       })
 
       modelUtils.saveLog({
-        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更新了分类 <a href="/project/${cate.project_id
+        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 更新了分类 <a href="/project/${
+          cate.project_id
         }/interface/api/cat_${params.catid}">${cate.name}</a>`,
         type: 'project',
         uid: this.getUid(),
@@ -968,7 +960,8 @@ class interfaceController extends baseController {
 
       const username = this.getUsername()
       modelUtils.saveLog({
-        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分类 "${catData.name
+        content: `<a href="/user/profile/${this.getUid()}">${username}</a> 删除了分类 "${
+          catData.name
         }" 及该分类下的接口`,
         type: 'project',
         uid: this.getUid(),
@@ -976,18 +969,18 @@ class interfaceController extends baseController {
         typeid: catData.project_id,
       })
 
-      const interfaceData = await this.Model.listByCatid(id)
+      const interfaceData = await this.model.listByCatid(id)
 
       interfaceData.forEach(async item => {
         try {
-          yapi.emitHook('interface_del', item._id).then()
           await this.caseModel.delByInterfaceId(item._id)
+          await this.advMockModel.delByInterfaceId(item._id)
         } catch (e) {
           commons.log(e.message, 'error')
         }
       })
       await this.catModel.del(id)
-      const r = await this.Model.delByCatid(id)
+      const r = await this.model.delByCatid(id)
       return (ctx.body = commons.resReturn(r))
     } catch (e) {
       commons.resReturn(null, 400, e.message)
@@ -1046,7 +1039,7 @@ class interfaceController extends baseController {
 
     try {
       //  查找有customFieldName的分组（group）
-      const groups = await this.GroupModel.getcustomFieldName(customFieldName)
+      const groups = await this.groupModel.getcustomFieldName(customFieldName)
       if (groups.length === 0) {
         return (ctx.body = commons.resReturn(null, 404, '没有找到对应自定义接口'))
       }
@@ -1059,7 +1052,7 @@ class interfaceController extends baseController {
         // 在每个项目（project）中查找interface下的custom_field_value
         for (let j = 0; j < projects.length; j++) {
           const data = {}
-          let inter = await this.Model.getcustomFieldValue(projects[j]._id, customFieldValue)
+          let inter = await this.model.getcustomFieldValue(projects[j]._id, customFieldValue)
           if (inter.length > 0) {
             data.project_name = projects[j].name
             data.project_id = projects[j]._id
@@ -1106,11 +1099,13 @@ class interfaceController extends baseController {
 
       params.forEach(item => {
         if (item.id) {
-          this.Model.upIndex(item.id, item.index).then(
-            () => { /* noop */ },
+          this.model.upIndex(item.id, item.index).then(
+            () => {
+              /* noop */
+            },
             err => {
               commons.log(err.message, 'error')
-            },
+            }
           )
         }
       })
@@ -1140,10 +1135,12 @@ class interfaceController extends baseController {
       params.forEach(item => {
         if (item.id) {
           this.catModel.upCatIndex(item.id, item.index).then(
-            () => { /* noop */ },
+            () => {
+              /* noop */
+            },
             err => {
               commons.log(err.message, 'error')
-            },
+            }
           )
         }
       })
@@ -1190,7 +1187,7 @@ class interfaceController extends baseController {
 
       for (let i = 0, item, list; i < result.length; i++) {
         item = result[i].toObject()
-        list = await this.Model.listByInterStatus(item._id, 'open')
+        list = await this.model.listByInterStatus(item._id, 'open')
         for (let j = 0; j < list.length; j++) {
           list[j] = list[j].toObject()
           list[j].basepath = basepath

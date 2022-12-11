@@ -3,6 +3,7 @@ import sha from 'sha.js'
 import _ from 'underscore'
 
 import cons from '../cons'
+import AdvMockModel from '../models/advMockModel'
 import FollowModel from '../models/follow.js'
 import GroupModel from '../models/group'
 import InterfaceModel from '../models/interface.js'
@@ -30,6 +31,7 @@ class projectController extends baseController {
     this.FollowModel = inst.getInst(FollowModel)
     this.tokenModel = inst.getInst(tokenModel)
     this.InterfaceModel = inst.getInst(InterfaceModel)
+    this.advMockModel = inst.getInst(AdvMockModel)
 
     const id = 'number'
     const member_uid = ['number']
@@ -121,6 +123,7 @@ class projectController extends baseController {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   handleBasepath(basepath) {
     if (!basepath) {
       return ''
@@ -134,17 +137,18 @@ class projectController extends baseController {
     if (basepath[basepath.length - 1] === '/') {
       basepath = basepath.substr(0, basepath.length - 1)
     }
-    if (!/^\/[a-zA-Z0-9\-\/\._]+$/.test(basepath)) {
+    if (!/^\/[a-zA-Z0-9\-/._]+$/.test(basepath)) {
       return false
     }
     return basepath
   }
 
+  // eslint-disable-next-line class-methods-use-this
   verifyDomain(domain) {
     if (!domain) {
       return false
     }
-    if (/^[a-zA-Z0-9\-_\.]+?\.[a-zA-Z0-9\-_\.]*?[a-zA-Z]{2,6}$/.test(domain)) {
+    if (/^[a-zA-Z0-9\-_.]+?\.[a-zA-Z0-9\-_.]*?[a-zA-Z]{2,6}$/.test(domain)) {
       return true
     }
     return false
@@ -467,7 +471,8 @@ class projectController extends baseController {
 
       const result = await this.Model.delMember(params.id, params.member_uid)
       const username = this.getUsername()
-      inst.getInst(UserModel)
+      inst
+        .getInst(UserModel)
         .findById(params.member_uid)
         .then(member => {
           modelUtils.saveLog({
@@ -556,16 +561,16 @@ class projectController extends baseController {
    */
 
   async list(ctx) {
-    let group_id = ctx.params.group_id,
-      project_list = []
+    const gId = ctx.params.group_id
+    let project_list = []
 
-    const groupData = await this.GroupModel.get(group_id)
+    const groupData = await this.GroupModel.get(gId)
     let isPrivateGroup = false
     if (groupData.type === 'private' && this.getUid() === groupData.uid) {
       isPrivateGroup = true
     }
-    const auth = await this.checkAuth(group_id, 'group', 'view')
-    const result = await this.Model.list(group_id)
+    const auth = await this.checkAuth(gId, 'group', 'view')
+    const result = await this.Model.list(gId)
     let follow = await this.FollowModel.list(this.getUid())
     if (isPrivateGroup === false) {
       for (let index = 0, item, r = 1; index < result.length; index++) {
@@ -626,7 +631,8 @@ class projectController extends baseController {
     await interfaceInst.delByProjectId(id)
     await interfaceCaseInst.delByProjectId(id)
     await interfaceColInst.delByProjectId(id)
-    yapi.emitHook('project_del', id).then()
+    await this.advMockModel.delByProjectId(id)
+
     const result = await this.Model.del(id)
     ctx.body = commons.resReturn(result)
   }
@@ -694,6 +700,7 @@ class projectController extends baseController {
    * @returns {Object}
    * @example
    */
+  // eslint-disable-next-line class-methods-use-this
   async changeMemberEmailNotice(ctx) {
     try {
       const params = ctx.request.body
@@ -703,11 +710,7 @@ class projectController extends baseController {
         return (ctx.body = commons.resReturn(null, 400, '项目成员不存在'))
       }
 
-      const result = await projectInst.changeMemberEmailNotice(
-        params.id,
-        params.member_uid,
-        params.notice,
-      )
+      const result = await projectInst.changeMemberEmailNotice(params.id, params.member_uid, params.notice)
       ctx.body = commons.resReturn(result)
     } catch (e) {
       ctx.body = commons.resReturn(null, 402, e.message)
@@ -980,6 +983,7 @@ class projectController extends baseController {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   arrRepeat(arr, key) {
     const s = new Set()
     arr.forEach(item => s.add(item[key]))
@@ -1003,10 +1007,7 @@ class projectController extends baseController {
       let token
       if (!data) {
         const passsalt = commons.randStr()
-        token = sha('sha1')
-          .update(passsalt)
-          .digest('hex')
-          .substr(0, 20)
+        token = sha('sha1').update(passsalt).digest('hex').substr(0, 20)
 
         await this.tokenModel.save({ project_id, token })
       } else {
@@ -1038,10 +1039,7 @@ class projectController extends baseController {
       let token, result
       if (data && data.token) {
         const passsalt = commons.randStr()
-        token = sha('sha1')
-          .update(passsalt)
-          .digest('hex')
-          .substr(0, 20)
+        token = sha('sha1').update(passsalt).digest('hex').substr(0, 20)
         result = await this.tokenModel.up(project_id, token)
         token = getToken(token)
         result.token = token
@@ -1121,6 +1119,7 @@ class projectController extends baseController {
   }
 
   // 输入 swagger url 的时候 node 端请求数据
+  // eslint-disable-next-line class-methods-use-this
   async swaggerUrl(ctx) {
     try {
       const { url } = ctx.request.query

@@ -9,6 +9,7 @@ import { AnyFunc } from '@/types'
 
 import { fetchInterfaceData } from '../../../../reducer/modules/interface'
 
+import AdvMock from './AdvMock/AdvMock.js'
 import Edit from './Edit'
 import Run from './Run/Run'
 import View from './View'
@@ -120,9 +121,8 @@ class Content extends Component<PropTypes, StateTypes> {
       view: { component: View, name: '预览' },
       edit: { component: Edit, name: '编辑' },
       run: { component: Run, name: '运行' },
+      advMock: { component: AdvMock, name: '高级Mock' },
     }
-
-    plugin.emitHook('interface_tab', InterfaceTabs)
 
     const tabs = (
       <Tabs className={styles.tabs} size="large" onChange={this.onChange} activeKey={this.state.curTab}>

@@ -1,10 +1,8 @@
-import _ from 'underscore'
-
 function isObj(object) {
   return (
-    object
-    && typeof object == 'object'
-    && Object.prototype.toString.call(object).toLowerCase() == '[object object]'
+    object &&
+    typeof object == 'object' &&
+    Object.prototype.toString.call(object).toLowerCase() == '[object object]'
   )
 }
 
@@ -23,13 +21,19 @@ function Compare(objA, objB) {
     }
     return objA == objB
   }
-  if (!isObj(objA) || !isObj(objB)) { return false }
-  if (getLength(objA) != getLength(objB)) { return false }
+  if (!isObj(objA) || !isObj(objB)) {
+    return false
+  }
+  if (getLength(objA) != getLength(objB)) {
+    return false
+  }
   return CompareObj(objA, objB, true)
 }
 
 function CompareArray(objA, objB, flag) {
-  if (objA.length != objB.length) { return false }
+  if (objA.length != objB.length) {
+    return false
+  }
   for (const i in objB) {
     if (!Compare(objA[i], objB[i])) {
       flag = false
@@ -42,7 +46,9 @@ function CompareArray(objA, objB, flag) {
 
 function CompareObj(objA, objB, flag) {
   for (const key in objA) {
-    if (!flag) { break }
+    if (!flag) {
+      break
+    }
     if (!objB.hasOwnProperty(key)) {
       flag = false
       break
@@ -64,7 +70,9 @@ function CompareObj(objA, objB, flag) {
         break
       }
       for (const k in oA) {
-        if (!flag) { break }
+        if (!flag) {
+          break
+        }
         flag = CompareObj(oA[k], oB[k], flag)
       }
     }
