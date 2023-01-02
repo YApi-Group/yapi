@@ -9,7 +9,7 @@ import { AnyFunc } from '@/types'
 
 import { fetchInterfaceData } from '../../../../reducer/modules/interface'
 
-import AdvMock from './AdvMock/AdvMock.js'
+import AdvMock from './AdvMock/AdvMock'
 import Edit from './Edit'
 import Run from './Run/Run'
 import View from './View'

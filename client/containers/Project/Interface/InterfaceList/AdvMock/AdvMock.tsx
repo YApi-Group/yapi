@@ -1,24 +1,30 @@
-import { Form, Switch, Button, message, Icon, Tooltip, Radio } from 'antd'
+import { QuestionCircleOutlined } from '@ant-design/icons'
+import { Form, Switch, Button, message, Tooltip, Radio, RadioChangeEvent } from 'antd'
 import axios from 'axios'
-import mockEditor from 'client/components/AceEditor/mockEditor'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 // import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
+import mockEditor from '../../../../../components/AceEditor/mockEditor'
 import constants from '../../../../../cons'
 
-import MockCol from './MockCol.js'
+import MockCol from './MockCol'
 
 const FormItem = Form.Item
 
-class AdvMock extends Component {
-  static propTypes = {
-    form: PropTypes.object,
-    match: PropTypes.object,
-  }
+type PropTypes = {
+  match: any
+}
 
-  constructor(props) {
+type StateTypes = {
+  enable: boolean
+  mock_script: string
+  tab: string
+}
+
+class AdvMock extends Component<PropTypes, StateTypes> {
+  constructor(props: PropTypes) {
     super(props)
     this.state = {
       enable: false,
@@ -27,8 +33,7 @@ class AdvMock extends Component {
     }
   }
 
-  handleSubmit = e => {
-    e.preventDefault()
+  handleFinish = () => {
     const projectId = this.props.match.params.id
     const interfaceId = this.props.match.params.actionId
     const params = {
@@ -46,7 +51,7 @@ class AdvMock extends Component {
     })
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getAdvMockData()
   }
 
@@ -61,25 +66,24 @@ class AdvMock extends Component {
       })
     }
 
-    const that = this
     mockEditor({
       container: 'mock-script',
-      data: that.state.mock_script,
-      onChange: function (d) {
-        that.setState({
+      data: this.state.mock_script,
+      onChange: (d: any) => {
+        this.setState({
           mock_script: d.text,
         })
       },
     })
   }
 
-  onChange = v => {
+  onChange = (v: boolean) => {
     this.setState({
       enable: v,
     })
   }
 
-  handleTapChange = e => {
+  handleTapChange = (e: RadioChangeEvent) => {
     this.setState({
       tab: e.target.value,
     })
@@ -113,17 +117,14 @@ class AdvMock extends Component {
           </Radio.Group>
         </div>
         <div style={{ display: isShowCase ? 'none' : '' }}>
-          <Form onSubmit={this.handleSubmit}>
+          <Form onFinish={this.handleFinish}>
             <FormItem
               label={
                 <span>
-                  是否开启&nbsp;<a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={constants.docHref.adv_mock_script}
-                  >
+                  是否开启&nbsp;
+                  <a target="_blank" rel="noopener noreferrer" href={constants.docHref.adv_mock_script}>
                     <Tooltip title="点击查看文档">
-                      <Icon type="question-circle-o" />
+                      <QuestionCircleOutlined />
                     </Tooltip>
                   </a>
                 </span>
@@ -156,4 +157,4 @@ class AdvMock extends Component {
   }
 }
 
-export default Form.create()(withRouter(AdvMock))
+export default withRouter(AdvMock as any) as any as typeof AdvMock

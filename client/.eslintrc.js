@@ -13,19 +13,13 @@ const jsRules = {
     'accessor-pairs': 'error',
 
     // 控制语句单行没有大括号或者多行有大括号
-    'curly': [
-      'warn',
-      'all',
-    ],
+    'curly': ['warn', 'all'],
 
     // 要求 switch 语句中有 default 分支
     'default-case': 'warn',
 
     // 只能在点号之前换行
-    'dot-location': [
-      'warn',
-      'property',
-    ],
+    'dot-location': ['warn', 'property'],
 
     // 尽可能使用点号而不使用中括号
     'dot-notation': 'warn',
@@ -36,10 +30,7 @@ const jsRules = {
      * 比较 typeof 的值
      * 与 null 进行比较
      */
-    'eqeqeq': [
-      'error',
-      'smart',
-    ],
+    'eqeqeq': ['error', 'smart'],
 
     // for in 内部必须有 if hasOwnProperty
     'guard-for-in': 'warn',
@@ -138,246 +129,8 @@ const jsRules = {
     ],
   },
 
-  // Stylistic Issues: 这些规则是关于风格指南的
-  ...{
-    // 强制在数组开括号后和闭括号前出现换行，对每个括号要求使用一致的换行符
-    'array-bracket-newline': [
-      'warn',
-      'consistent',
-    ],
-
-    // 禁止在数组括号内侧加空格
-    'array-bracket-spacing': 'warn',
-
-    // 强制数组元素间出现换行，需要一致地使用数组元素之间的换行符
-    'array-element-newline': [
-      'warn',
-      'consistent',
-    ],
-
-    // 强制在代码块中开括号前和闭括号后有空格
-    'block-spacing': 'warn',
-
-    // 大括号开括号后闭括号前必须换行，单行除外
-    'brace-style': [
-      'warn',
-      '1tbs',
-      {
-        allowSingleLine: true,
-      },
-    ],
-
-    // 对象的最后一个属性末尾的逗号
-    'comma-dangle': [
-      'warn',
-      'always-multiline', // 多行时必须有
-    ],
-
-    // 逗号后面必须加空格
-    'comma-spacing': 'warn',
-
-    // 只能在逗号后换行
-    'comma-style': 'warn',
-
-    // 禁止在计算属性内使用空格
-    'computed-property-spacing': 'warn',
-
-    // 禁止在函数标识符和其调用之间有空格
-    'func-call-spacing': 'warn',
-
-    // 如果函数的任一参数有换行，则要求在函数括号内换行。否则禁止换行。
-    'function-paren-newline': 'warn',
-
-    // 禁止在箭头函数体之前出现换行
-    'implicit-arrow-linebreak': 'warn',
-
-    // 缩进
-    'indent': ['warn', 2, { SwitchCase: 1 }],
-
-    // 强制所有不包含双引号的 JSX 属性值使用双引号
-    'jsx-quotes': 'warn',
-
-    // 对象字面量中冒号前面禁止有空格，后面必须有空格
-    'key-spacing': 'warn',
-
-    // 关键字前后必须有空格
-    'keyword-spacing': 'warn',
-
-    // 每行最大长度
-    'max-len': [
-      'warn', {
-        code: 120,
-        tabWidth: 2,
-        ignoreUrls: true,
-        ignoreStrings: true,
-        ignoreTemplateLiterals: true,
-      },
-    ],
-
-    // 每一行中最多只能有2条语句
-    'max-statements-per-line': ['error', { max: 2 }],
-
-    // new 后面的类名必须首字母大写
-    'new-cap': 'warn',
-
-    // 要求调用无参构造函数时带括号
-    'new-parens': 'warn',
-
-    // 禁止 if 作为唯一的语句出现在 else 语句中
-    'no-lonely-if': 'warn',
-
-    // 禁止连续赋值，对变量连续赋值可能会导致意想不到的结果，而且难以阅读
-    'no-multi-assign': 'warn',
-
-    // 禁用 Object 的构造函数
-    'no-new-object': 'warn',
-
-    // ++ 和 -- 只允许出现在 for 循环的最后一个表达式中
-    'no-plusplus': [
-      'warn',
-      {
-        allowForLoopAfterthoughts: true,
-      },
-    ],
-
-    // 禁止使用with
-    'no-restricted-syntax': [
-      'warn',
-      'WithStatement',
-    ],
-
-    // 禁止使用tab
-    'no-tabs': 'warn',
-
-    // 禁止可以表达为更简单结构的三元操作符
-    'no-unneeded-ternary': 'warn',
-
-    // 禁止属性前有空格，比如 foo. bar()
-    'no-whitespace-before-property': 'warn',
-
-    // 禁止单行语句之前有换行
-    'nonblock-statement-body-position': 'warn',
-
-    // 强制在花括号内使用一致的换行符，如果在属性内部或属性之间有换行符，就要求有换行符
-    'object-curly-newline': [
-      'warn',
-      {
-        multiline: true,
-        consistent: true,
-      },
-    ],
-
-    // 单行大括号内部首尾必须有空格
-    'object-curly-spacing': [
-      'warn',
-      'always',
-    ],
-
-    // 对象的属性要么都同行要么都不同行
-    'object-property-newline': [
-      'warn',
-      {
-        allowAllPropertiesOnSameLine: true,
-      },
-    ],
-
-    // 需要换行的时候，操作符必须放在行首
-    'operator-linebreak': [
-      'warn',
-      'before',
-    ],
-
-    // 禁止使用以对象字面量作为第一个参数的 Object.assign，优先使用对象扩展。
-    'prefer-object-spread': 'warn',
-
-    // 如果有属性名称要求使用引号，则所有的属性名称都要使用引号；否则，禁止所有的属性名称使用引号
-    'quote-props': [
-      'warn',
-      'consistent-as-needed',
-    ],
-
-    // 尽可能地使用单引号
-    'quotes': [
-      'warn',
-      'single',
-    ],
-
-    // 尽可能不使用分号
-    'semi': [
-      'warn',
-      'never',
-    ],
-
-    // 一行有多个语句时，分号前面禁止有空格，分号后面必须有空格
-    'semi-spacing': 'warn',
-
-    // 分号必须写在行尾，禁止在行首出现
-    'semi-style': 'warn',
-
-    // 语句块之前必须有空格
-    'space-before-blocks': 'warn',
-
-    // 命名的函数表达式左括号前不得有空格，匿名函数和箭头函数左括号前必须有空格
-    'space-before-function-paren': [
-      'warn',
-      {
-        anonymous: 'always',
-        named: 'never',
-        asyncArrow: 'always',
-      },
-    ],
-
-    // 小括号内的首尾禁止有空格
-    'space-in-parens': 'warn',
-
-    // 操作符左右必须有空格
-    'space-infix-ops': 'warn',
-
-    // new, typeof 等后面必须有空格，++, -- 等禁止有空格
-    'space-unary-ops': 'warn',
-
-    // 注释的斜线或 * 后必须有空格
-    'spaced-comment': 'warn',
-
-    // switch 语句中的 case 和 default的冒号前禁止有空格，冒号后必须有空格
-    'switch-colon-spacing': 'warn',
-
-    // 禁止在模板标记和它们的字面量之间有空格
-    'template-tag-spacing': 'warn',
-
-    // 文件开头禁止有 BOM
-    'unicode-bom': 'warn',
-
-    // 禁止多个连续空行
-    'no-multiple-empty-lines': ['warn', { max: 1 }],
-
-    // 禁止行末尾有无用的空格
-    'no-trailing-spaces': ['warn', { ignoreComments: true }],
-
-    // 大括号{}内部 第一行&最后一行 禁止为空行
-    'padded-blocks': ['warn', 'never'],
-  },
-
   // ECMAScript 6: 这些规则只与 ES6 有关, 即通常所说的 ES2015
   ...{
-    // 当箭头函数大括号是可以省略的，强制不使用它们
-    'arrow-body-style': 'warn',
-
-    // 箭头函数的参数的圆括号在可以的地方强制不使用
-    'arrow-parens': [
-      'warn',
-      'as-needed',
-    ],
-
-    // 箭头函数的箭头之前或之后有一个或多个空格
-    'arrow-spacing': 'warn',
-
-    // 禁止重复导入
-    'no-duplicate-imports': 'warn',
-
-    // 禁止在对象中使用不必要的计算属性
-    'no-useless-computed-key': 'warn',
-
     // 禁用不必要的构造函数
     'no-useless-constructor': 'warn',
 
@@ -403,18 +156,21 @@ const jsRules = {
     'template-curly-spacing': 'warn',
 
     // 对 import 排序
-    'import/order': ['warn', {
-      'groups': ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
-      'pathGroups': [
-        {
-          pattern: '@?(common)/**',
-          group: 'internal',
-        },
-      ],
-      'pathGroupsExcludedImportTypes': ['builtin'],
-      'newlines-between': 'always',
-      'alphabetize': { order: 'asc' },
-    }],
+    'import/order': [
+      'warn',
+      {
+        'groups': ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
+        'pathGroups': [
+          {
+            pattern: '@?(common)/**',
+            group: 'internal',
+          },
+        ],
+        'pathGroupsExcludedImportTypes': ['builtin'],
+        'newlines-between': 'always',
+        'alphabetize': { order: 'asc' },
+      },
+    ],
     'import/no-dynamic-require': 'warn',
   },
 }
@@ -504,10 +260,8 @@ module.exports = {
   overrides: [
     {
       files: ['*.js', '*.jsx'],
-      extends: [
-        'eslint:recommended',
-        'plugin:react/recommended',
-      ],
+      plugins: ['react', 'import', '@babel', 'prettier'],
+      extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:prettier/recommended'],
 
       parser: '@babel/eslint-parser',
       parserOptions: {
@@ -517,39 +271,33 @@ module.exports = {
         sourceType: 'module',
       },
 
-      plugins: [
-        'react',
-        'import',
-        '@babel',
-      ],
-
       rules: {
         ...jsRules,
         ...babelRules,
+        'prettier/prettier': 'warn',
       },
     },
     {
       files: ['*.ts', '*.tsx'],
+      plugins: ['react', 'import', '@typescript-eslint', 'prettier'],
       extends: [
         'eslint:recommended',
         'plugin:react/recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:import/typescript', // this line does the trick
+        'plugin:prettier/recommended',
       ],
 
       parser: '@typescript-eslint/parser',
       parserOptions: {
+        tsconfigRootDir: __dirname,
+        project: ['./tsconfig.json'],
       },
-
-      plugins: [
-        'react',
-        'import',
-        '@typescript-eslint',
-      ],
 
       rules: {
         ...jsRules,
         ...tsRules,
+        'prettier/prettier': 'warn',
       },
     },
   ],
