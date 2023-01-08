@@ -3,18 +3,18 @@ import path from 'path'
 import fs from 'fs-extra'
 import jwt from 'jsonwebtoken'
 
-import cons from '../cons'
+import cons from '../cons.js'
 import AvatarModel from '../models/avatar.js'
 import GroupModel from '../models/group.js'
 import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
 import * as commons from '../utils/commons.js'
-import * as inst from '../utils/inst'
+import * as inst from '../utils/inst.js'
 import * as ldap from '../utils/ldap.js'
-import yapi from '../yapi'
+import yapi from '../yapi.js'
 
-import baseController from './base'
+import baseController from './base.js'
 
 class userController extends baseController {
   constructor(ctx) {

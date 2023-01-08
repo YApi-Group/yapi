@@ -1,5 +1,5 @@
-// import cons from './cons'
-import yapi from './yapi'
+// import cons from './cons.js'
+import yapi from './yapi.js'
 
 /**
  * 钩子配置

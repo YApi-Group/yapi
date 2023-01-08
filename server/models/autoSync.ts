@@ -1,6 +1,6 @@
-import * as time from '../utils/time'
+import * as time from '../utils/time.js'
 
-import BaseModel from './base'
+import BaseModel from './base.js'
 
 class SyncModel extends BaseModel {
   getName() {
@@ -49,7 +49,9 @@ class SyncModel extends BaseModel {
   listAll() {
     return this.model
       .find({})
-      .select('_id uid project_id add_time up_time is_sync_open sync_cron sync_json_url sync_mode old_swagger_content last_sync_time')
+      .select(
+        '_id uid project_id add_time up_time is_sync_open sync_cron sync_json_url sync_mode old_swagger_content last_sync_time'
+      )
       .sort({ _id: -1 })
       .exec()
   }
@@ -62,7 +64,7 @@ class SyncModel extends BaseModel {
       {
         _id: id,
       },
-      data,
+      data
     )
   }
 
@@ -73,7 +75,7 @@ class SyncModel extends BaseModel {
       {
         _id: id,
       },
-      data,
+      data
     )
   }
 

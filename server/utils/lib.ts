@@ -1,4 +1,4 @@
-function isObj(object) {
+function isObj(object: any) {
   return (
     object &&
     typeof object == 'object' &&
@@ -6,15 +6,15 @@ function isObj(object) {
   )
 }
 
-function isArray(object) {
+function isArray(object: any) {
   return object && typeof object == 'object' && object.constructor == Array
 }
 
-function getLength(object) {
+function getLength(object: any) {
   return Object.keys(object).length
 }
 
-function Compare(objA, objB) {
+function Compare(objA: any, objB: any) {
   if (!isObj(objA) && !isObj(objB)) {
     if (isArray(objA) && isArray(objB)) {
       return CompareArray(objA, objB, true)
@@ -30,7 +30,7 @@ function Compare(objA, objB) {
   return CompareObj(objA, objB, true)
 }
 
-function CompareArray(objA, objB, flag) {
+function CompareArray(objA: any, objB: any, flag: any) {
   if (objA.length != objB.length) {
     return false
   }
@@ -44,7 +44,7 @@ function CompareArray(objA, objB, flag) {
   return flag
 }
 
-function CompareObj(objA, objB, flag) {
+function CompareObj(objA: any, objB: any, flag: any) {
   for (const key in objA) {
     if (!flag) {
       break
@@ -82,7 +82,7 @@ function CompareObj(objA, objB, flag) {
 
 export const jsonEqual = Compare
 
-export function isDeepMatch(obj, properties) {
+export function isDeepMatch(obj: any, properties: any) {
   if (!properties || typeof properties !== 'object' || Object.keys(properties).length === 0) {
     return true
   }

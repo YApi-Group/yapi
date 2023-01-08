@@ -5,9 +5,9 @@ import interfaceColModel from '../models/interfaceCol.js'
 import LogModel from '../models/log.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
-import * as inst from '../utils/inst'
+import * as inst from '../utils/inst.js'
 
-import * as commons from './commons'
+import * as commons from './commons.js'
 
 function convertString(variable: any) {
   if (variable instanceof Error) {
@@ -83,7 +83,9 @@ export async function runCaseScript(params: any, colId: any, interfaceId: any) {
 
     if (colData.checkResponseField.enable) {
       if (params.response.body[colData.checkResponseField.name] !== colData.checkResponseField.value) {
-        throw new Error(`返回json ${colData.checkResponseField.name} 值不是${colData.checkResponseField.value}，请检查(该规则来源于于 [测试集->通用规则配置] )`)
+        throw new Error(
+          `返回json ${colData.checkResponseField.name} 值不是${colData.checkResponseField.value}，请检查(该规则来源于于 [测试集->通用规则配置] )`
+        )
       }
     }
 

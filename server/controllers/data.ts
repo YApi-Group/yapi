@@ -4,15 +4,15 @@ import markdownItAnchor from 'markdown-it-anchor'
 // @ts-ignore 考虑替换为 https://www.npmjs.com/package/@mdit-vue/plugin-toc
 import markdownItTableOfContents from 'markdown-it-table-of-contents'
 
-import md from '../../common/markdown'
-import InterfaceModel from '../models/interface'
-import InterfaceCatModel from '../models/interfaceCat'
-import ProjectModel from '../models/project'
-import * as commons from '../utils/commons'
-import * as inst from '../utils/inst'
+import md from '../../common/markdown.js'
+import InterfaceModel from '../models/interface.js'
+import InterfaceCatModel from '../models/interfaceCat.js'
+import ProjectModel from '../models/project.js'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
 
-import BaseController from './base'
-import defaultTheme from './defaultTheme'
+import BaseController from './base.js'
+import defaultTheme from './defaultTheme.js'
 
 // const wikiModel = require('../yapi-plugin-wiki/wikiModel.js');
 

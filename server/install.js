@@ -3,12 +3,12 @@ import path from 'path'
 import fs from 'fs-extra'
 import mongoose from 'mongoose'
 
-import cons from './cons'
+import cons from './cons.js'
 import UserModel from './models/user.js'
 import * as commons from './utils/commons.js'
 import dbModule from './utils/db.js'
-import * as inst from './utils/inst'
-import yapi from './yapi'
+import * as inst from './utils/inst.js'
+import yapi from './yapi.js'
 
 const connect = dbModule.connect()
 

@@ -3,8 +3,8 @@ import path from 'path'
 import { exts } from '../common/config.js'
 import { initPlugins } from '../common/plugin.js'
 
-import cons from './cons'
-import yapi from './yapi'
+import cons from './cons.js'
+import yapi from './yapi.js'
 
 const plugin_path = path.join(cons.WEB_ROOT, 'node_modules')
 const plugin_system_path = path.join(cons.WEB_ROOT, 'exts')

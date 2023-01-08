@@ -2,7 +2,7 @@ import KoaRouter from '@koa/router'
 
 import interfaceController from './controllers/interface.js'
 import { createAction } from './utils/commons.js'
-import yapi from './yapi'
+import yapi from './yapi.js'
 
 const router = new KoaRouter()
 

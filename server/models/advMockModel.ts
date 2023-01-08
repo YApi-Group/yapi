@@ -1,6 +1,6 @@
-import * as commons from '../utils/commons'
+import * as commons from '../utils/commons.js'
 
-import BaseModel from './base'
+import BaseModel from './base.js'
 
 export default class AdvMockModel extends BaseModel {
   // eslint-disable-next-line class-methods-use-this

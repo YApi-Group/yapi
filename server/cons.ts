@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import nodemailer from 'nodemailer'
 
-import config from '../config.json'
+import config from '../config.json' assert { type: "json" }
 
 const WEB_ROOT = path.resolve(__dirname, '../') // 路径
 const WEB_LOG_DIR = path.join(WEB_ROOT, 'log')

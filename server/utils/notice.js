@@ -1,7 +1,7 @@
-import cons from '../cons'
-import * as commons from '../utils/commons'
-import * as inst from '../utils/inst'
-import yapi from '../yapi'
+import cons from '../cons.js'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
+import yapi from '../yapi.js'
 
 function arrUnique(arr1, arr2) {
   const arr = arr1.concat(arr2)

@@ -4,17 +4,17 @@ import markdownItTableOfContents from 'markdown-it-table-of-contents'
 import request from 'request'
 import _ from 'underscore'
 
-import handleImportData from '../../common/HandleImportData'
-import createContext from '../../common/createContext'
+import handleImportData from '../../common/HandleImportData.js'
+import createContext from '../../common/createContext.js'
 import md from '../../common/markdown.js'
 import {
   handleParams,
   crossRequest,
   handleCurrDomain,
   checkNameIsExistInArray,
-} from '../../common/postmanLib'
+} from '../../common/postmanLib.js'
 import { handleParamsValue, changeArrayToObject } from '../../common/utils.js'
-import cons from '../cons'
+import cons from '../cons.js'
 import FollowModel from '../models/follow.js'
 import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
@@ -22,15 +22,15 @@ import interfaceCatModel from '../models/interfaceCat.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
-import * as commons from '../utils/commons'
-import * as inst from '../utils/inst'
-import * as modelUtils from '../utils/modelUtils'
-import renderToHtml from '../utils/reportHtml'
-import swaggerImport from '../utils/swaggerImport'
-import yapi from '../yapi'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
+import * as modelUtils from '../utils/modelUtils.js'
+import renderToHtml from '../utils/reportHtml/index.js'
+import swaggerImport from '../utils/swaggerImport.js'
+import yapi from '../yapi.js'
 
-import baseController from './base'
-import defaultTheme from './theme/defaultTheme'
+import baseController from './base.js'
+import defaultTheme from './theme/defaultTheme.js'
 
 /**
  * {

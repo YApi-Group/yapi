@@ -7,8 +7,8 @@
   "ext": "ts,js,json",
 
   "execMap": {
-    "js": "node -r ts-node/register",
-    "ts": "node -r ts-node/register"
+    "js": "ts-node-esm",
+    "ts": "ts-node-esm"
   },
   "env": {
     "NODE_ENV": "development"

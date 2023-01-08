@@ -1,6 +1,6 @@
-import * as commons from '../utils/commons'
+import * as commons from '../utils/commons.js'
 
-import BaseModel from './base'
+import BaseModel from './base.js'
 
 class ProjectModel extends BaseModel {
   getName() {

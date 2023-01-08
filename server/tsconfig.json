@@ -8,7 +8,7 @@
     // 为了在 webpack.xxx.ts 中正常使用，需要设置为 "CommonJS"
     // 但是在浏览器环境中要想正确使用，需要设置为 "ES2015"
     // (如果需要的话，该设置会在 ts-loader compilerOptions 中被重写，使用 babel/typescript 就没关系了)
-    "module": "CommonJS",
+    "module": "ESNext",
 
     "noImplicitAny": true, // 禁止隐式 any
     // "noImplicitThis": true, // 禁止隐式 this, this 不默认识别为 any
@@ -28,7 +28,7 @@
     "esModuleInterop": true, // 兼容 babel 等其他 ECMAScript 模块的实现
 
     // "sourceMap": true, // webpack 下会默认关闭, 所以看起来无效
-    "lib": ["DOM", "ES2020"], // 仅仅使用 ts 进行语法检查
+    "lib": ["ES2020"], // 仅仅使用 ts 进行语法检查
 
     "jsx": "preserve", // 保留 JSX 语法, 后续使用 babel 转换
     // "jsxFactory": "h", // h 对 vue 无效, 语法不兼容

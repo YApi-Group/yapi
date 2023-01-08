@@ -1,12 +1,12 @@
-import cons from '../cons'
-import GroupModel from '../models/group'
-import InterfaceModel from '../models/interface'
+import cons from '../cons.js'
+import GroupModel from '../models/group.js'
+import InterfaceModel from '../models/interface.js'
 import LogModel from '../models/log.js'
-import projectModel from '../models/project'
-import * as commons from '../utils/commons'
-import * as inst from '../utils/inst'
+import projectModel from '../models/project.js'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
 
-import baseController from './base'
+import baseController from './base.js'
 
 class logController extends baseController {
   constructor(ctx) {
@@ -63,18 +63,13 @@ class logController extends baseController {
           projectDatas[projectList[i]._id] = projectList[i]
           projectIds[i] = projectList[i]._id
         }
-        const projectLogList = await this.Model.listWithPagingByGroup(
-          typeid,
-          projectIds,
-          page,
-          limit,
-        )
+        const projectLogList = await this.Model.listWithPagingByGroup(typeid, projectIds, page, limit)
         projectLogList.forEach((item, index) => {
           item = item.toObject()
           if (item.type === 'project') {
-            item.content
-              = `在 <a href="/project/${item.typeid}">${projectDatas[item.typeid].name}</a> 项目: `
-              + item.content
+            item.content =
+              `在 <a href="/project/${item.typeid}">${projectDatas[item.typeid].name}</a> 项目: ` +
+              item.content
           }
           projectLogList[index] = item
         })
@@ -121,12 +116,7 @@ class logController extends baseController {
         if (basePath) {
           api.path = api.path.indexOf(basePath) === 0 ? api.path.substr(basePath.length) : api.path
         }
-        const interfaceIdList = await this.InterfaceModel.getByPath(
-          typeid,
-          api.path,
-          api.method,
-          '_id',
-        )
+        const interfaceIdList = await this.InterfaceModel.getByPath(typeid, api.path, api.method, '_id')
 
         for (let j = 0; j < interfaceIdList.length; j++) {
           const interfaceId = interfaceIdList[j]

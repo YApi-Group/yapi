@@ -1,16 +1,14 @@
-import * as modelUtils from '../utils/modelUtils'
 import _ from 'underscore'
 
-import * as inst from '../utils/inst'
-import cons from '../cons'
 import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
-import * as commons from '../utils/commons'
-import * as modelUtils from '../utils/modelUtils'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
+import * as modelUtils from '../utils/modelUtils.js'
 
-import baseController from './base'
+import baseController from './base.js'
 
 class interfaceColController extends baseController {
   constructor(ctx) {
@@ -56,7 +54,6 @@ class interfaceColController extends baseController {
 
         caseList = caseList.sort((a, b) => a.index - b.index)
         result[i].caseList = caseList
-        
       }
       ctx.body = commons.resReturn(result)
     } catch (e) {
@@ -403,9 +400,9 @@ class interfaceColController extends baseController {
 
         // 处理json schema 解析
         if (
-          interfaceData.req_body_type === 'json'
-          && interfaceData.req_body_other
-          && interfaceData.req_body_is_json_schema
+          interfaceData.req_body_type === 'json' &&
+          interfaceData.req_body_other &&
+          interfaceData.req_body_is_json_schema
         ) {
           let req_body_other = commons.json_parse(interfaceData.req_body_other)
           req_body_other = commons.schemaToJson(req_body_other, {
@@ -639,10 +636,7 @@ class interfaceColController extends baseController {
       result.req_headers = commons.handleParamsValue(data.req_headers, result.req_headers)
       result.res_body = data.res_body
       result.res_body_type = data.res_body_type
-      result.req_body_form = commons.handleParamsValue(
-        data.req_body_form,
-        result.req_body_form,
-      )
+      result.req_body_form = commons.handleParamsValue(data.req_body_form, result.req_body_form)
       result.req_query = commons.handleParamsValue(data.req_query, result.req_query)
       result.req_params = commons.handleParamsValue(data.req_params, result.req_params)
       result.interface_up_time = data.up_time
@@ -723,7 +717,7 @@ class interfaceColController extends baseController {
             res => {},
             err => {
               commons.log(err.message, 'error')
-            },
+            }
           )
         }
       })
@@ -757,7 +751,7 @@ class interfaceColController extends baseController {
             res => {},
             err => {
               commons.log(err.message, 'error')
-            },
+            }
           )
         }
       })

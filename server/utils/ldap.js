@@ -1,6 +1,6 @@
 import ldap from 'ldapjs'
 
-import cons from '../cons'
+import cons from '../cons.js'
 
 export function ldapQuery(username, password) {
   // const deferred = Q.defer();

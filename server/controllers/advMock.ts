@@ -3,10 +3,10 @@ import { Context } from 'koa'
 import AdvModel from '../models/advMockModel.js'
 import CaseModel from '../models/caseModel.js'
 import UserModel from '../models/user.js'
-import * as commons from '../utils/commons'
-import * as inst from '../utils/inst'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
 
-import BaseController from './base'
+import BaseController from './base.js'
 
 const HTTP_CODES = [
   100, 101, 102, 200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 307, 308,

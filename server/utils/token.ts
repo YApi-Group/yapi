@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 
-import cons from '../cons'
+import cons from '../cons.js'
 
 /** 创建加密算法 */
 const aseEncode = function (data: string, password: string) {

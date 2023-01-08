@@ -1,9 +1,9 @@
 /**
  * Created by gxl.gao on 2017/10/24.
  */
-import * as commons from '../utils/commons'
+import * as commons from '../utils/commons.js'
 
-import BaseModel from './base'
+import BaseModel from './base.js'
 
 class StatisticModel extends BaseModel {
   getName() { return 'statistic' }

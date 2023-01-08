@@ -1,10 +1,9 @@
-import cons from '../cons'
-import FollowModel from '../models/follow'
-import projectModel from '../models/project'
-import * as inst from '../utils/inst'
-import yapi from '../yapi'
+import FollowModel from '../models/follow.js'
+import projectModel from '../models/project.js'
+import * as inst from '../utils/inst.js'
+import yapi from '../yapi.js'
 
-import baseController from './base'
+import baseController from './base.js'
 
 class followController extends baseController {
   constructor(ctx) {
@@ -67,7 +66,7 @@ class followController extends baseController {
 
     const checkRepeat = await this.Model.checkProjectRepeat(uid, params.projectid)
 
-    if (checkRepeat == 0) {
+    if (checkRepeat === 0) {
       return (ctx.body = yapi.commons.resReturn(null, 401, '项目未关注'))
     }
 
@@ -120,14 +119,7 @@ class followController extends baseController {
         color: project.color,
       }
       let result = await this.Model.save(data)
-      result = yapi.commons.fieldSelect(result, [
-        '_id',
-        'uid',
-        'projectid',
-        'projectname',
-        'icon',
-        'color',
-      ])
+      result = yapi.commons.fieldSelect(result, ['_id', 'uid', 'projectid', 'projectname', 'icon', 'color'])
       ctx.body = yapi.commons.resReturn(result)
     } catch (e) {
       ctx.body = yapi.commons.resReturn(null, 402, e.message)

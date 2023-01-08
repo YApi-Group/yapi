@@ -1,6 +1,6 @@
-import cons from '../cons'
+import cons from '../cons.js'
 import storageModel from '../models/storage.js'
-import * as inst from '../utils/inst'
+import * as inst from '../utils/inst.js'
 
 export default function storageCreator(id) {
   const defaultData = {}

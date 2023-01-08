@@ -6,11 +6,11 @@ import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
-import * as commons from '../utils/commons'
-import * as inst from '../utils/inst'
-import * as modelUtils from '../utils/modelUtils'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
+import * as modelUtils from '../utils/modelUtils.js'
 
-import baseController from './base'
+import baseController from './base.js'
 
 const rolename = {
   owner: '组长',

@@ -1,15 +1,15 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Context } from 'koa'
 
-import cons from '../cons'
+import cons from '../cons.js'
 import GroupModel from '../models/group.js'
 import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
-import tokenModel from '../models/token'
+import tokenModel from '../models/token.js'
 import UserModel from '../models/user.js'
-import * as commons from '../utils/commons'
-import * as inst from '../utils/inst'
-import { parseToken } from '../utils/token'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
+import { parseToken } from '../utils/token.js'
 
 class BaseController {
   ctx: Context

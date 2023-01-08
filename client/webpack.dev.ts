@@ -84,24 +84,20 @@ const devConf: Configuration = {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          { loader: 'style-loader' },
-          { loader: 'css-loader' },
-          { loader: 'postcss-loader' },
-        ],
+        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }, { loader: 'postcss-loader' }],
       },
 
       {
         test: /\.less$/,
         use: [
           { loader: 'style-loader' },
-          { loader: 'css-loader' }, /* css-loader auto set module for \.module\. files */
+          { loader: 'css-loader' } /* css-loader auto set module for \.module\. files */,
           { loader: 'postcss-loader' },
           {
             loader: 'less-loader',
             options: {
               lessOptions: {
-                javascriptEnabled: true, /* antd need javascriptEnabled */
+                javascriptEnabled: true /* antd need javascriptEnabled */,
               },
             },
           },
@@ -163,14 +159,14 @@ const devConf: Configuration = {
     },
   },
 
-  externals: {
-  },
+  externals: {},
 
   plugins: [
     new ReactRefreshWebpackPlugin(),
 
     new DefinePlugin({
-      VERSION_INFO: JSON.stringify('version: ' + moment.tz('Asia/Shanghai').format()), /* 编译时添加版本信息 */
+      /** 编译时添加版本信息 */
+      VERSION_INFO: JSON.stringify('version: ' + moment.tz('Asia/Shanghai').format()),
     }),
 
     new HtmlWebpackPlugin({
@@ -180,9 +176,7 @@ const devConf: Configuration = {
     }),
 
     new CopyWebpackPlugin({
-      patterns: [
-        { from: './static/', to: './', globOptions: { ignore: ['**/*.ejs'] } },
-      ],
+      patterns: [{ from: './static/', to: './', globOptions: { ignore: ['**/*.ejs'] } }],
     }),
   ],
 }

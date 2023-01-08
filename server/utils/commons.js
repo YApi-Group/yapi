@@ -10,9 +10,9 @@ import Mock from 'mockjs'
 import sha1 from 'sha1'
 import _ from 'underscore'
 
-import cons from '../cons'
+import cons from '../cons.js'
 
-export * from './time'
+export * from './time.js'
 
 jsf.extend('mock', function () {
   return {

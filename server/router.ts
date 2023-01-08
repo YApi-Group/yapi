@@ -1,8 +1,8 @@
 import KoaRouter from '@koa/router'
 
-import AdvMockController from './controllers/advMock'
-import SyncController from './controllers/autoSync'
-import DataController from './controllers/data'
+import AdvMockController from './controllers/advMock.js'
+import SyncController from './controllers/autoSync.js'
+import DataController from './controllers/data.js'
 import followController from './controllers/follow.js'
 import groupController from './controllers/group.js'
 import interfaceController from './controllers/interface.js'
@@ -10,11 +10,11 @@ import interfaceColController from './controllers/interfaceCol.js'
 import logController from './controllers/log.js'
 import openController from './controllers/open.js'
 import projectController from './controllers/project.js'
-import statisticController from './controllers/statistic'
+import statisticController from './controllers/statistic.js'
 import testController from './controllers/test.js'
 import userController from './controllers/user.js'
 import { createAction } from './utils/commons.js'
-import yapi from './yapi'
+import yapi from './yapi.js'
 
 const router = new KoaRouter()
 

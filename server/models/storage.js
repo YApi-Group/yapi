@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-import BaseModel from './base'
+import BaseModel from './base.js'
 
 class StorageModel extends BaseModel {
   constructor() {

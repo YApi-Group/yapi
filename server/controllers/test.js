@@ -1,10 +1,10 @@
 import fs from 'fs'
 import path from 'path'
 
-import cons from '../cons'
-import * as commons from '../utils/commons'
+import cons from '../cons.js'
+import * as commons from '../utils/commons.js'
 
-import baseController from './base'
+import baseController from './base.js'
 
 class interfaceColController extends baseController {
   /**

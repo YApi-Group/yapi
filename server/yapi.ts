@@ -1,8 +1,8 @@
-import cons from './cons'
+import cons from './cons.js'
 import { bindHook, emitHook } from './hook.js'
-import * as commons from './utils/commons'
-import * as inst from './utils/inst'
-import * as modelUtils from './utils/modelUtils'
+import * as commons from './utils/commons.js'
+import * as inst from './utils/inst.js'
+import * as modelUtils from './utils/modelUtils.js'
 
 export default {
   ...cons,

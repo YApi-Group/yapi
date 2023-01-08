@@ -1,8 +1,8 @@
 import mongoose, { Model, Schema } from 'mongoose'
 
-import * as commons from '../utils/commons'
-import db from '../utils/db'
-import autoIncrement from '../utils/mongoose-auto-increment'
+import * as commons from '../utils/commons.js'
+import db from '../utils/db.js'
+import * as autoIncrement from '../utils/mongoose-auto-increment.js'
 
 /**
  * 所有的model都需要继承baseModel, 且需要 getSchema和getName方法，不然会报错

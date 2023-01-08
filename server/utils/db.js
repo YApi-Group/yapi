@@ -1,9 +1,8 @@
 import mongoose from 'mongoose'
 
-import cons from '../cons'
-import * as commons from '../utils/commons'
-
-import autoIncrement from './mongoose-auto-increment.js'
+import cons from '../cons.js'
+import * as commons from '../utils/commons.js'
+import * as autoIncrement from '../utils/mongoose-auto-increment.js'
 
 function model(model, schema) {
   if (!(schema instanceof mongoose.Schema)) {

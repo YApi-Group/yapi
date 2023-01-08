@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "abled",
+    "advmock",
     "antd",
     "basepath",
     "casename",
@@ -26,5 +27,6 @@
   "i18n-ally.indent": 2,
   "editor.tabSize": 2,
   "javascript.preferences.importModuleSpecifierEnding": "js",
-  "typescript.preferences.importModuleSpecifierEnding": "js"
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

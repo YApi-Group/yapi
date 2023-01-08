@@ -4,16 +4,16 @@ import md5 from 'md5'
 import schedule from 'node-schedule'
 import sha from 'sha.js'
 
-import openController from '../controllers/open'
-import syncModel from '../models/autoSync'
-import projectModel from '../models/project'
-import tokenModel from '../models/token'
+import openController from '../controllers/open.js'
+import syncModel from '../models/autoSync.js'
+import projectModel from '../models/project.js'
+import tokenModel from '../models/token.js'
 
-import * as commons from './commons'
-import * as inst from './inst'
-import * as modelUtils from './modelUtils'
-import * as time from './time'
-import { getToken } from './token'
+import * as commons from './commons.js'
+import * as inst from './inst.js'
+import * as modelUtils from './modelUtils.js'
+import * as time from './time.js'
+import { getToken } from './token.js'
 
 const jobMap = new Map()
 
@@ -47,7 +47,7 @@ class SyncUtils {
           syncItem.sync_cron,
           syncItem.sync_json_url,
           syncItem.sync_mode,
-          syncItem.uid,
+          syncItem.uid
         )
       }
     }
@@ -61,7 +61,13 @@ class SyncUtils {
    * @param {*} syncMode 同步模式
    * @param {*} uid 用户id
    */
-  async addSyncJob(projectId: number, cronExpression: string, swaggerUrl: string, syncMode: SyncModeType, uid: string) {
+  async addSyncJob(
+    projectId: number,
+    cronExpression: string,
+    swaggerUrl: string,
+    syncMode: SyncModeType,
+    uid: string
+  ) {
     if (!swaggerUrl) {
       return
     }
@@ -86,7 +92,7 @@ class SyncUtils {
     swaggerUrl: string,
     syncMode: SyncModeType,
     uid: string,
-    projectToken: string,
+    projectToken: string
   ) {
     commons.log('定时器触发, syncJsonUrl:' + swaggerUrl + ',合并模式:' + syncMode)
     let oldPorjectData
@@ -124,9 +130,9 @@ class SyncUtils {
 
     // 更新之前判断本次swagger json数据是否跟上次的相同,相同则不更新
     if (
-      newSwaggerJsonData
-      && oldSyncJob.old_swagger_content
-      && oldSyncJob.old_swagger_content === md5(newSwaggerJsonData)
+      newSwaggerJsonData &&
+      oldSyncJob.old_swagger_content &&
+      oldSyncJob.old_swagger_content === md5(newSwaggerJsonData)
     ) {
       // 记录日志
       // this.saveSyncLog(0, syncMode, "接口无更新", uid, projectId);
@@ -173,12 +179,12 @@ class SyncUtils {
   saveSyncLog(errcode: number, syncMode: SyncModeType, moremsg: string, uid: string, projectId: number) {
     modelUtils.saveLog({
       content:
-        '自动同步接口状态:'
-        + (errcode === 0 ? '成功,' : '失败,')
-        + '合并模式:'
-        + this.getSyncModeName(syncMode)
-        + ',更多信息:'
-        + moremsg,
+        '自动同步接口状态:' +
+        (errcode === 0 ? '成功,' : '失败,') +
+        '合并模式:' +
+        this.getSyncModeName(syncMode) +
+        ',更多信息:' +
+        moremsg,
       type: 'project',
       uid: uid,
       username: '自动同步用户',

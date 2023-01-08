@@ -10,11 +10,11 @@ import AdvMockModel from '../models/advMockModel.js'
 import CaseModel from '../models/caseModel.js'
 import InterfaceModel from '../models/interface.js'
 import projectModel from '../models/project.js'
-import StatisticModel from '../models/statistic'
-import * as commons from '../utils/commons'
-import * as inst from '../utils/inst'
+import StatisticModel from '../models/statistic.js'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
 import * as lib from '../utils/lib.js'
-import yapi from '../yapi'
+import yapi from '../yapi.js'
 
 /**
  *

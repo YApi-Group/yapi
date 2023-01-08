@@ -1,12 +1,12 @@
 import { Context } from 'koa'
 
-import SyncModel from '../models/autoSync'
-import ProjectModel from '../models/project'
-import SyncUtils from '../utils/autoSync'
-import * as commons from '../utils/commons'
-import * as inst from '../utils/inst'
+import SyncModel from '../models/autoSync.js'
+import ProjectModel from '../models/project.js'
+import SyncUtils from '../utils/autoSync.js'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
 
-import BaseController from './base'
+import BaseController from './base.js'
 
 class SyncController extends BaseController {
   syncModelIns: any

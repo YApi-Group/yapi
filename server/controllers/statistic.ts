@@ -5,16 +5,16 @@ import os from 'os'
 
 import { Context } from 'koa'
 
-import cons from '../cons'
+import cons from '../cons.js'
 import GroupModel from '../models/group.js'
 import InterfaceModel from '../models/interface.js'
 import InterfaceCaseModel from '../models/interfaceCase.js'
 import ProjectModel from '../models/project.js'
-import StatisticModel from '../models/statistic'
-import * as commons from '../utils/commons'
-import * as inst from '../utils/inst'
+import StatisticModel from '../models/statistic.js'
+import * as commons from '../utils/commons.js'
+import * as inst from '../utils/inst.js'
 
-import BaseController from './base'
+import BaseController from './base.js'
 
 class StatisticController extends BaseController {
   private statInst: any = null
@@ -34,13 +34,13 @@ class StatisticController extends BaseController {
   }
 
   /**
-     * 获取所有统计总数
-     * @interface statismock/count
-     * @method get
-     * @category statistics
-     * @foldnumber 10
-     * @returns {Object}
-     */
+   * 获取所有统计总数
+   * @interface statismock/count
+   * @method get
+   * @category statistics
+   * @foldnumber 10
+   * @returns {Object}
+   */
   async getStatisCount(ctx: Context) {
     try {
       const groupCount = await this.groupInst.getGroupListCount()
@@ -60,13 +60,13 @@ class StatisticController extends BaseController {
   }
 
   /**
-     * 获取所有mock接口数据信息
-     * @interface statismock/get
-     * @method get
-     * @category statistics
-     * @foldnumber 10
-     * @returns {Object}
-     */
+   * 获取所有mock接口数据信息
+   * @interface statismock/get
+   * @method get
+   * @category statistics
+   * @foldnumber 10
+   * @returns {Object}
+   */
   async getMockDateList(ctx: Context) {
     try {
       const mockCount = await this.statInst.getTotalCount()
@@ -85,13 +85,13 @@ class StatisticController extends BaseController {
   }
 
   /**
-     * 获取邮箱状态信息
-     * @interface statismock/getSystemStatus
-     * @method get
-     * @category statistics
-     * @foldnumber 10
-     * @returns {Object}
-     */
+   * 获取邮箱状态信息
+   * @interface statismock/getSystemStatus
+   * @method get
+   * @category statistics
+   * @foldnumber 10
+   * @returns {Object}
+   */
   async getSystemStatus(ctx: Context) {
     try {
       let mail = ''
@@ -175,12 +175,15 @@ class StatisticController extends BaseController {
       const start = os.cpus()
 
       setTimeout(function avgCpuLoadCompare() {
-        const totals = os.cpus().reduce(function (totals, end, i) {
-          const busy = end.times.user + end.times.sys - start[i].times.user - start[i].times.sys
-          totals.total += busy + end.times.idle - start[i].times.idle
-          totals.busy += busy
-          return totals
-        }, { busy: 0, total: 0 })
+        const totals = os.cpus().reduce(
+          function (totals, end, i) {
+            const busy = end.times.user + end.times.sys - start[i].times.user - start[i].times.sys
+            totals.total += busy + end.times.idle - start[i].times.idle
+            totals.busy += busy
+            return totals
+          },
+          { busy: 0, total: 0 }
+        )
 
         resolve(totals.busy / totals.total)
       }, 1000)
