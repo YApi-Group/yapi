@@ -1,4 +1,4 @@
-import { schemaValidator } from '../../common/utils.js'
+import { schemaValidator } from '../common/utils.js'
 import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
 import interfaceColModel from '../models/interfaceCol.js'

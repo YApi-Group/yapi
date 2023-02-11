@@ -4,16 +4,16 @@ import markdownItTableOfContents from 'markdown-it-table-of-contents'
 import request from 'request'
 import _ from 'underscore'
 
-import handleImportData from '../../common/HandleImportData.js'
-import createContext from '../../common/createContext.js'
-import md from '../../common/markdown.js'
+import handleImportData from '../common/HandleImportData.js'
+import createContext from '../common/createContext.js'
+import md from '../common/markdown.js'
 import {
   handleParams,
   crossRequest,
   handleCurrDomain,
   checkNameIsExistInArray,
-} from '../../common/postmanLib.js'
-import { handleParamsValue, changeArrayToObject } from '../../common/utils.js'
+} from '../common/postmanLib.js'
+import { handleParamsValue, changeArrayToObject } from '../common/utils.js'
 import cons from '../cons.js'
 import FollowModel from '../models/follow.js'
 import InterfaceModel from '../models/interface.js'

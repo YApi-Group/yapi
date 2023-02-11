@@ -3,9 +3,9 @@ import _ from 'underscore'
 
 // import variable from '../../client/cons'
 // eslint-disable-next-line
-import mockExtra from '../../common/mock-extra.js'
-import { schemaValidator } from '../../common/utils.js'
-import variable from '../../variable.js'
+import variable from '../variable.js'
+import mockExtra from '../common/mock-extra.js'
+import { schemaValidator } from '../common/utils.js'
 import AdvMockModel from '../models/advMockModel.js'
 import CaseModel from '../models/caseModel.js'
 import InterfaceModel from '../models/interface.js'

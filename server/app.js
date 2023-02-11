@@ -16,7 +16,7 @@ import yapi from './yapi.js'
 
 // import  bodyParser from 'koa-bodyparser'
 // TODO 重新设计 plugin 机制 ，不使用 dynamic-require
-import './plugin.js'
+// import './plugin.js'
 // require('./utils/notice')
 
 yapi.connect = dbModule.connect()
