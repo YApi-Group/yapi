@@ -38,8 +38,8 @@ class GenTsService extends Component<PropTypes> {
   {
     "url": "yapi-swagger.json",
     "remoteUrl": "${location.protocol}//${location.hostname}${
-        location.port ? `:${location.port}` : ''
-      }/api/open/plugin/export-full?type=json&pid=${id}&status=all&token=${this.props.token}",
+                location.port ? `:${location.port}` : ''
+              }/api/open/export-full?type=json&pid=${id}&status=all&token=${this.props.token}",
     "type": "yapi",
     "swaggerParser": {}
   }
@@ -53,8 +53,8 @@ class GenTsService extends Component<PropTypes> {
               {`
   {
     "url": "${location.protocol}//${location.hostname}${
-        location.port ? `:${location.port}` : ''
-      }/api/open/plugin/export-full?type=json&pid=${id}&status=all&token=${this.props.token}",
+                location.port ? `:${location.port}` : ''
+              }/api/open/export-full?type=json&pid=${id}&status=all&token=${this.props.token}",
     "type": "yapi",
     "swaggerParser": {}
   }

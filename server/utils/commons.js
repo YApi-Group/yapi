@@ -1,7 +1,9 @@
 import http from 'http'
 import path from 'path'
+import vm from 'vm'
 
 import Ajv from 'ajv'
+import localize from 'ajv-i18n'
 import ejs from 'easy-json-schema'
 import fs from 'fs-extra'
 import jsf from 'json-schema-faker'
@@ -91,8 +93,8 @@ export const log = (msg, type) => {
     case 'error':
       f = console.error; // eslint-disable-line
       break
-    default:
-      f = console.log; // eslint-disable-line
+    default: // eslint-disable-line
+      f = console.log
       break
   }
 
@@ -145,9 +147,7 @@ export const json_parse = json => {
   }
 }
 
-export const randStr = () => Math.random()
-  .toString(36)
-  .substr(2)
+export const randStr = () => Math.random().toString(36).substr(2)
 export const getIp = ctx => {
   let ip
   try {
@@ -167,16 +167,20 @@ export const expireDate = day => {
 }
 
 export const sendMail = (options, cb) => {
-  if (!cons.mail) { return false }
+  if (!cons.mail) {
+    return false
+  }
   options.subject = options.subject ? options.subject + '-YApi 平台' : 'YApi 平台'
 
-  cb = cb || function (err) {
-    if (err) {
-      log('send mail ' + options.to + ' error,' + err.message, 'error')
-    } else {
-      log('send mail ' + options.to + ' success')
+  cb =
+    cb ||
+    function (err) {
+      if (err) {
+        log('send mail ' + options.to + ' error,' + err.message, 'error')
+      } else {
+        log('send mail ' + options.to + ' success')
+      }
     }
-  }
 
   try {
     cons.mail.sendMail(
@@ -186,7 +190,7 @@ export const sendMail = (options, cb) => {
         subject: options.subject,
         html: options.contents,
       },
-      cb,
+      cb
     )
   } catch (e) {
     log(e.message, 'error')
@@ -202,19 +206,20 @@ export const validateSearchKeyword = keyword => {
   return true
 }
 
-export const filterRes = (list, rules) => list.map(item => {
-  const filteredRes = {}
+export const filterRes = (list, rules) =>
+  list.map(item => {
+    const filteredRes = {}
 
-  rules.forEach(rule => {
-    if (typeof rule == 'string') {
-      filteredRes[rule] = item[rule]
-    } else if (typeof rule == 'object') {
-      filteredRes[rule.alias] = item[rule.key]
-    }
+    rules.forEach(rule => {
+      if (typeof rule == 'string') {
+        filteredRes[rule] = item[rule]
+      } else if (typeof rule == 'object') {
+        filteredRes[rule.alias] = item[rule.key]
+      }
+    })
+
+    return filteredRes
   })
-
-  return filteredRes
-})
 
 export const handleVarPath = (pathname, params) => {
   function insertParams(name) {
@@ -226,7 +231,9 @@ export const handleVarPath = (pathname, params) => {
     }
   }
 
-  if (!pathname) { return }
+  if (!pathname) {
+    return
+  }
 
   if (pathname.indexOf(':') !== -1) {
     const paths = pathname.split('/')
@@ -266,7 +273,6 @@ export const verifyPath = path => /^\/[a-zA-Z0-9\-/_:!.{}=]*$/.test(path)
  */
 export const sandbox = (sandbox, script) => {
   // try {
-  const vm = require('vm')
   sandbox = sandbox || {}
   script = new vm.Script(script)
   const context = new vm.createContext(sandbox)
@@ -346,7 +352,6 @@ export const validateParams = (schema2, params) => {
     removeAdditional: !flag,
   })
 
-  const localize = require('ajv-i18n')
   delete schema2.closeRemoveAdditional
 
   const schema = ejs(schema2)
@@ -412,15 +417,23 @@ export const createAction = (router, baseurl, routerController, action, path, me
  */
 export function handleParamsValue(params, val) {
   const value = {}
-  try { params = params.toObject() } catch (e) { /* TODO noop */ }
+  try {
+    params = params.toObject()
+  } catch (e) {
+    /* TODO noop */
+  }
 
-  if (params.length === 0 || val.length === 0) { return params }
+  if (params.length === 0 || val.length === 0) {
+    return params
+  }
 
   val.forEach(item => {
     value[item.name] = item
   })
   params.forEach((item, index) => {
-    if (!value[item.name] || typeof value[item.name] !== 'object') { return null }
+    if (!value[item.name] || typeof value[item.name] !== 'object') {
+      return null
+    }
     params[index].value = value[item.name].value
     if (!_.isUndefined(value[item.name].enable)) {
       params[index].enable = value[item.name].enable
@@ -444,8 +457,8 @@ export function handleMockScript(script, context) {
   }
   sandbox.cookie = {}
 
-  context.ctx.header.cookie
-    && context.ctx.header.cookie.split(';').forEach(function (Cookie) {
+  context.ctx.header.cookie &&
+    context.ctx.header.cookie.split(';').forEach(function (Cookie) {
       const parts = Cookie.split('=')
       sandbox.cookie[parts[0].trim()] = (parts[1] || '').trim()
     })
@@ -483,7 +496,7 @@ export function createWebAPIRequest(ops) {
             resolve(req)
           })
         }
-      },
+      }
     )
     http_client.on('error', e => {
       reject({ message: `request error: ${e.message}` })

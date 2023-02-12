@@ -4,7 +4,7 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Prompt, withRouter } from 'react-router-dom'
 
-import plugin from '@/plugin'
+// import plugin from '@/plugin'
 import { AnyFunc } from '@/types'
 
 import { fetchInterfaceData } from '../../../../reducer/modules/interface'
@@ -113,8 +113,7 @@ class Content extends Component<PropTypes, StateTypes> {
 
   render() {
     if (this.props.curdata.title) {
-      document.getElementsByTagName('title')[0].innerText
-        = this.props.curdata.title + '-' + this.title
+      document.getElementsByTagName('title')[0].innerText = this.props.curdata.title + '-' + this.title
     }
 
     const InterfaceTabs: { [K: string]: { component: typeof Component, name: string } } = {
@@ -126,7 +125,9 @@ class Content extends Component<PropTypes, StateTypes> {
 
     const tabs = (
       <Tabs className={styles.tabs} size="large" onChange={this.onChange} activeKey={this.state.curTab}>
-        {Object.entries(InterfaceTabs).map(([key, item]) => <TabPane tab={item.name} key={key} />)}
+        {Object.entries(InterfaceTabs).map(([key, item]) => (
+          <TabPane tab={item.name} key={key} />
+        ))}
       </Tabs>
     )
 

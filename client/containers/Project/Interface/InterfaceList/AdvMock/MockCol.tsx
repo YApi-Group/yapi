@@ -88,7 +88,7 @@ class MockCol extends Component<PropTypes, StateTypes> {
     if (!this.state.isAdd) {
       caseData.id = curCase._id
     }
-    await axios.post('/api/plugin/advmock/case/save', caseData).then(async res => {
+    await axios.post('/api/advmock/case/save', caseData).then(async res => {
       if (res.data.errcode === 0) {
         message.success(this.state.isAdd ? '添加成功' : '保存成功')
         await this.props.fetchMockCol(interface_id)
@@ -101,7 +101,7 @@ class MockCol extends Component<PropTypes, StateTypes> {
 
   deleteCase = async (id: number) => {
     const interface_id = this.props.match.params.actionId
-    await axios.post('/api/plugin/advmock/case/del', { id }).then(async res => {
+    await axios.post('/api/advmock/case/del', { id }).then(async res => {
       if (res.data.errcode === 0) {
         message.success('删除成功')
         await this.props.fetchMockCol(interface_id)
@@ -116,7 +116,7 @@ class MockCol extends Component<PropTypes, StateTypes> {
     const interface_id = this.props.match.params.actionId
 
     await axios
-      .post('/api/plugin/advmock/case/hide', {
+      .post('/api/advmock/case/hide', {
         id,
         enable: !enable,
       })

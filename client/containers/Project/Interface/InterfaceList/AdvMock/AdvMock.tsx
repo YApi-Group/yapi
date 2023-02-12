@@ -42,7 +42,7 @@ class AdvMock extends Component<PropTypes, StateTypes> {
       mock_script: this.state.mock_script,
       enable: this.state.enable,
     }
-    axios.post('/api/plugin/advmock/save', params).then(res => {
+    axios.post('/api/advmock/save', params).then(res => {
       if (res.data.errcode === 0) {
         message.success('保存成功')
       } else {
@@ -57,7 +57,7 @@ class AdvMock extends Component<PropTypes, StateTypes> {
 
   async getAdvMockData() {
     const interfaceId = this.props.match.params.actionId
-    const result = await axios.get('/api/plugin/advmock/get?interface_id=' + interfaceId)
+    const result = await axios.get('/api/advmock/get?interface_id=' + interfaceId)
     if (result.data.errcode === 0) {
       const mockData = result.data.data
       this.setState({
