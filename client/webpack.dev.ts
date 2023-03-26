@@ -13,7 +13,7 @@ const devConf: Configuration = {
   target: 'web',
 
   entry: {
-    main: path.resolve(__dirname, './index.js'),
+    main: path.resolve(__dirname, './index.tsx'),
   },
 
   output: {

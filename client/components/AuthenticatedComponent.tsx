@@ -14,7 +14,7 @@ type PropTypes = {
   changeMenuItem: AnyFunc
 }
 
-const states = (state:any) => ({
+const states = (state: any) => ({
   isAuthenticated: state.user.isLogin,
 })
 
@@ -44,5 +44,5 @@ export function requireAuthentication(Comp: typeof React.Component) {
     }
   }
 
-  return connect(states, actions)(AuthenticatedComponent) as typeof AuthenticatedComponent
+  return connect(states, actions)(AuthenticatedComponent) as any as typeof AuthenticatedComponent
 }

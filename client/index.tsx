@@ -22,5 +22,5 @@ ReactDOM.render(
       <App />
     </ConfigProvider>
   </Provider>,
-  document.getElementById('yapi'),
+  document.getElementById('yapi')
 )

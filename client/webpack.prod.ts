@@ -12,7 +12,7 @@ const prodConf: Configuration = {
   target: 'web',
 
   entry: {
-    main: path.resolve(__dirname, './index.js'),
+    main: path.resolve(__dirname, './index.tsx'),
   },
 
   output: {
@@ -61,7 +61,7 @@ const prodConf: Configuration = {
         test: /\.less$/,
         use: [
           { loader: MiniCssExtractPlugin.loader },
-          { loader: 'css-loader' }, /* css-loader auto set module for \.module\. files */
+          { loader: 'css-loader' } /* css-loader auto set module for \.module\. files */,
           { loader: 'postcss-loader' },
           /* antd 需要打开 javascriptEnabled */
           {
@@ -130,12 +130,13 @@ const prodConf: Configuration = {
     },
   },
 
-  externals: {
-  },
+  externals: {},
 
   plugins: [
     new DefinePlugin({
-      VERSION_INFO: JSON.stringify('version: ' + moment.tz('Asia/Shanghai').format()), /* 编译时添加版本信息 */
+      VERSION_INFO: JSON.stringify(
+        'version: ' + moment.tz('Asia/Shanghai').format(),
+      ) /* 编译时添加版本信息 */,
     }),
 
     new MiniCssExtractPlugin({
@@ -149,9 +150,7 @@ const prodConf: Configuration = {
     }),
 
     new CopyWebpackPlugin({
-      patterns: [
-        { from: './static/', to: './', globOptions: { ignore: ['**/*.ejs'] } },
-      ],
+      patterns: [{ from: './static/', to: './', globOptions: { ignore: ['**/*.ejs'] } }],
     }),
   ],
 }

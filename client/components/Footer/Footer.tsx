@@ -1,69 +1,40 @@
 import { GithubOutlined, TeamOutlined, AliwangwangOutlined } from '@ant-design/icons'
 import { Row, Col } from 'antd'
-import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 
 import data from '@/package.json'
 
 import './Footer.scss'
 
-// console.log(data.version)
-class Footer extends Component {
-  static propTypes = {
-    footList: PropTypes.array,
-  }
-
-  render() {
-    return (
-      <div className="footer-wrapper">
-        <Row className="footer-container">
-          {this.props.footList.map(function (item, i) {
-            return (
-              <FootItem
-                key={i}
-                linkList={item.linkList}
-                title={item.title}
-                iconType={item.iconType}
-              />
-            )
-          })}
-        </Row>
-      </div>
-    )
-  }
+type ItemPropTypes = {
+  linkList: any[]
+  title: string
+  iconType: typeof Component
 }
 
-class FootItem extends Component {
-  static propTypes = {
-    linkList: PropTypes.array,
-    title: PropTypes.string,
-    iconType: PropTypes.object,
-  }
+function FootItem(props: ItemPropTypes) {
+  const { iconType: IconType, title, linkList } = props
 
-  render() {
-    const { iconType: IconType, title, linkList } = this.props
-
-    return (
-      <Col span={6}>
-        <h4 className="title">
-          {IconType ? <IconType className="icon" /> : ''}
-          {title}
-        </h4>
-        {linkList.map(function (item, i) {
-          return (
-            <p key={i}>
-              <a href={item.itemLink} className="link">
-                {item.itemTitle}
-              </a>
-            </p>
-          )
-        })}
-      </Col>
-    )
-  }
+  return (
+    <Col span={6}>
+      <h4 className="title">
+        {IconType ? <IconType className="icon" /> : ''}
+        {title}
+      </h4>
+      {linkList.map(function (item, i) {
+        return (
+          <p key={i}>
+            <a href={item.itemLink} className="link">
+              {item.itemTitle}
+            </a>
+          </p>
+        )
+      })}
+    </Col>
+  )
 }
 
-Footer.defaultProps = {
+const defaultProps = {
   footList: [
     {
       title: 'GitHub',
@@ -113,6 +84,24 @@ Footer.defaultProps = {
       ],
     },
   ],
+}
+
+type FooPropTypes = {
+  footList?: any[]
+}
+
+function Footer(props: FooPropTypes = defaultProps) {
+  props = Object.assign(defaultProps, props)
+
+  return (
+    <div className="footer-wrapper">
+      <Row className="footer-container">
+        {props.footList.map(function (item, i) {
+          return <FootItem key={i} linkList={item.linkList} title={item.title} iconType={item.iconType} />
+        })}
+      </Row>
+    </div>
+  )
 }
 
 export default Footer

@@ -206,12 +206,6 @@ const tsRules = {
       functions: false,
     },
   ],
-
-  // 对象 及 enum 的最后一个属性末尾的逗号
-  '@typescript-eslint/comma-dangle': [
-    'warn',
-    'always-multiline', // 多行时必须有
-  ],
 }
 
 const babelRules = {
