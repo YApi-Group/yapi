@@ -1,22 +1,23 @@
 import { Row } from 'antd'
-import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
 
-import List from './List.jsx'
-import Profile from './Profile.jsx'
+import List from './List'
+import Profile from './Profile'
 
 import './index.scss'
 
-class User extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    curUid: PropTypes.number,
-    userType: PropTypes.string,
-    role: PropTypes.string,
+type PropsType = {
+  match: {
+    path: string
   }
+  curUid: number
+  userType: string
+  role: string
+}
 
+class User extends Component<PropsType> {
   render() {
     return (
       <div>
@@ -31,7 +32,7 @@ class User extends Component {
   }
 }
 
-const states = state => ({
+const states = (state: any) => ({
   curUid: state.user.uid,
   userType: state.user.type,
   role: state.user.role,

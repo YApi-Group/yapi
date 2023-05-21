@@ -1,14 +1,23 @@
 import { EditOutlined } from '@ant-design/icons'
 import { Row, Col, Input, Button, Select, message, Upload, Tooltip } from 'antd'
 import axios from 'axios'
-import PropTypes from 'prop-types'
-import React, { PureComponent as Component } from 'react'
+import React, { ChangeEvent, PureComponent as Component, ReactElement } from 'react'
 import { connect } from 'react-redux'
+
+import { AnyFunc } from '@/types.js'
 
 import { formatTime } from '../../common.js'
 import { setBreadcrumb, setImageUrl } from '../../reducer/modules/user'
 
-const EditButton = props => {
+type PropsType1 = {
+  isAdmin: boolean
+  isOwner: boolean
+  onClick: AnyFunc
+  name: string
+  admin?: boolean
+}
+
+const EditButton = (props: PropsType1) => {
   const { isAdmin, isOwner, onClick, name, admin } = props
   if (isOwner) {
     // 本人
@@ -41,13 +50,76 @@ const EditButton = props => {
   }
   return null
 }
-EditButton.propTypes = {
-  isAdmin: PropTypes.bool,
-  isOwner: PropTypes.bool,
-  onClick: PropTypes.func,
-  name: PropTypes.string,
-  admin: PropTypes.bool,
+
+type PropsType2 = {
+  uid: number
+  children: string
+  setImageUrl?: AnyFunc
+  url?: string
 }
+class AvatarUploadBase extends Component<PropsType2> {
+  uploadAvatar(str: string) {
+    axios
+      .post('/api/user/upload_avatar', { basecode: str })
+      .then(() => {
+        // this.setState({ imageUrl: str });
+        this.props.setImageUrl(str)
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  }
+
+  handleChange(info: any) {
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj, str => {
+        this.uploadAvatar(str)
+      })
+    }
+  }
+
+  render() {
+    const { url } = this.props
+    const imageUrl = url ? url : `/api/user/avatar?uid=${this.props.uid}`
+    // let imageUrl = this.state.imageUrl ? this.state.imageUrl : `/api/user/avatar?uid=${this.props.uid}`;
+    // console.log(this.props.uid);
+    return (
+      <div className="avatar-box">
+        <Tooltip
+          placement="right"
+          title={<div>点击头像更换 (只支持jpg、png格式且大小不超过200kb的图片)</div>}
+        >
+          <div>
+            <Upload
+              className="avatar-uploader"
+              name="basecode"
+              showUploadList={false}
+              action="/api/user/upload_avatar"
+              beforeUpload={beforeUpload}
+              onChange={this.handleChange.bind(this)}
+            >
+              {/* <Avatar size="large" src={imageUrl}  />*/}
+              <div style={{ width: 100, height: 100 }}>
+                <img className="avatar" src={imageUrl} />
+              </div>
+            </Upload>
+          </div>
+        </Tooltip>
+        <span className="avatarChange" />
+      </div>
+    )
+  }
+}
+
+const AvatarUpload = connect(
+  (state: any) => ({
+    url: state.user.imageUrl,
+  }),
+  {
+    setImageUrl,
+  }
+)(AvatarUploadBase)
 
 // @connect(
 //   state => ({
@@ -59,17 +131,32 @@ EditButton.propTypes = {
 //     setBreadcrumb,
 //   },
 // )
-class Profile extends Component {
-  static propTypes = {
-    match: PropTypes.object,
-    curUid: PropTypes.number,
-    userType: PropTypes.string,
-    setBreadcrumb: PropTypes.func,
-    curRole: PropTypes.string,
-    upload: PropTypes.bool,
+type PropsType = {
+  match: {
+    params: {
+      uid: string
+    }
   }
+  curUid: number
+  userType: string
+  setBreadcrumb: AnyFunc
+  curRole: string
+  upload: boolean
+}
 
-  constructor(props) {
+type StateType = {
+  usernameEdit: boolean
+  emailEdit: boolean
+  secureEdit: boolean
+  roleEdit: boolean
+  userinfo: Record<string, any>
+  _userinfo: Record<string, any>
+}
+
+class Profile extends Component<PropsType, StateType> {
+  _uid = ''
+
+  constructor(props: PropsType) {
     super(props)
     this.state = {
       usernameEdit: false,
@@ -77,6 +164,7 @@ class Profile extends Component {
       secureEdit: false,
       roleEdit: false,
       userinfo: {},
+      _userinfo: {},
     }
   }
 
@@ -85,7 +173,7 @@ class Profile extends Component {
     this.handleUserinfo(this.props)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: PropsType) {
     if (!nextProps.match.params.uid) {
       return
     }
@@ -94,23 +182,22 @@ class Profile extends Component {
     }
   }
 
-  handleUserinfo(props) {
+  handleUserinfo(props: PropsType) {
     const uid = props.match.params.uid
     this.getUserInfo(uid)
   }
 
-  handleEdit = (key, val) => {
-    const s = {}
+  handleEdit = (key: string, val: any) => {
+    const s: any = {}
     s[key] = val
     this.setState(s)
   }
 
-  getUserInfo = id => {
-    const _this = this
+  getUserInfo = (id: string) => {
     const { curUid } = this.props
 
     axios.get('/api/user/find?id=' + id).then(res => {
-      _this.setState({
+      this.setState({
         userinfo: res.data.data,
         _userinfo: res.data.data,
       })
@@ -122,10 +209,10 @@ class Profile extends Component {
     })
   }
 
-  updateUserinfo = name => {
+  updateUserinfo = (name: string) => {
     const state = this.state
     const value = this.state._userinfo[name]
-    const params = { uid: state.userinfo.uid }
+    const params: any = { uid: state.userinfo.uid }
     params[name] = value
 
     axios.post('/api/user/update', params).then(
@@ -146,12 +233,12 @@ class Profile extends Component {
       },
       err => {
         message.error(err.message)
-      },
+      }
     )
   }
 
-  changeUserinfo = e => {
-    const dom = e.target
+  changeUserinfo = (e: ChangeEvent) => {
+    const dom = e.target as HTMLInputElement
     const name = dom.getAttribute('name')
     const value = dom.value
 
@@ -163,7 +250,7 @@ class Profile extends Component {
     })
   }
 
-  changeRole = val => {
+  changeRole = (val: string) => {
     const userinfo = this.state.userinfo
     userinfo.role = val
     this.setState({
@@ -173,9 +260,9 @@ class Profile extends Component {
   }
 
   updatePassword = () => {
-    const old_password = document.getElementById('old_password').value
-    const password = document.getElementById('password').value
-    const verify_pass = document.getElementById('verify_pass').value
+    const old_password = (document.getElementById('old_password') as HTMLInputElement).value
+    const password = (document.getElementById('password') as HTMLInputElement).value
+    const verify_pass = (document.getElementById('verify_pass') as HTMLInputElement).value
     if (password !== verify_pass) {
       return message.error('两次输入的密码不一样')
     }
@@ -200,7 +287,7 @@ class Profile extends Component {
       },
       err => {
         message.error(err.message)
-      },
+      }
     )
   }
 
@@ -210,8 +297,9 @@ class Profile extends Component {
     const Option = Select.Option
     const userinfo = this.state.userinfo
     const _userinfo = this.state._userinfo
-    const roles = { admin: '管理员', member: '会员' }
-    let userType = ''
+    const roles: Record<string, string> = { admin: '管理员', member: '会员' }
+
+    let userType: boolean
     if (this.props.userType === 'third') {
       userType = false
     } else if (this.props.userType === 'site') {
@@ -232,7 +320,6 @@ class Profile extends Component {
           {/* 站点登陆才能编辑 */}
           {userType && (
             <EditButton
-              userType={userType}
               isOwner={userinfo.uid === this.props.curUid}
               isAdmin={this.props.curRole === 'admin'}
               onClick={this.handleEdit}
@@ -244,7 +331,12 @@ class Profile extends Component {
     } else {
       userNameEditHtml = (
         <div>
-          <Input value={_userinfo.username} name="username" onChange={this.changeUserinfo} placeholder="用户名" />
+          <Input
+            value={_userinfo.username}
+            name="username"
+            onChange={this.changeUserinfo}
+            placeholder="用户名"
+          />
           <ButtonGroup className="edit-buttons">
             <Button
               className="edit-button"
@@ -331,7 +423,7 @@ class Profile extends Component {
     }
 
     if (this.state.secureEdit === false) {
-      let btn = ''
+      let btn: ReactElement | null = null
       if (userType) {
         btn = (
           <Button
@@ -380,7 +472,7 @@ class Profile extends Component {
         <div className="user-item-body">
           {userinfo.uid === this.props.curUid ? <h3>个人设置</h3> : <h3>{userinfo.username} 资料设置</h3>}
 
-          <Row className="avatarCon" type="flex" justify="start">
+          <Row className="avatarCon" justify="start">
             <Col span={24}>
               {userinfo.uid === this.props.curUid ? (
                 <AvatarUpload uid={userinfo.uid}>点击上传头像</AvatarUpload>
@@ -391,17 +483,17 @@ class Profile extends Component {
               )}
             </Col>
           </Row>
-          <Row className="user-item" type="flex" justify="start">
+          <Row className="user-item" justify="start">
             <div className="maoboli" />
             <Col span={4}>用户id</Col>
             <Col span={12}>{userinfo.uid}</Col>
           </Row>
-          <Row className="user-item" type="flex" justify="start">
+          <Row className="user-item" justify="start">
             <div className="maoboli" />
             <Col span={4}>用户名</Col>
             <Col span={12}>{userNameEditHtml}</Col>
           </Row>
-          <Row className="user-item" type="flex" justify="start">
+          <Row className="user-item" justify="start">
             <div className="maoboli" />
             <Col span={4}>Email</Col>
             <Col span={12}>{emailEditHtml}</Col>
@@ -409,7 +501,6 @@ class Profile extends Component {
           <Row
             className="user-item"
             style={{ display: this.props.curRole === 'admin' ? '' : 'none' }}
-            type="flex"
             justify="start"
           >
             <div className="maoboli" />
@@ -419,26 +510,25 @@ class Profile extends Component {
           <Row
             className="user-item"
             style={{ display: this.props.curRole === 'admin' ? '' : 'none' }}
-            type="flex"
             justify="start"
           >
             <div className="maoboli" />
             <Col span={4}>登陆方式</Col>
             <Col span={12}>{userinfo.type === 'site' ? '站点登陆' : '第三方登陆'}</Col>
           </Row>
-          <Row className="user-item" type="flex" justify="start">
+          <Row className="user-item" justify="start">
             <div className="maoboli" />
             <Col span={4}>创建账号时间</Col>
             <Col span={12}>{formatTime(userinfo.add_time)}</Col>
           </Row>
-          <Row className="user-item" type="flex" justify="start">
+          <Row className="user-item" justify="start">
             <div className="maoboli" />
             <Col span={4}>更新账号时间</Col>
             <Col span={12}>{formatTime(userinfo.up_time)}</Col>
           </Row>
 
           {userType ? (
-            <Row className="user-item" type="flex" justify="start">
+            <Row className="user-item" justify="start">
               <div className="maoboli" />
               <Col span={4}>密码</Col>
               <Col span={12}>{secureEditHtml}</Col>
@@ -452,73 +542,7 @@ class Profile extends Component {
   }
 }
 
-@connect(
-  state => ({
-    url: state.user.imageUrl,
-  }),
-  {
-    setImageUrl,
-  },
-)
-class AvatarUpload extends Component {
-  static propTypes = {
-    uid: PropTypes.number,
-    setImageUrl: PropTypes.func,
-    url: PropTypes.any,
-  }
-
-  uploadAvatar(basecode) {
-    axios
-      .post('/api/user/upload_avatar', { basecode: basecode })
-      .then(() => {
-        // this.setState({ imageUrl: basecode });
-        this.props.setImageUrl(basecode)
-      })
-      .catch(e => {
-        console.log(e)
-      })
-  }
-
-  handleChange(info) {
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, basecode => {
-        this.uploadAvatar(basecode)
-      })
-    }
-  }
-
-  render() {
-    const { url } = this.props
-    const imageUrl = url ? url : `/api/user/avatar?uid=${this.props.uid}`
-    // let imageUrl = this.state.imageUrl ? this.state.imageUrl : `/api/user/avatar?uid=${this.props.uid}`;
-    // console.log(this.props.uid);
-    return (
-      <div className="avatar-box">
-        <Tooltip placement="right" title={<div>点击头像更换 (只支持jpg、png格式且大小不超过200kb的图片)</div>}>
-          <div>
-            <Upload
-              className="avatar-uploader"
-              name="basecode"
-              showUploadList={false}
-              action="/api/user/upload_avatar"
-              beforeUpload={beforeUpload}
-              onChange={this.handleChange.bind(this)}
-            >
-              {/* <Avatar size="large" src={imageUrl}  />*/}
-              <div style={{ width: 100, height: 100 }}>
-                <img className="avatar" src={imageUrl} />
-              </div>
-            </Upload>
-          </div>
-        </Tooltip>
-        <span className="avatarChange" />
-      </div>
-    )
-  }
-}
-
-function beforeUpload(file) {
+function beforeUpload(file: File) {
   const isJPG = file.type === 'image/jpeg'
   const isPNG = file.type === 'image/png'
   if (!isJPG && !isPNG) {
@@ -532,13 +556,13 @@ function beforeUpload(file) {
   return (isPNG || isJPG) && isLt2M
 }
 
-function getBase64(img, callback) {
+function getBase64(img: File, callback: (rst: string) => void) {
   const reader = new FileReader()
-  reader.addEventListener('load', () => callback(reader.result))
+  reader.addEventListener('load', () => callback(reader.result as string))
   reader.readAsDataURL(img)
 }
 
-const states = state => ({
+const states = (state: any) => ({
   curUid: state.user.uid,
   userType: state.user.type,
   curRole: state.user.role,

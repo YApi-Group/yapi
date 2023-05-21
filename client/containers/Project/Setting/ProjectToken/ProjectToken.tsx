@@ -1,9 +1,10 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Tooltip, message, Modal } from 'antd'
 import { CopyOutlined, ReloadOutlined } from '@ant-design/icons'
+import { Tooltip, message, Modal } from 'antd'
 import copy from 'copy-to-clipboard'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+
+import { AnyFunc } from '@/types'
 
 import { getToken, updateToken } from '../../../../reducer/modules/project'
 
@@ -11,24 +12,16 @@ import './ProjectToken.scss'
 
 const confirm = Modal.confirm
 
-@connect(
-  state => ({
-    token: state.project.token,
-  }),
-  {
-    getToken,
-    updateToken,
-  },
-)
-class ProjectToken extends Component {
-  static propTypes = {
-    projectId: PropTypes.number,
-    getToken: PropTypes.func,
-    token: PropTypes.string,
-    updateToken: PropTypes.func,
-    curProjectRole: PropTypes.string,
-  };
+type PropsType = {
+  projectId: number
+  curProjectRole: string
 
+  getToken?: AnyFunc
+  token?: string
+  updateToken?: AnyFunc
+}
+
+class ProjectToken extends Component<PropsType> {
   async componentDidMount() {
     await this.props.getToken(this.props.projectId)
   }
@@ -36,30 +29,27 @@ class ProjectToken extends Component {
   copyToken = () => {
     copy(this.props.token)
     message.success('已经成功复制到剪切板')
-  };
+  }
 
   updateToken = () => {
-    const that = this
     confirm({
       title: '重新生成key',
       content: '重新生成之后，之前的key将无法使用，确认重新生成吗？',
       okText: '确认',
       cancelText: '取消',
-      async onOk() {
-        await that.props.updateToken(that.props.projectId)
+      onOk: async () => {
+        await this.props.updateToken(this.props.projectId)
         message.success('更新成功')
       },
-      onCancel() {},
+      // onCancel() {},
     })
-  };
+  }
 
   render() {
     return (
       <div className="project-token">
         <h2 className="token-title">工具标识</h2>
-        <div className="message">
-          每个项目都有唯一的标识token，用户可以使用这个token值来请求项目 openapi.
-        </div>
+        <div className="message">每个项目都有唯一的标识token，用户可以使用这个token值来请求项目 openapi.</div>
         <div className="token">
           <span>
             token: <span className="token-message">{this.props.token}</span>
@@ -78,7 +68,15 @@ class ProjectToken extends Component {
         </div>
         <br />
         <h2 className="token-title">open接口：</h2>
-        <p><a target="_blank" rel="noopener noreferrer" href="https://hellosean1025.github.io/yapi/openapi.html">详细接口文档</a></p>
+        <p>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://hellosean1025.github.io/yapi/openapi.html"
+          >
+            详细接口文档
+          </a>
+        </p>
         <div>
           <ul className="open-api">
             <li>/api/open/run_auto_test [运行自动化测试]</li>
@@ -98,4 +96,13 @@ class ProjectToken extends Component {
   }
 }
 
-export default ProjectToken
+const states = (state: any) => ({
+  token: state.project.token,
+})
+
+const actions = {
+  getToken,
+  updateToken,
+}
+
+export default connect(states, actions)(ProjectToken)

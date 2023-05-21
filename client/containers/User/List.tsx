@@ -5,6 +5,8 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
+import { AnyFunc } from '@/types.js'
+
 import { formatTime } from '../../common.js'
 import { setBreadcrumb } from '../../reducer/modules/user'
 
@@ -13,6 +15,22 @@ import { setBreadcrumb } from '../../reducer/modules/user'
 const Search = Input.Search
 const limit = 20
 
+type ItemPart = {
+  _id: number
+  username: string
+}
+
+type PropsType = {
+  curUserRole: string
+  setBreadcrumb: AnyFunc
+}
+type StateType = {
+  data: any[]
+  total: number | null
+  current: number
+  backups: any[]
+  isSearch: boolean
+}
 // @connect(
 //   state => ({
 //     curUserRole: state.user.role,
@@ -21,8 +39,8 @@ const limit = 20
 //     setBreadcrumb,
 //   },
 // )
-class List extends Component {
-  constructor(props) {
+class List extends Component<PropsType, StateType> {
+  constructor(props: PropsType) {
     super(props)
     this.state = {
       data: [],
@@ -36,13 +54,9 @@ class List extends Component {
     setBreadcrumb: PropTypes.func,
     curUserRole: PropTypes.string,
   }
-  changePage = current => {
-    this.setState(
-      {
-        current: current,
-      },
-      this.getUserList,
-    )
+
+  changePage = (current: number) => {
+    this.setState({ current: current }, this.getUserList)
   }
 
   getUserList() {
@@ -50,7 +64,7 @@ class List extends Component {
       const result = res.data
 
       if (result.errcode === 0) {
-        const list = result.data.list
+        const list = result.data.list as any[]
         const total = result.data.count
         list.map((item, index) => {
           item.key = index
@@ -69,7 +83,7 @@ class List extends Component {
     this.getUserList()
   }
 
-  confirm = uid => {
+  confirm = (uid: number) => {
     axios
       .post('/api/user/del', {
         id: uid,
@@ -78,10 +92,10 @@ class List extends Component {
         res => {
           if (res.data.errcode === 0) {
             message.success('已删除此用户')
-            let userlist = this.state.data
-            userlist = userlist.filter(item => item._id != uid)
+            let users = this.state.data
+            users = users.filter(item => item._id !== uid)
             this.setState({
-              data: userlist,
+              data: users,
             })
           } else {
             message.error(res.data.errmsg)
@@ -89,7 +103,7 @@ class List extends Component {
         },
         err => {
           message.error(err.message)
-        },
+        }
       )
   }
 
@@ -97,18 +111,20 @@ class List extends Component {
     this.props.setBreadcrumb([{ name: '用户管理' }])
   }
 
-  handleSearch = value => {
+  handleSearch = (value: string) => {
     const params = { q: value }
     if (params.q !== '') {
       axios.get('/api/user/search', { params }).then(data => {
-        const userList = []
+        const userList: any[] = []
 
         data = data.data.data
         if (data) {
-          data.forEach(v => userList.push({
-            ...v,
-            _id: v.uid,
-          }))
+          ;(data as any).forEach((v: any) =>
+            userList.push({
+              ...v,
+              _id: v.uid,
+            })
+          )
         }
 
         this.setState({
@@ -136,7 +152,7 @@ class List extends Component {
         dataIndex: 'username',
         key: 'username',
         width: 180,
-        render: (username, item) => <Link to={'/user/profile/' + item._id}>{item.username}</Link>,
+        render: (_: any, item: ItemPart) => <Link to={'/user/profile/' + item._id}>{item.username}</Link>,
       },
       {
         title: 'Email',
@@ -159,7 +175,7 @@ class List extends Component {
         title: '功能',
         key: 'action',
         width: '90px',
-        render: item => (
+        render: (item: ItemPart) => (
           <span>
             {/* <span className="ant-divider" /> */}
             <Popconfirm
@@ -221,7 +237,7 @@ class List extends Component {
   }
 }
 
-const states = state => ({
+const states = (state: any) => ({
   curUserRole: state.user.role,
 })
 

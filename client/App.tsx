@@ -13,7 +13,7 @@ import Loading from './components/Loading/Loading'
 import MyPopConfirm from './components/MyPopConfirm/MyPopConfirm'
 import Notify from './components/Notify/Notify'
 import StatisticPage from './components/StatisticPage'
-import User from './containers/User/User.jsx'
+import User from './containers/User/User'
 import { Home, Group, Project, Follows, AddProject, Login } from './containers/index'
 import { checkLoginState } from './reducer/modules/user'
 
