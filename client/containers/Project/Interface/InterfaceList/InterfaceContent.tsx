@@ -13,7 +13,7 @@ import AdvMock from './AdvMock/AdvMock'
 import Edit from './Edit'
 import Run from './Run/Run'
 import View from './View'
-import styles from './ic.module.less'
+import styles from './ic.module.scss'
 
 const TabPane = Tabs.TabPane
 

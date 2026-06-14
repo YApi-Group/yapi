@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "concurrently \"cd server && npm i\" \"cd client && npm i\"",
     "clean": "rimraf ./node_modules/ ./server/node_modules/ ./client/node_modules/",
-    "dev": "concurrently -k \"cd server && npm run dev\" \"cd client && npm run dev\"",
+    "dev": "concurrently -n svr,cli -k \"cd server && npm run dev\" \"cd client && npm run dev\"",
     "install-server": "node server/install.js",
     "start": "node server/app.js",
     "test": "ava",
@@ -90,7 +90,7 @@
     "nodemon": "^2.0.12",
     "prop-types": "^15.5.10",
     "rewire": "^2.5.2",
-    "typescript": "^4.3.4",
+    "typescript": "^6.0.3",
     "validate-commit-msg": "^2.12.2"
   },
   "config": {

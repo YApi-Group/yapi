@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { getToken } from '@/reducer/modules/project'
 import { AnyFunc } from '@/types'
 
-import styles from './gts.module.less'
+import styles from './gts.module.scss'
 
 type PropTypes = {
   projectId: number

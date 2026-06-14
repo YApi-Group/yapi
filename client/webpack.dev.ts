@@ -59,7 +59,7 @@ const devConf: Configuration = {
   devServer: {
     hot: true,
     open: ['/'],
-    host: ip.address(),
+    // host: ip.address(),
     client: { logging: 'none' },
     devMiddleware: {
       writeToDisk: false,

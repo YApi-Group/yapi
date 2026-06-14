@@ -55,5 +55,5 @@
   "prettier.tabWidth": 2,
   "i18n-ally.indent": 2,
   "editor.tabSize": 2,
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+  "js/ts.tsdk.path": "node_modules\\typescript\\lib"
 }

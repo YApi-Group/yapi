@@ -6,7 +6,7 @@ import { Table } from 'antd'
 import { ColumnsType, ColumnType } from 'antd/lib/table'
 import React, { Component } from 'react'
 import { SortableContainer, SortableElement, SortableHandle, SortEnd } from 'react-sortable-hoc'
-// import styles from './ct.module.less'
+// import styles from './ct.module.scss'
 
 // eslint-disable-next-line new-cap
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />)

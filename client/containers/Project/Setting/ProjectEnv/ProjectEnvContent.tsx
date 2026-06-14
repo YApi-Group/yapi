@@ -7,7 +7,7 @@ import { EnvPart } from '@/ajax/ProjectGet'
 import constants from '@/cons'
 import { AnyFunc } from '@/types'
 
-import styles from './pec.module.less'
+import styles from './pec.module.scss'
 
 import './index.scss'
 

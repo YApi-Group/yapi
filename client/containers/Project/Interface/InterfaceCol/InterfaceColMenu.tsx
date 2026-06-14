@@ -19,7 +19,7 @@ import {
 import { fetchProjectList } from '../../../../reducer/modules/project'
 
 import ImportInterface from './ImportInterface'
-import styles from './icm.module.less'
+import styles from './icm.module.scss'
 
 import './InterfaceColMenu.scss'
 

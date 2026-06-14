@@ -11,7 +11,7 @@ import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
 import { updateEnv, getProject, getEnv } from '../../../../reducer/modules/project'
 
 import ProjectEnvContent from './ProjectEnvContent'
-import styles from './index.module.less'
+import styles from './index.module.scss'
 
 import './index.scss'
 

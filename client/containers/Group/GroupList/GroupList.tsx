@@ -15,7 +15,7 @@ import UsernameAutoComplete from '../../../components/UsernameAutoComplete/Usern
 import { fetchGroupList, setCurrGroup, fetchGroupMsg } from '../../../reducer/modules/group.js'
 import { fetchNewsData } from '../../../reducer/modules/news.js'
 
-import style from './gl.module.less'
+import style from './gl.module.scss'
 
 import './GroupList.scss'
 
