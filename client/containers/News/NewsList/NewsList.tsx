@@ -1,10 +1,12 @@
 import { Menu } from 'antd'
-import { ItemType } from 'antd/lib/menu/hooks/useItems.js'
+import type { MenuProps } from 'antd'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
 import { fetchNewsData } from '../../../reducer/modules/news.js'
 import { AnyFunc } from '../../../types'
+
+type ItemType = Required<MenuProps>['items'][number]
 
 const logList = [{ name: '用户' }, { name: '分组' }, { name: '接口' }, { name: '项目' }]
 

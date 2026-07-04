@@ -1,0 +1,7 @@
+// antd 5 升级后仍需保留的全局 .ant-* 覆盖（原 theme.less 中的活代码，v5 类名未变）
+
+// 处理添加环境配置下边距重合的 bug
+.ant-form-item > .ant-form-item,
+.ant-form-item :not(.ant-form) > .ant-form-item {
+  margin-bottom: 16px;
+}

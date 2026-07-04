@@ -1,6 +1,6 @@
 import { FolderAddOutlined, UserOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { Modal, Input, message, Spin, Row, Menu, Col, Popover, Tooltip } from 'antd'
-import { ItemType } from 'antd/lib/menu/hooks/useItems'
+import type { MenuProps } from 'antd'
 import axios from 'axios'
 import PropTypes from 'prop-types'
 import { MenuInfo } from 'rc-menu/lib/interface'
@@ -18,6 +18,8 @@ import { fetchNewsData } from '../../../reducer/modules/news.js'
 import style from './gl.module.scss'
 
 import './GroupList.scss'
+
+type ItemType = Required<MenuProps>['items'][number]
 
 const { TextArea } = Input
 

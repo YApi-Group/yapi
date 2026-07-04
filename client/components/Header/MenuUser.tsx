@@ -1,6 +1,6 @@
 import { LogoutOutlined, UserOutlined, SolutionOutlined, BarChartOutlined } from '@ant-design/icons'
 import { Menu } from 'antd'
-import { ItemType } from 'antd/lib/menu/hooks/useItems'
+import type { MenuProps } from 'antd'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
@@ -9,6 +9,8 @@ import plugin from '@/plugin.js'
 import { AnyFunc } from '@/types'
 
 import './Header.scss'
+
+type ItemType = Required<MenuProps>['items'][number]
 
 type PropTypes = {
   user: string

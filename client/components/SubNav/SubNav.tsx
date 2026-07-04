@@ -1,10 +1,12 @@
 import { Menu } from 'antd'
-import { ItemType } from 'antd/lib/menu/hooks/useItems'
+import type { MenuProps } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { Link } from 'react-router-dom'
 
 import './SubNav.scss'
+
+type ItemType = Required<MenuProps>['items'][number]
 
 type PropTypes = {
   data: any[]

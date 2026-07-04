@@ -12,6 +12,11 @@ body {
   padding: 0;
 }
 
+// antd 5 不再给 body 上色（v4 由 antd.less 的 @body-background 提供），在此补齐
+body {
+  background-color: #eceef1;
+}
+
 ::selection {
   background-color: #2395f1;
 }
