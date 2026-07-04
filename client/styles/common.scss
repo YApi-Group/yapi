@@ -130,11 +130,6 @@ em {
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
 }
 
-// confirm 框内边距过大
-.ant-confirm .ant-modal-body {
-  padding: 0.24rem !important;
-}
-
 .card-panel {
   padding: 0.36rem 0.24rem 0;
 }
@@ -179,17 +174,6 @@ em {
   &.undone::before {
     background-color: #ff561b;
   }
-}
-
-.ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
-  border: none;
-}
-.ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
-  border: none;
-}
-
-.ant-tabs.ant-tabs-card > .ant-tabs-content {
-  margin-top: -1px;
 }
 
 .tabs-large .ant-tabs-tab {
