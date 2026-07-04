@@ -121,12 +121,6 @@ const devConf: Configuration = {
       },
 
       {
-        test: /\.[jt]sx?$/,
-        include: /(json-schema-editor-visual)/,
-        loader: 'babel-loader',
-      },
-
-      {
         test: /\.(eot|ttf|woff|woff2)(\?\S*)?$/,
         loader: 'file-loader',
       },

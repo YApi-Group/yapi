@@ -18,7 +18,6 @@ import {
   FormInstance,
 } from 'antd'
 import axios from 'axios'
-import jSchema from 'json-schema-editor-visual'
 import json5 from 'json5'
 import PropTypes from 'prop-types'
 import React, { ChangeEvent, createRef, PureComponent as Component } from 'react'
@@ -28,7 +27,7 @@ import _ from 'underscore'
 import AceEditor from '@/components/AceEditor/AceEditor'
 import mockEditor from '@/components/AceEditor/mockEditor'
 import constants from '@/cons'
-// import jSchema from '@/package'
+import jSchema from '@/package'
 import { AnyFunc, HttpMethod } from '@/types'
 import Editor from '@common/tui-editor/dist/tui-editor-Editor-all.min.js'
 
