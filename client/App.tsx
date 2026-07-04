@@ -1,6 +1,6 @@
 import { Alert } from 'antd'
 import React, { PureComponent as Component } from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { connect } from 'react-redux'
 import { Route, BrowserRouter } from 'react-router-dom'
 
@@ -99,7 +99,7 @@ class App extends Component<AppProps, AppState> {
     // http://reacttraining.cn/web/api/BrowserRouter/getUserConfirmation-func
     const container = document.createElement('div')
     document.body.appendChild(container)
-    ReactDOM.render(<MyPopConfirm msg={msg} callback={callback} />, container)
+    createRoot(container).render(<MyPopConfirm msg={msg} callback={callback} />)
   }
 
   render() {

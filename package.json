@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "concurrently \"cd server && npm i\" \"cd client && npm i\"",
     "clean": "rimraf ./node_modules/ ./server/node_modules/ ./client/node_modules/",
-    "dev": "concurrently -n svr,cli -k \"cd server && npm run dev\" \"cd client && npm run dev\"",
+    "dev": "concurrently -n svr,cli -c yellow,green -k \"cd server && npm run dev\" \"cd client && npm run dev\"",
     "install-server": "node server/install.js",
     "start": "node server/app.js",
     "test": "ava",

@@ -1,7 +1,7 @@
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/lib/locale-provider/zh_CN'
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 
 import './plugin'
@@ -16,11 +16,12 @@ console.log(VERSION_INFO)
 
 const store = createStore()
 
-ReactDOM.render(
+// React 18 起使用 createRoot 挂载应用（替代已废弃的 ReactDOM.render）
+const root = createRoot(document.getElementById('yapi') as HTMLElement)
+root.render(
   <Provider store={store}>
     <ConfigProvider locale={zhCN}>
       <App />
     </ConfigProvider>
-  </Provider>,
-  document.getElementById('yapi')
+  </Provider>
 )
