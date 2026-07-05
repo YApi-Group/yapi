@@ -88,23 +88,6 @@ const devConf: Configuration = {
       },
 
       {
-        test: /\.less$/,
-        use: [
-          { loader: 'style-loader' },
-          { loader: 'css-loader' } /* css-loader auto set module for \.module\. files */,
-          { loader: 'postcss-loader' },
-          {
-            loader: 'less-loader',
-            options: {
-              lessOptions: {
-                javascriptEnabled: true /* antd need javascriptEnabled */,
-              },
-            },
-          },
-        ],
-      },
-
-      {
         test: /\.scss$/,
         use: [
           { loader: 'style-loader' },

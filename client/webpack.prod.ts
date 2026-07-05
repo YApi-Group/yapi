@@ -58,24 +58,6 @@ const prodConf: Configuration = {
       },
 
       {
-        test: /\.less$/,
-        use: [
-          { loader: MiniCssExtractPlugin.loader },
-          { loader: 'css-loader' } /* css-loader auto set module for \.module\. files */,
-          { loader: 'postcss-loader' },
-          /* antd 需要打开 javascriptEnabled */
-          {
-            loader: 'less-loader',
-            options: {
-              lessOptions: {
-                javascriptEnabled: true,
-              },
-            },
-          },
-        ],
-      },
-
-      {
         test: /\.scss$/,
         use: [
           { loader: MiniCssExtractPlugin.loader },
