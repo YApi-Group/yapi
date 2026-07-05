@@ -2,31 +2,45 @@ import crypto from 'crypto'
 
 import cons from '../cons.js'
 
-/** 创建加密算法 */
-const aseEncode = function (data: string, password: string) {
-  // 如下方法使用指定的算法与密码来创建cipher对象
-  const cipher = crypto.createCipher('aes192', password)
+/**
+ * 复刻 OpenSSL EVP_BytesToKey（MD5、无 salt）的 key/IV 派生。
+ * crypto.createCipher/createDecipher 在 Node 22 中被移除，但历史已分发的项目 token
+ * 均由 createCipher('aes192', password) 生成，必须保持派生方式一致才能兼容旧 token。
+ */
+const deriveKeyAndIv = function (password: string) {
+  const keyLen = 24 // aes192 密钥长度
+  const ivLen = 16
+  let material = Buffer.alloc(0)
+  let prev = Buffer.alloc(0)
+  while (material.length < keyLen + ivLen) {
+    prev = crypto
+      .createHash('md5')
+      .update(Buffer.concat([prev, Buffer.from(password)]))
+      .digest()
+    material = Buffer.concat([material, prev])
+  }
+  return {
+    key: material.subarray(0, keyLen),
+    iv: material.subarray(keyLen, keyLen + ivLen),
+  }
+}
 
-  // 使用该对象的update方法来指定需要被加密的数据
+/** 创建加密算法（等价于已移除的 createCipher('aes192', password)） */
+const aseEncode = function (data: string, password: string) {
+  const { key, iv } = deriveKeyAndIv(password)
+  const cipher = crypto.createCipheriv('aes-192-cbc', key, iv)
+
   let encrypted = cipher.update(data, 'utf-8', 'hex')
   encrypted += cipher.final('hex')
 
   return encrypted
 }
 
-/** 创建解密算法 */
+/** 创建解密算法（等价于已移除的 createDecipher('aes192', password)） */
 const aseDecode = function (data: string, password: string) {
-  /* 
-   该方法使用指定的算法与密码来创建 decipher对象, 第一个算法必须与加密数据时所使用的算法保持一致;
-   第二个参数用于指定解密时所使用的密码，其参数值为一个二进制格式的字符串或一个Buffer对象，该密码同样必须与加密该数据时所使用的密码保持一致
-  */
-  const decipher = crypto.createDecipher('aes192', password)
+  const { key, iv } = deriveKeyAndIv(password)
+  const decipher = crypto.createDecipheriv('aes-192-cbc', key, iv)
 
-  /*
-   第一个参数为一个Buffer对象或一个字符串，用于指定需要被解密的数据
-   第二个参数用于指定被解密数据所使用的编码格式，可指定的参数值为 'hex', 'binary', 'base64'等，
-   第三个参数用于指定输出解密数据时使用的编码格式，可选参数值为 'utf-8', 'ascii' 或 'binary';
-  */
   let decrypted = decipher.update(data, 'hex', 'utf-8')
   decrypted += decipher.final('utf-8')
 
