@@ -199,7 +199,7 @@ class GroupList extends Component<PropTypes, StateTypes> {
           <div className="group-item" style={{ zIndex: this.props.studyTip === 0 ? 3 : 1 }}>
             <UserOutlined className={style.itemIcon} />
             <Popover
-              overlayClassName="popover-index"
+              classNames={{ root: 'popover-index' }}
               content={<GuideBtns />}
               title={tip}
               placement="right"

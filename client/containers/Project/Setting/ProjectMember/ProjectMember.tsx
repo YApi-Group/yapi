@@ -382,7 +382,7 @@ class ProjectMember extends Component<PropsType, StateType> {
             className="setting-project-member"
           />
           <Card
-            bordered={false}
+            variant="borderless"
             title={this.state.groupName + ' 分组成员 (' + this.state.groupMemberList.length + ') 人'}
             hoverable={true}
             className="setting-group"

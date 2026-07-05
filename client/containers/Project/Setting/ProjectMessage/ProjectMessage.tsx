@@ -268,7 +268,7 @@ class ProjectMessage extends Component<PropTypes, StateTypes> {
                 title={colorSelector}
                 content={iconSelector}
                 trigger="click"
-                overlayClassName="change-project-container"
+                classNames={{ root: 'change-project-container' }}
               >
                 {/* <Icon
                   type={projectMsg.icon || 'star-o'}

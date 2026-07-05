@@ -233,7 +233,7 @@ class InterfaceList extends Component<PropTypes, StateTypes> {
               <Tooltip title="开放接口" placement="topLeft">
                 <span>{record.api_opened && <EyeOutlined className="opened" />}</span>
               </Tooltip>
-              <Tooltip title={path} placement="topLeft" overlayClassName="toolTip">
+              <Tooltip title={path} placement="topLeft" classNames={{ root: 'toolTip' }}>
                 <span className="path">{path}</span>
               </Tooltip>
             </div>

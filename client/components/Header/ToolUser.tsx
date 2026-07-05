@@ -65,11 +65,11 @@ const ToolUser = (props: PropTypes) => {
         <Search groupList={props.groupList} />
       </li>
       <Popover
-        overlayClassName="popover-index"
+        classNames={{ root: 'popover-index' }}
         content={<GuideBtns />}
         title={tipFollow}
         placement="bottomRight"
-        arrowPointAtCenter
+        arrow={{ pointAtCenter: true }}
         open={props.studyTip === 1 && !props.study}
       >
         <Tooltip placement="bottom" title={'我的关注'}>
@@ -81,11 +81,11 @@ const ToolUser = (props: PropTypes) => {
         </Tooltip>
       </Popover>
       <Popover
-        overlayClassName="popover-index"
+        classNames={{ root: 'popover-index' }}
         content={<GuideBtns />}
         title={tipAdd}
         placement="bottomRight"
-        arrowPointAtCenter
+        arrow={{ pointAtCenter: true }}
         open={props.studyTip === 2 && !props.study}
       >
         <Tooltip placement="bottom" title={'新建项目'}>
@@ -97,11 +97,11 @@ const ToolUser = (props: PropTypes) => {
         </Tooltip>
       </Popover>
       <Popover
-        overlayClassName="popover-index"
+        classNames={{ root: 'popover-index' }}
         content={<GuideBtns isLast={true} />}
         title={tipDoc}
         placement="bottomRight"
-        arrowPointAtCenter
+        arrow={{ pointAtCenter: true }}
         open={props.studyTip === 3 && !props.study}
       >
         <Tooltip placement="bottom" title={'使用文档'}>

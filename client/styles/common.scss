@@ -12,9 +12,14 @@ body {
   padding: 0;
 }
 
-// antd 5 不再给 body 上色（v4 由 antd.less 的 @body-background 提供），在此补齐
+// antd 5 的 reset.css 不含 v4 antd.less 中的 body 全局排版样式，在此补齐：
+// 缺少 font-size 兜底时，上方 html 的 100px rem 基准会向下继承，
+// 依赖行盒基线定位的元素（如顶栏 logo）会整体下坠
 body {
   background-color: #eceef1;
+  color: rgb(0 0 0 / 88%);
+  font-size: 14px;
+  line-height: 1.5715;
 }
 
 ::selection {

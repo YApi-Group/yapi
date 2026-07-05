@@ -11,21 +11,13 @@ type PropTypes = {
 
 class BreadcrumbNavigation extends Component<PropTypes> {
   render() {
-    const getItem = this.props.breadcrumb.map((item, index) => {
-      if (item.href) {
-        return (
-          <Breadcrumb.Item key={index}>
-            <Link to={item.href}>{item.name}</Link>
-          </Breadcrumb.Item>
-        )
-      }
-
-      return <Breadcrumb.Item key={index}>{item.name}</Breadcrumb.Item>
-    })
+    const items = this.props.breadcrumb.map(item => ({
+      title: item.href ? <Link to={item.href}>{item.name}</Link> : item.name,
+    }))
 
     return (
       <div className="breadcrumb-container">
-        <Breadcrumb>{getItem}</Breadcrumb>
+        <Breadcrumb items={items} />
       </div>
     )
   }
