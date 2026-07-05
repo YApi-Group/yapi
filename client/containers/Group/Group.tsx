@@ -1,4 +1,5 @@
 import { Tabs, Layout, Spin } from 'antd'
+import type { TabsProps } from 'antd'
 import axios from 'axios'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
@@ -19,7 +20,6 @@ import ProjectList from './ProjectList/ProjectList'
 import './Group.scss'
 
 const { Content, Sider } = Layout
-const TabPane = Tabs.TabPane
 
 type PropTypes = {
   fetchNewsData: AnyFunc
@@ -64,6 +64,37 @@ class Group extends Component<PropTypes, StateTypes> {
   render() {
     if (this.state.groupId === -1) { return <Spin /> }
 
+    const items: TabsProps['items'] = [
+      {
+        key: '1',
+        label: '项目列表',
+        children: <ProjectList />,
+      },
+      ...(this.props.currGroup.type === 'public'
+        ? [{
+            key: '2',
+            label: '成员列表',
+            children: <MemberList />,
+          }]
+        : []),
+      ...(['admin', 'owner', 'guest', 'dev'].indexOf(this.props.curUserRoleInGroup) > -1
+        || this.props.curUserRole === 'admin'
+        ? [{
+            key: '3',
+            label: '分组动态',
+            children: <GroupLog />,
+          }]
+        : []),
+      ...((this.props.curUserRole === 'admin' || this.props.curUserRoleInGroup === 'owner')
+        && this.props.currGroup.type !== 'private'
+        ? [{
+            key: '4',
+            label: '分组设置',
+            children: <GroupSetting />,
+          }]
+        : []),
+    ]
+
     const GroupContent = (
       <Layout style={{ minHeight: 'calc(100vh - 100px)', marginLeft: '24px', marginTop: '24px' }}>
         <Sider style={{ height: '100%' }} width={300}>
@@ -79,30 +110,7 @@ class Group extends Component<PropTypes, StateTypes> {
               backgroundColor: '#fff',
             }}
           >
-            <Tabs type="card" className="m-tab tabs-large" style={{ height: '100%' }}>
-              <TabPane tab="项目列表" key="1">
-                <ProjectList />
-              </TabPane>
-              {this.props.currGroup.type === 'public' ? (
-                <TabPane tab="成员列表" key="2">
-                  <MemberList />
-                </TabPane>
-              ) : null}
-              {['admin', 'owner', 'guest', 'dev'].indexOf(this.props.curUserRoleInGroup) > -1
-                || this.props.curUserRole === 'admin' ? (
-                  <TabPane tab="分组动态" key="3">
-                    <GroupLog />
-                  </TabPane>
-                ) : (
-                  ''
-                )}
-              {(this.props.curUserRole === 'admin' || this.props.curUserRoleInGroup === 'owner')
-                && this.props.currGroup.type !== 'private' ? (
-                  <TabPane tab="分组设置" key="4">
-                    <GroupSetting />
-                  </TabPane>
-                ) : null}
-            </Tabs>
+            <Tabs type="card" className="m-tab tabs-large" style={{ height: '100%' }} items={items} />
           </Content>
         </Layout>
       </Layout>

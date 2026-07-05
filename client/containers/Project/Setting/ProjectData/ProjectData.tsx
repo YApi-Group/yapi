@@ -15,7 +15,7 @@ import {
   Checkbox,
   RadioChangeEvent,
 } from 'antd'
-import { CheckboxChangeEvent } from 'antd/lib/checkbox'
+import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import axios from 'axios'
 import PropsType from 'prop-types'
 import React, { PureComponent as Component } from 'react'
@@ -172,17 +172,18 @@ class ProjectData extends Component<PropsType, StateTyPe> {
     }
   }
 
-  handleAddInterface = (res: any) => handleImportData(
-    res,
-    this.props.match.params.id,
-    this.state.selectCatid,
-    this.state.menuList,
-    this.props.basePath,
-    this.state.dataSync,
-    message.error,
-    message.success,
-    () => this.setState({ showLoading: false }),
-  )
+  handleAddInterface = (res: any) =>
+    handleImportData(
+      res,
+      this.props.match.params.id,
+      this.state.selectCatid,
+      this.state.menuList,
+      this.props.basePath,
+      this.state.dataSync,
+      message.error,
+      message.success,
+      () => this.setState({ showLoading: false })
+    )
 
   // 本地文件上传
   handleFile = (info: any) => {
@@ -334,9 +335,10 @@ class ProjectData extends Component<PropsType, StateTyPe> {
    * @memberof ProjectData
    */
   render() {
-    const exportUrl = this.state.curExportType
-      && exportDataModule[this.state.curExportType]
-      && exportDataModule[this.state.curExportType].route
+    const exportUrl =
+      this.state.curExportType &&
+      exportDataModule[this.state.curExportType] &&
+      exportDataModule[this.state.curExportType].route
     const exportHref = handleExportRouteParams(exportUrl, this.state.exportContent, this.state.isWiki)
 
     const selectOpts = Object.entries(importDataModule).map(([k, v]) => ({
@@ -380,7 +382,8 @@ class ProjectData extends Component<PropsType, StateTyPe> {
                   placeholder="请选择数据导入的默认分类"
                   optionFilterProp="children"
                   onChange={this.selectChange.bind(this)}
-                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
                 >
                   {this.state.menuList.map((item, key) => (
@@ -400,7 +403,10 @@ class ProjectData extends Component<PropsType, StateTyPe> {
                         <p>不导入已存在的接口</p>
                         <br />
                         <h3 style={{ color: 'white' }}>智能合并</h3>
-                        <p>已存在的接口，将合并返回数据的 response，适用于导入了 swagger 数据，保留对数据结构的改动</p>
+                        <p>
+                          已存在的接口，将合并返回数据的 response，适用于导入了 swagger
+                          数据，保留对数据结构的改动
+                        </p>
                         <br />
                         <h3 style={{ color: 'white' }}>完全覆盖</h3>
                         <p>不保留旧数据，完全使用新数据，适用于接口定义完全交给后端定义</p>
@@ -450,10 +456,10 @@ class ProjectData extends Component<PropsType, StateTyPe> {
                     <Dragger
                       name="interfaceData"
                       multiple={true}
-                      showUploadList= {false}
-                      action= "/api/interface/interUpload"
+                      showUploadList={false}
+                      action="/api/interface/interUpload"
                       customRequest={this.handleFile}
-                      onChange= {this.uploadChange}
+                      onChange={this.uploadChange}
                     >
                       <p className="ant-upload-drag-icon">
                         <InboxOutlined />
@@ -465,7 +471,9 @@ class ProjectData extends Component<PropsType, StateTyPe> {
                           e.stopPropagation()
                         }}
                         dangerouslySetInnerHTML={{
-                          __html: this.state.curImportType ? importDataModule[this.state.curImportType]?.desc : null,
+                          __html: this.state.curImportType
+                            ? importDataModule[this.state.curImportType]?.desc
+                            : null,
                         }}
                       />
                     </Dragger>

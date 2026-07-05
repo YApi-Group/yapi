@@ -24,7 +24,13 @@ import AceEditor from '@/components/AceEditor/AceEditor'
 import constants from '@/cons'
 import plugin from '@/plugin.js'
 import createContext from '@common/createContext'
-import { handleParams, checkRequestBodyIsRaw, handleContentType, crossRequest, checkNameIsExistInArray } from '@common/postmanLib.js'
+import {
+  handleParams,
+  checkRequestBodyIsRaw,
+  handleContentType,
+  crossRequest,
+  checkNameIsExistInArray,
+} from '@common/postmanLib.js'
 import { handleParamsValue, changeArrayToObject, schemaValidator } from '@common/utils.js'
 
 import { isJson, deepCopyJson, json5_parse } from '../../common.js'
@@ -38,7 +44,6 @@ import './Postman.scss'
 const HTTP_METHOD = constants.HTTP_METHOD
 const InputGroup = Input.Group
 const Option = Select.Option
-const Panel = Collapse.Panel
 
 export const InsertCodeMap = [
   {
@@ -136,9 +141,11 @@ export default class Run extends Component {
 
   get testResponseBodyIsHTML() {
     const hd = this.state.test_res_header
-    return hd != null
-      && typeof hd === 'object'
-      && String(hd['Content-Type'] || hd['content-type']).indexOf('text/html') !== -1
+    return (
+      hd != null &&
+      typeof hd === 'object' &&
+      String(hd['Content-Type'] || hd['content-type']).indexOf('text/html') !== -1
+    )
   }
 
   checkInterfaceData(data) {
@@ -150,9 +157,7 @@ export default class Run extends Component {
 
   // 整合header信息
   handleReqHeader = (value, env) => {
-    let index = value
-      ? env.findIndex(item => item.name === value)
-      : 0
+    let index = value ? env.findIndex(item => item.name === value) : 0
     index = index === -1 ? 0 : index
 
     let req_header = [].concat(this.props.data.req_headers || [])
@@ -187,10 +192,10 @@ export default class Run extends Component {
     let body = req_body_other
     // 运行时才会进行转换
     if (
-      this.props.type === 'inter'
-      && req_body_type === 'json'
-      && req_body_other
-      && req_body_is_json_schema
+      this.props.type === 'inter' &&
+      req_body_type === 'json' &&
+      req_body_other &&
+      req_body_is_json_schema
     ) {
       let schema = {}
       try {
@@ -208,22 +213,19 @@ export default class Run extends Component {
 
     let example = {}
     if (this.props.type === 'inter') {
-      example = ['req_headers', 'req_query', 'req_body_form'].reduce(
-        (res, key) => {
-          res[key] = (data[key] || []).map(item => {
-            if (
-              item.type !== 'file' // 不是文件类型
-              && (item.value == null || item.value === '') // 初始值为空
-              && item.example != null // 有示例值
-            ) {
-              item.value = item.example
-            }
-            return item
-          })
-          return res
-        },
-        {},
-      )
+      example = ['req_headers', 'req_query', 'req_body_form'].reduce((res, key) => {
+        res[key] = (data[key] || []).map(item => {
+          if (
+            item.type !== 'file' && // 不是文件类型
+            (item.value == null || item.value === '') && // 初始值为空
+            item.example != null // 有示例值
+          ) {
+            item.value = item.example
+          }
+          return item
+        })
+        return res
+      }, {})
     }
 
     this.setState(
@@ -238,7 +240,7 @@ export default class Run extends Component {
         test_valid_msg: null,
         resStatusText: null,
       },
-      () => this.props.type === 'inter' && this.initEnvState(data.case_env, data.env),
+      () => this.props.type === 'inter' && this.initEnvState(data.case_env, data.env)
     )
   }
 
@@ -257,7 +259,7 @@ export default class Run extends Component {
             case_env: this.state.env[0].name,
           })
         }
-      },
+      }
     )
   }
 
@@ -333,11 +335,12 @@ export default class Run extends Component {
 
     try {
       options.taskId = this.props.curUid
-      result = await crossRequest(options, options.pre_script || this.state.pre_script, options.after_script || this.state.after_script, createContext(
-        this.props.curUid,
-        this.props.projectId,
-        this.props.interfaceId,
-      ))
+      result = await crossRequest(
+        options,
+        options.pre_script || this.state.pre_script,
+        options.after_script || this.state.after_script,
+        createContext(this.props.curUid, this.props.projectId, this.props.interfaceId)
+      )
 
       await plugin.emitHook('after_request', result, {
         type: this.props.type,
@@ -353,7 +356,6 @@ export default class Run extends Component {
         statusText: result.res.statusText,
         runTime: result.runTime,
       }
-
     } catch (data) {
       result = {
         header: data.header,
@@ -413,7 +415,6 @@ export default class Run extends Component {
   }
 
   changeParam = (name, v, index, key) => {
-
     key = key || 'value'
     const pathParam = deepCopyJson(this.state[name])
 
@@ -588,7 +589,7 @@ export default class Run extends Component {
         {this.state.envModalVisible && (
           <Modal
             title="环境设置"
-            visible={this.state.envModalVisible}
+            open={this.state.envModalVisible}
             onOk={this.handleEnvOk}
             onCancel={this.handleEnvCancel}
             footer={null}
@@ -604,14 +605,10 @@ export default class Run extends Component {
           <InputGroup compact style={{ display: 'flex' }}>
             <Select disabled value={method} style={{ flexBasis: 60 }}>
               {Object.keys(HTTP_METHOD).map(name => {
-                <Option value={name.toUpperCase()}>{name.toUpperCase()}</Option>
+                ;<Option value={name.toUpperCase()}>{name.toUpperCase()}</Option>
               })}
             </Select>
-            <Select
-              value={case_env}
-              style={{ flexBasis: 180, flexGrow: 1 }}
-              onSelect={this.selectDomain}
-            >
+            <Select value={case_env} style={{ flexBasis: 180, flexGrow: 1 }} onSelect={this.selectDomain}>
               {env.map((item, index) => (
                 <Option value={item.name} key={index}>
                   {item.name + '：' + item.domain}
@@ -640,7 +637,6 @@ export default class Run extends Component {
                 return '发送请求'
               }
               return '请安装 cross-request 插件'
-
             })()}
           >
             <Button
@@ -656,7 +652,7 @@ export default class Run extends Component {
 
           <Tooltip
             placement="bottom"
-            title={() => this.props.type === 'inter' ? '保存到测试集' : '更新该用例'}
+            title={() => (this.props.type === 'inter' ? '保存到测试集' : '更新该用例')}
           >
             <Button onClick={this.props.save} type="primary" style={{ marginLeft: 10 }}>
               {this.props.type === 'inter' ? '保存' : '更新'}
@@ -664,351 +660,391 @@ export default class Run extends Component {
           </Tooltip>
         </div>
 
-        <Collapse defaultActiveKey={['0', '1', '2', '3']} bordered={true}>
-          <Panel
-            header="PATH PARAMETERS"
-            key="0"
-            className={req_params.length === 0 ? 'hidden' : ''}
-          >
-            {req_params.map((item, index) => (
-              <div key={index} className="key-value-wrap">
-                {/* <Tooltip
+        <Collapse
+          defaultActiveKey={['0', '1', '2', '3']}
+          bordered={true}
+          items={[
+            {
+              key: '0',
+              label: 'PATH PARAMETERS',
+              className: req_params.length === 0 ? 'hidden' : '',
+              children: (
+                <>
+                  {req_params.map((item, index) => (
+                    <div key={index} className="key-value-wrap">
+                      {/* <Tooltip
                     placement="topLeft"
                     title={<TooltipContent example={item.example} desc={item.desc} />}
                   >
                     <Input disabled value={item.name} className="key" />
                   </Tooltip> */}
-                <ParamsNameComponent example={item.example} desc={item.desc} name={item.name} />
-                <span className="eq-symbol">=</span>
-                <Input
-                  value={item.value}
-                  className="value"
-                  onChange={e => this.changeParam('req_params', e.target.value, index)}
-                  placeholder="参数值"
-                  id={`req_params_${index}`}
-                  addonAfter={
-                    <EditOutlined onClick={() => this.showModal(item.value, index, 'req_params')} />
-                  }
-                />
-              </div>
-            ))}
-            <Button
-              style={{ display: 'none' }}
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={this.addPathParam}
-            >
-              添加Path参数
-            </Button>
-          </Panel>
-          <Panel
-            header="QUERY PARAMETERS"
-            key="1"
-            className={req_query.length === 0 ? 'hidden' : ''}
-          >
-            {req_query.map((item, index) => (
-              <div key={index} className="key-value-wrap">
-                {/* <Tooltip
-                    placement="topLeft"
-                    title={<TooltipContent example={item.example} desc={item.desc} />}
-                  >
-                    <Input disabled value={item.name} className="key" />
-                  </Tooltip> */}
-                <ParamsNameComponent example={item.example} desc={item.desc} name={item.name} />
-                &nbsp;
-                {item.required == 1 ? (
-                  <Checkbox className="params-enable" checked={true} disabled />
-                ) : (
-                  <Checkbox
-                    className="params-enable"
-                    checked={item.enable}
-                    onChange={e => this.changeParam('req_query', e.target.checked, index, 'enable')
-                    }
-                  />
-                )}
-                <span className="eq-symbol">=</span>
-                <Input
-                  value={item.value}
-                  className="value"
-                  onChange={e => this.changeParam('req_query', e.target.value, index)}
-                  placeholder="参数值"
-                  id={`req_query_${index}`}
-                  addonAfter={
-                    <EditOutlined onClick={() => this.showModal(item.value, index, 'req_query')} />
-                  }
-                />
-              </div>
-            ))}
-            <Button style={{ display: 'none' }} type="primary" icon={<PlusOutlined />} onClick={this.addQuery}>
-              添加Query参数
-            </Button>
-          </Panel>
-          <Panel header="HEADERS" key="2" className={req_headers.length === 0 ? 'hidden' : ''}>
-            {req_headers.map((item, index) => (
-              <div key={index} className="key-value-wrap">
-                {/* <Tooltip
-                    placement="topLeft"
-                    title={<TooltipContent example={item.example} desc={item.desc} />}
-                  >
-                    <Input disabled value={item.name} className="key" />
-                  </Tooltip> */}
-                <ParamsNameComponent example={item.example} desc={item.desc} name={item.name} />
-                <span className="eq-symbol">=</span>
-                <Input
-                  value={item.value}
-                  disabled={!!item.abled}
-                  className="value"
-                  onChange={e => this.changeParam('req_headers', e.target.value, index)}
-                  placeholder="参数值"
-                  id={`req_headers_${index}`}
-                  addonAfter={
-                    !item.abled && (
-                      <EditOutlined onClick={() => this.showModal(item.value, index, 'req_headers')} />
-                    )
-                  }
-                />
-              </div>
-            ))}
-            <Button style={{ display: 'none' }} type="primary" icon={<PlusOutlined />} onClick={this.addHeader}>
-              添加Header
-            </Button>
-          </Panel>
-          <Panel
-            header={
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Tooltip title="F9 全屏编辑">BODY(F9)</Tooltip>
-              </div>
-            }
-            key="3"
-            className={
-              HTTP_METHOD[method].request_body
-                && ((req_body_type === 'form' && req_body_form.length > 0) || req_body_type !== 'form')
-                ? 'POST'
-                : 'hidden'
-            }
-          >
-            <div
-              style={{ display: checkRequestBodyIsRaw(method, req_body_type) ? 'block' : 'none' }}
-            >
-              {req_body_type === 'json' && (
-                <div className="adv-button">
+                      <ParamsNameComponent example={item.example} desc={item.desc} name={item.name} />
+                      <span className="eq-symbol">=</span>
+                      <Input
+                        value={item.value}
+                        className="value"
+                        onChange={e => this.changeParam('req_params', e.target.value, index)}
+                        placeholder="参数值"
+                        id={`req_params_${index}`}
+                        addonAfter={
+                          <EditOutlined onClick={() => this.showModal(item.value, index, 'req_params')} />
+                        }
+                      />
+                    </div>
+                  ))}
                   <Button
-                    onClick={() => this.showModal(this.state.req_body_other, 0, 'req_body_other')}
+                    style={{ display: 'none' }}
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={this.addPathParam}
                   >
-                    高级参数设置
+                    添加Path参数
                   </Button>
-                  <Tooltip title="高级参数设置只在json字段值中生效">
-                    {'  '}
-                    <QuestionCircleOutlined />
-                  </Tooltip>
+                </>
+              ),
+            },
+            {
+              key: '1',
+              label: 'QUERY PARAMETERS',
+              className: req_query.length === 0 ? 'hidden' : '',
+              children: (
+                <>
+                  {req_query.map((item, index) => (
+                    <div key={index} className="key-value-wrap">
+                      {/* <Tooltip
+                    placement="topLeft"
+                    title={<TooltipContent example={item.example} desc={item.desc} />}
+                  >
+                    <Input disabled value={item.name} className="key" />
+                  </Tooltip> */}
+                      <ParamsNameComponent example={item.example} desc={item.desc} name={item.name} />
+                      &nbsp;
+                      {item.required == 1 ? (
+                        <Checkbox className="params-enable" checked={true} disabled />
+                      ) : (
+                        <Checkbox
+                          className="params-enable"
+                          checked={item.enable}
+                          onChange={e => this.changeParam('req_query', e.target.checked, index, 'enable')}
+                        />
+                      )}
+                      <span className="eq-symbol">=</span>
+                      <Input
+                        value={item.value}
+                        className="value"
+                        onChange={e => this.changeParam('req_query', e.target.value, index)}
+                        placeholder="参数值"
+                        id={`req_query_${index}`}
+                        addonAfter={
+                          <EditOutlined onClick={() => this.showModal(item.value, index, 'req_query')} />
+                        }
+                      />
+                    </div>
+                  ))}
+                  <Button
+                    style={{ display: 'none' }}
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={this.addQuery}
+                  >
+                    添加Query参数
+                  </Button>
+                </>
+              ),
+            },
+            {
+              key: '2',
+              label: 'HEADERS',
+              className: req_headers.length === 0 ? 'hidden' : '',
+              children: (
+                <>
+                  {req_headers.map((item, index) => (
+                    <div key={index} className="key-value-wrap">
+                      {/* <Tooltip
+                    placement="topLeft"
+                    title={<TooltipContent example={item.example} desc={item.desc} />}
+                  >
+                    <Input disabled value={item.name} className="key" />
+                  </Tooltip> */}
+                      <ParamsNameComponent example={item.example} desc={item.desc} name={item.name} />
+                      <span className="eq-symbol">=</span>
+                      <Input
+                        value={item.value}
+                        disabled={!!item.abled}
+                        className="value"
+                        onChange={e => this.changeParam('req_headers', e.target.value, index)}
+                        placeholder="参数值"
+                        id={`req_headers_${index}`}
+                        addonAfter={
+                          !item.abled && (
+                            <EditOutlined onClick={() => this.showModal(item.value, index, 'req_headers')} />
+                          )
+                        }
+                      />
+                    </div>
+                  ))}
+                  <Button
+                    style={{ display: 'none' }}
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={this.addHeader}
+                  >
+                    添加Header
+                  </Button>
+                </>
+              ),
+            },
+            {
+              key: '3',
+              label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Tooltip title="F9 全屏编辑">BODY(F9)</Tooltip>
                 </div>
-              )}
+              ),
+              className:
+                HTTP_METHOD[method].request_body &&
+                ((req_body_type === 'form' && req_body_form.length > 0) || req_body_type !== 'form')
+                  ? 'POST'
+                  : 'hidden',
+              children: (
+                <>
+                  <div style={{ display: checkRequestBodyIsRaw(method, req_body_type) ? 'block' : 'none' }}>
+                    {req_body_type === 'json' && (
+                      <div className="adv-button">
+                        <Button
+                          onClick={() => this.showModal(this.state.req_body_other, 0, 'req_body_other')}
+                        >
+                          高级参数设置
+                        </Button>
+                        <Tooltip title="高级参数设置只在json字段值中生效">
+                          {'  '}
+                          <QuestionCircleOutlined />
+                        </Tooltip>
+                      </div>
+                    )}
 
-              <AceEditor
-                className="pretty-editor"
-                ref={editor => (this.aceEditor = editor)}
-                data={this.state.req_body_other}
-                mode={req_body_type === 'json' ? null : 'text'}
-                onChange={this.handleRequestBody}
-                fullScreen={true}
-              />
-            </div>
+                    <AceEditor
+                      className="pretty-editor"
+                      ref={editor => (this.aceEditor = editor)}
+                      data={this.state.req_body_other}
+                      mode={req_body_type === 'json' ? null : 'text'}
+                      onChange={this.handleRequestBody}
+                      fullScreen={true}
+                    />
+                  </div>
 
-            {HTTP_METHOD[method].request_body
-              && req_body_type === 'form' && (
-              <div>
-                {req_body_form.map((item, index) => (
-                  <div key={index} className="key-value-wrap">
-                    {/* <Tooltip
+                  {HTTP_METHOD[method].request_body && req_body_type === 'form' && (
+                    <div>
+                      {req_body_form.map((item, index) => (
+                        <div key={index} className="key-value-wrap">
+                          {/* <Tooltip
                           placement="topLeft"
                           title={<TooltipContent example={item.example} desc={item.desc} />}
                         >
                           <Input disabled value={item.name} className="key" />
                         </Tooltip> */}
-                    <ParamsNameComponent
-                      example={item.example}
-                      desc={item.desc}
-                      name={item.name}
-                    />
-                      &nbsp;
-                    {item.required == 1 ? (
-                      <Checkbox className="params-enable" checked={true} disabled />
-                    ) : (
-                      <Checkbox
-                        className="params-enable"
-                        checked={item.enable}
-                        onChange={e => this.changeBody(e.target.checked, index, 'enable')}
-                      />
-                    )}
-                    <span className="eq-symbol">=</span>
-                    {item.type === 'file' ? (
-                      '因Chrome最新版安全策略限制，不再支持文件上传'
-                    // <Input
-                    //   type="file"
-                    //   id={'file_' + index}
-                    //   onChange={e => this.changeBody(e.target.value, index, 'value')}
-                    //   multiple
-                    //   className="value"
-                    // />
-                    ) : (
-                      <Input
-                        value={item.value}
-                        className="value"
-                        onChange={e => this.changeBody(e.target.value, index)}
-                        placeholder="参数值"
-                        id={`req_body_form_${index}`}
-                        addonAfter={
-                          <EditOutlined onClick={() => this.showModal(item.value, index, 'req_body_form')} />
-                        }
-                      />
-                    )}
-                  </div>
-                ))}
-                <Button
-                  style={{ display: 'none' }}
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  onClick={this.addBody}
-                >
-                    添加Form参数
-                </Button>
-              </div>
-            )}
-            {HTTP_METHOD[method].request_body
-              && req_body_type === 'file' && (
-              <div>
-                <Input type="file" id="single-file" />
-              </div>
-            )}
-          </Panel>
-        </Collapse>
-
-        <Tabs size="large" defaultActiveKey="res" className="response-tab">
-          <Tabs.TabPane tab="Response" key="res">
-            <Spin spinning={this.state.loading}>
-              <h2
-                style={{ display: this.state.resStatusCode ? '' : 'none' }}
-                className={
-                  'res-code '
-                  + (this.state.resStatusCode >= 200
-                    && this.state.resStatusCode < 400
-                    && !this.state.loading
-                    ? 'success'
-                    : 'fail')
-                }
-              >
-                {this.state.resStatusCode + '  ' + this.state.resStatusText}
-              </h2>
-              <div>
-                <a rel="noopener noreferrer" target="_blank" href="https://juejin.im/post/5c888a3e5188257dee0322af">YApi 新版如何查看 http 请求数据</a>
-              </div>
-              {this.state.test_valid_msg && (
-                <Alert
-                  message={
-                    <span>
-                      Warning &nbsp;
-                      <Tooltip title="针对定义为 json schema 的返回数据进行格式校验">
-                        <QuestionCircleOutlined />
-                      </Tooltip>
-                    </span>
-                  }
-                  type="warning"
-                  showIcon
-                  description={this.state.test_valid_msg}
-                />
-              )}
-
-              <div className="container-header-body">
-                <div className="header">
-                  <div className="container-title">
-                    <h4>Headers</h4>
-                  </div>
-                  <AceEditor
-                    callback={editor => {
-                      editor.renderer.setShowGutter(false)
-                    }}
-                    readOnly={true}
-                    className="pretty-editor-header"
-                    data={this.state.test_res_header}
-                    mode="json"
-                  />
-                </div>
-                <div className="resizer">
-                  <div className="container-title">
-                    <h4 style={{ visibility: 'hidden' }}>1</h4>
-                  </div>
-                </div>
-                <div className="body">
-                  <div className="container-title">
-                    <h4>Body</h4>
-                    <Checkbox
-                      checked={this.state.autoPreviewHTML}
-                      onChange={e => this.setState({ autoPreviewHTML: e.target.checked })}>
-                      <span>自动预览HTML</span>
-                    </Checkbox>
-                  </div>
-                  {
-                    this.state.autoPreviewHTML && this.testResponseBodyIsHTML
-                      ? <iframe
-                        className="pretty-editor-body"
-                        srcDoc={this.state.test_res_body}
-                      />
-                      : <AceEditor
-                        readOnly={true}
-                        className="pretty-editor-body"
-                        data={this.state.test_res_body}
-                        mode={handleContentType(this.state.test_res_header)}
-                      />
-                  }
-                </div>
-              </div>
-            </Spin>
-          </Tabs.TabPane>
-          {this.props.type === 'case' ? (
-            <Tabs.TabPane
-              className="response-test"
-              tab={<Tooltip title="测试脚本，可断言返回结果，使用方法请查看文档">Test</Tooltip>}
-              key="test"
-            >
-              <h3 style={{ margin: '5px' }}>
-                &nbsp;是否开启:&nbsp;
-                <Switch
-                  checked={this.state.enable_script}
-                  onChange={e => this.setState({ enable_script: e })}
-                />
-              </h3>
-              <p style={{ margin: '10px' }}>注：Test 脚本只有做自动化测试才执行</p>
-              <Row>
-                <Col span="18">
-                  <AceEditor
-                    onChange={this.onOpenTest}
-                    className="case-script"
-                    data={this.state.test_script}
-                    ref={aceEditor => {
-                      this.aceEditor = aceEditor
-                    }}
-                  />
-                </Col>
-                <Col span="6">
-                  <div className="insert-code">
-                    {InsertCodeMap.map(item => (
-                      <div
-                        style={{ cursor: 'pointer' }}
-                        className="code-item"
-                        key={item.title}
-                        onClick={() => {
-                          this.handleInsertCode('\n' + item.code)
-                        }}
+                          <ParamsNameComponent example={item.example} desc={item.desc} name={item.name} />
+                          &nbsp;
+                          {item.required == 1 ? (
+                            <Checkbox className="params-enable" checked={true} disabled />
+                          ) : (
+                            <Checkbox
+                              className="params-enable"
+                              checked={item.enable}
+                              onChange={e => this.changeBody(e.target.checked, index, 'enable')}
+                            />
+                          )}
+                          <span className="eq-symbol">=</span>
+                          {item.type === 'file' ? (
+                            '因Chrome最新版安全策略限制，不再支持文件上传'
+                          ) : (
+                            // <Input
+                            //   type="file"
+                            //   id={'file_' + index}
+                            //   onChange={e => this.changeBody(e.target.value, index, 'value')}
+                            //   multiple
+                            //   className="value"
+                            // />
+                            <Input
+                              value={item.value}
+                              className="value"
+                              onChange={e => this.changeBody(e.target.value, index)}
+                              placeholder="参数值"
+                              id={`req_body_form_${index}`}
+                              addonAfter={
+                                <EditOutlined
+                                  onClick={() => this.showModal(item.value, index, 'req_body_form')}
+                                />
+                              }
+                            />
+                          )}
+                        </div>
+                      ))}
+                      <Button
+                        style={{ display: 'none' }}
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={this.addBody}
                       >
-                        {item.title}
-                      </div>
-                    ))}
+                        添加Form参数
+                      </Button>
+                    </div>
+                  )}
+                  {HTTP_METHOD[method].request_body && req_body_type === 'file' && (
+                    <div>
+                      <Input type="file" id="single-file" />
+                    </div>
+                  )}
+                </>
+              ),
+            },
+          ]}
+        />
+
+        <Tabs
+          size="large"
+          defaultActiveKey="res"
+          className="response-tab"
+          items={[
+            {
+              key: 'res',
+              label: 'Response',
+              children: (
+                <Spin spinning={this.state.loading}>
+                  <h2
+                    style={{ display: this.state.resStatusCode ? '' : 'none' }}
+                    className={
+                      'res-code ' +
+                      (this.state.resStatusCode >= 200 &&
+                      this.state.resStatusCode < 400 &&
+                      !this.state.loading
+                        ? 'success'
+                        : 'fail')
+                    }
+                  >
+                    {this.state.resStatusCode + '  ' + this.state.resStatusText}
+                  </h2>
+                  <div>
+                    <a
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      href="https://juejin.im/post/5c888a3e5188257dee0322af"
+                    >
+                      YApi 新版如何查看 http 请求数据
+                    </a>
                   </div>
-                </Col>
-              </Row>
-            </Tabs.TabPane>
-          ) : null}
-        </Tabs>
+                  {this.state.test_valid_msg && (
+                    <Alert
+                      message={
+                        <span>
+                          Warning &nbsp;
+                          <Tooltip title="针对定义为 json schema 的返回数据进行格式校验">
+                            <QuestionCircleOutlined />
+                          </Tooltip>
+                        </span>
+                      }
+                      type="warning"
+                      showIcon
+                      description={this.state.test_valid_msg}
+                    />
+                  )}
+
+                  <div className="container-header-body">
+                    <div className="header">
+                      <div className="container-title">
+                        <h4>Headers</h4>
+                      </div>
+                      <AceEditor
+                        callback={editor => {
+                          editor.renderer.setShowGutter(false)
+                        }}
+                        readOnly={true}
+                        className="pretty-editor-header"
+                        data={this.state.test_res_header}
+                        mode="json"
+                      />
+                    </div>
+                    <div className="resizer">
+                      <div className="container-title">
+                        <h4 style={{ visibility: 'hidden' }}>1</h4>
+                      </div>
+                    </div>
+                    <div className="body">
+                      <div className="container-title">
+                        <h4>Body</h4>
+                        <Checkbox
+                          checked={this.state.autoPreviewHTML}
+                          onChange={e => this.setState({ autoPreviewHTML: e.target.checked })}
+                        >
+                          <span>自动预览HTML</span>
+                        </Checkbox>
+                      </div>
+                      {this.state.autoPreviewHTML && this.testResponseBodyIsHTML ? (
+                        <iframe className="pretty-editor-body" srcDoc={this.state.test_res_body} />
+                      ) : (
+                        <AceEditor
+                          readOnly={true}
+                          className="pretty-editor-body"
+                          data={this.state.test_res_body}
+                          mode={handleContentType(this.state.test_res_header)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </Spin>
+              ),
+            },
+            ...(this.props.type === 'case'
+              ? [
+                  {
+                    key: 'test',
+                    className: 'response-test',
+                    label: <Tooltip title="测试脚本，可断言返回结果，使用方法请查看文档">Test</Tooltip>,
+                    children: (
+                      <>
+                        <h3 style={{ margin: '5px' }}>
+                          &nbsp;是否开启:&nbsp;
+                          <Switch
+                            checked={this.state.enable_script}
+                            onChange={e => this.setState({ enable_script: e })}
+                          />
+                        </h3>
+                        <p style={{ margin: '10px' }}>注：Test 脚本只有做自动化测试才执行</p>
+                        <Row>
+                          <Col span="18">
+                            <AceEditor
+                              onChange={this.onOpenTest}
+                              className="case-script"
+                              data={this.state.test_script}
+                              ref={aceEditor => {
+                                this.aceEditor = aceEditor
+                              }}
+                            />
+                          </Col>
+                          <Col span="6">
+                            <div className="insert-code">
+                              {InsertCodeMap.map(item => (
+                                <div
+                                  style={{ cursor: 'pointer' }}
+                                  className="code-item"
+                                  key={item.title}
+                                  onClick={() => {
+                                    this.handleInsertCode('\n' + item.code)
+                                  }}
+                                >
+                                  {item.title}
+                                </div>
+                              ))}
+                            </div>
+                          </Col>
+                        </Row>
+                      </>
+                    ),
+                  },
+                ]
+              : []),
+          ]}
+        />
       </div>
     )
   }

@@ -203,7 +203,7 @@ class GroupList extends Component<PropTypes, StateTypes> {
               content={<GuideBtns />}
               title={tip}
               placement="right"
-              visible={this.props.studyTip === 0 && !this.props.study}
+              open={this.props.studyTip === 0 && !this.props.study}
             >
               {group.group_name}
             </Popover>
@@ -268,7 +268,7 @@ class GroupList extends Component<PropTypes, StateTypes> {
         {this.state.addGroupModalVisible ? (
           <Modal
             title="添加分组"
-            visible={this.state.addGroupModalVisible}
+            open={this.state.addGroupModalVisible}
             onOk={this.addGroup}
             onCancel={this.hideModal}
             className="add-group-modal"

@@ -205,7 +205,7 @@ class InterfaceEdit extends Component<PropTypes, StateTypes> {
         <Modal
           title="Tag 设置"
           width={680}
-          visible={this.state.visible}
+          open={this.state.visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
           okText="保存"

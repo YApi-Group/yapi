@@ -15,8 +15,6 @@ import Run from './Run/Run'
 import View from './View'
 import styles from './ic.module.scss'
 
-const TabPane = Tabs.TabPane
-
 type PropTypes = {
   match?: any
   list?: any[]
@@ -116,7 +114,7 @@ class Content extends Component<PropTypes, StateTypes> {
       document.getElementsByTagName('title')[0].innerText = this.props.curdata.title + '-' + this.title
     }
 
-    const InterfaceTabs: { [K: string]: { component: typeof Component, name: string } } = {
+    const InterfaceTabs: { [K: string]: { component: typeof Component; name: string } } = {
       view: { component: View, name: '预览' },
       edit: { component: Edit, name: '编辑' },
       run: { component: Run, name: '运行' },
@@ -124,11 +122,13 @@ class Content extends Component<PropTypes, StateTypes> {
     }
 
     const tabs = (
-      <Tabs className={styles.tabs} size="large" onChange={this.onChange} activeKey={this.state.curTab}>
-        {Object.entries(InterfaceTabs).map(([key, item]) => (
-          <TabPane tab={item.name} key={key} />
-        ))}
-      </Tabs>
+      <Tabs
+        className={styles.tabs}
+        size="large"
+        onChange={this.onChange}
+        activeKey={this.state.curTab}
+        items={Object.entries(InterfaceTabs).map(([key, item]) => ({ key, label: item.name }))}
+      />
     )
 
     let tabContent = null
@@ -149,7 +149,7 @@ class Content extends Component<PropTypes, StateTypes> {
         {this.state.visible && (
           <Modal
             title="你即将离开编辑页面"
-            visible={this.state.visible}
+            open={this.state.visible}
             onCancel={this.handleCancel}
             footer={[
               <Button key="back" onClick={this.handleCancel}>

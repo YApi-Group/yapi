@@ -5,7 +5,7 @@ import {
   FolderOpenOutlined,
   EditOutlined,
   PlusOutlined,
-  //  EllipsisOutlined 
+  //  EllipsisOutlined
 } from '@ant-design/icons'
 import { Input, Button, Modal, message, Tree, Tooltip, TreeDataNode } from 'antd'
 import axios from 'axios'
@@ -165,7 +165,9 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
         visible: false,
       })
 
-      if (cb) { cb() }
+      if (cb) {
+        cb()
+      }
     })
   }
 
@@ -343,8 +345,8 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
         if (item.name.indexOf(this.state.filter) === -1) {
           item.list = item.list.filter((inter: any) => {
             if (
-              inter.title.indexOf(this.state.filter) === -1
-              && inter.path.indexOf(this.state.filter) === -1
+              inter.title.indexOf(this.state.filter) === -1 &&
+              inter.path.indexOf(this.state.filter) === -1
             ) {
               return false
             }
@@ -367,7 +369,9 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
     const { router, inter, list } = this.props
     const rNull: any = { expands: [], selects: [] }
 
-    if (list.length === 0) { return rNull }
+    if (list.length === 0) {
+      return rNull
+    }
 
     if (router) {
       if (!isNaN(router.params.actionId)) {
@@ -384,7 +388,6 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
         expands: this.state.expands ? this.state.expands : ['cat_' + catid],
         selects: ['cat_' + catid],
       }
-
     }
     return {
       expands: this.state.expands ? this.state.expands : ['cat_' + list[0]._id],
@@ -408,7 +411,7 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
         {this.state.visible ? (
           <Modal
             title="添加接口"
-            visible={this.state.visible}
+            open={this.state.visible}
             onCancel={() => this.changeModal('visible', false)}
             footer={null}
             className="addCatModal"
@@ -427,7 +430,7 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
         {this.state.add_cat_modal_visible ? (
           <Modal
             title="添加分类"
-            visible={this.state.add_cat_modal_visible}
+            open={this.state.add_cat_modal_visible}
             onCancel={() => this.changeModal('add_cat_modal_visible', false)}
             footer={null}
             className="addCatModal"
@@ -444,7 +447,7 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
         {this.state.change_cat_modal_visible ? (
           <Modal
             title="修改分类"
-            visible={this.state.change_cat_modal_visible}
+            open={this.state.change_cat_modal_visible}
             onCancel={() => this.changeModal('change_cat_modal_visible', false)}
             footer={null}
             className="addCatModal"
@@ -553,7 +556,7 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
               {item.name}
             </Link>
 
-            <div className="btns" style={{ display: this.state.delIcon === item._id ? 'block' : 'none' }} >
+            <div className="btns" style={{ display: this.state.delIcon === item._id ? 'block' : 'none' }}>
               <Tooltip title="删除分类">
                 <DeleteOutlined
                   className="interface-delete-icon"
@@ -602,7 +605,7 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
       <div>
         {searchBox}
         {menuList.length > 0 ? (
-          <div className="tree-wrappper" style={{ maxHeight }} >
+          <div className="tree-wrappper" style={{ maxHeight }}>
             <Tree
               className="interface-list"
               treeData={treeData}

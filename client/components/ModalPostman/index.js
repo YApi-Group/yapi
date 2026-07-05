@@ -11,7 +11,6 @@ import VariablesSelect from './VariablesSelect.js'
 
 import './index.scss'
 const { handleParamsValue } = require('@common/utils.js')
-const Panel = Collapse.Panel
 
 // 深拷贝
 function deepEqual(state) {
@@ -44,7 +43,7 @@ class ModalPostman extends Component {
     inputValue: PropTypes.any,
     envType: PropTypes.string,
     id: PropTypes.number,
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -99,9 +98,7 @@ class ModalPostman extends Component {
       const nameArr = valArr[i].split(':')
 
       let paramArr = nameArr[1] && nameArr[1].split(',')
-      paramArr
-        = paramArr
-        && paramArr.map(item => trim(item))
+      paramArr = paramArr && paramArr.map(item => trim(item))
       const item = {
         name: trim(nameArr[0]),
         params: paramArr || [],
@@ -115,18 +112,13 @@ class ModalPostman extends Component {
       },
       () => {
         this.mockClick(valArr.length)()
-      },
+      }
     )
   }
 
   mockClick(index) {
     return (curname, params) => {
-      const newParamsList = closeRightTabsAndAddNewTab(
-        this.state.methodsParamsList,
-        index,
-        curname,
-        params,
-      )
+      const newParamsList = closeRightTabsAndAddNewTab(this.state.methodsParamsList, index, curname, params)
       this.setState({
         methodsParamsList: newParamsList,
       })
@@ -139,7 +131,7 @@ class ModalPostman extends Component {
       constantInput: val,
     })
     this.mockClick(0)(val)
-  };
+  }
 
   handleParamsInput = (e, clickIndex, paramsIndex) => {
     const newParamsList = deepEqual(this.state.methodsParamsList)
@@ -147,7 +139,7 @@ class ModalPostman extends Component {
     this.setState({
       methodsParamsList: newParamsList,
     })
-  };
+  }
 
   // 方法
   MethodsListSource = props => (
@@ -158,7 +150,7 @@ class ModalPostman extends Component {
       paramsInput={this.handleParamsInput}
       clickIndex={props.index}
     />
-  );
+  )
 
   //  处理表达式
   handleValue(val) {
@@ -192,19 +184,19 @@ class ModalPostman extends Component {
   handleCancel = () => {
     this.setInit()
     this.props.handleCancel()
-  };
+  }
 
   // 处理插入
   handleOk = installValue => {
     this.props.handleOk(installValue)
     this.setInit()
-  };
+  }
   // 处理面板切换
   handleCollapse = key => {
     this.setState({
       activeKey: key,
     })
-  };
+  }
 
   render() {
     const { visible, envType } = this.props
@@ -233,7 +225,7 @@ class ModalPostman extends Component {
             <EditOutlined /> 高级参数设置
           </p>
         }
-        visible={visible}
+        open={visible}
         onOk={() => this.handleOk(outputParams())}
         onCancel={this.handleCancel}
         wrapClassName="modal-postman"
@@ -242,53 +234,66 @@ class ModalPostman extends Component {
         okText="插入"
       >
         <Row className="modal-postman-form" type="flex">
-          {methodsParamsList.map((item, index) => item.type === 'dataSource' ? (
-            <Col span={8} className="modal-postman-col" key={index}>
-              <Collapse
-                className="modal-postman-collapse"
-                activeKey={this.state.activeKey}
-                onChange={this.handleCollapse}
-                bordered={false}
-                accordion
-              >
-                <Panel header={<h3 className="mock-title">常量</h3>} key="1">
-                  <Input
-                    placeholder="基础参数值"
-                    value={constantInput}
-                    onChange={e => this.handleConstantsInput(e.target.value, index)}
-                  />
-                </Panel>
-                <Panel header={<h3 className="mock-title">mock数据</h3>} key="2">
-                  <MockList click={this.mockClick(index)} clickValue={item.name} />
-                </Panel>
-                {envType === 'case' && (
-                  <Panel
-                    header={
-                      <h3 className="mock-title">
-                          变量&nbsp;<Tooltip
-                          placement="top"
-                          title="YApi 提供了强大的变量参数功能，你可以在测试的时候使用前面接口的 参数 或 返回值 作为 后面接口的参数，即使接口之间存在依赖，也可以轻松 一键测试~"
-                        >
-                          <QuestionCircleOutlined />
-                        </Tooltip>
-                      </h3>
-                    }
-                    key="3"
-                  >
-                    <VariablesSelect
-                      id={this.props.id}
-                      click={this.mockClick(index)}
-                      clickValue={item.name}
-                    />
-                  </Panel>
-                )}
-              </Collapse>
-            </Col>
-          ) : (
-            <Col span={8} className="modal-postman-col" key={index}>
-              <this.MethodsListSource index={index} value={item.name} params={item.params} />
-            </Col>
-          ))}
+          {methodsParamsList.map((item, index) =>
+            item.type === 'dataSource' ? (
+              <Col span={8} className="modal-postman-col" key={index}>
+                <Collapse
+                  className="modal-postman-collapse"
+                  activeKey={this.state.activeKey}
+                  onChange={this.handleCollapse}
+                  bordered={false}
+                  accordion
+                  items={[
+                    {
+                      key: '1',
+                      label: <h3 className="mock-title">常量</h3>,
+                      children: (
+                        <Input
+                          placeholder="基础参数值"
+                          value={constantInput}
+                          onChange={e => this.handleConstantsInput(e.target.value, index)}
+                        />
+                      ),
+                    },
+                    {
+                      key: '2',
+                      label: <h3 className="mock-title">mock数据</h3>,
+                      children: <MockList click={this.mockClick(index)} clickValue={item.name} />,
+                    },
+                    ...(envType === 'case'
+                      ? [
+                          {
+                            key: '3',
+                            label: (
+                              <h3 className="mock-title">
+                                变量&nbsp;
+                                <Tooltip
+                                  placement="top"
+                                  title="YApi 提供了强大的变量参数功能，你可以在测试的时候使用前面接口的 参数 或 返回值 作为 后面接口的参数，即使接口之间存在依赖，也可以轻松 一键测试~"
+                                >
+                                  <QuestionCircleOutlined />
+                                </Tooltip>
+                              </h3>
+                            ),
+                            children: (
+                              <VariablesSelect
+                                id={this.props.id}
+                                click={this.mockClick(index)}
+                                clickValue={item.name}
+                              />
+                            ),
+                          },
+                        ]
+                      : []),
+                  ]}
+                />
+              </Col>
+            ) : (
+              <Col span={8} className="modal-postman-col" key={index}>
+                <this.MethodsListSource index={index} value={item.name} params={item.params} />
+              </Col>
+            )
+          )}
         </Row>
         <Row className="modal-postman-expression">
           <Col span={6}>

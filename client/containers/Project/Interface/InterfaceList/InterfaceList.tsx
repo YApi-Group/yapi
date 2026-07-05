@@ -114,10 +114,13 @@ class InterfaceList extends Component<PropTypes, StateTypes> {
   }
 
   handleChange = (pagination: any, filters: any) => {
-    this.setState({
-      current: pagination.current || 1,
-      filteredInfo: filters,
-    }, () => this.handleRequest(this.props))
+    this.setState(
+      {
+        current: pagination.current || 1,
+        filteredInfo: filters,
+      },
+      () => this.handleRequest(this.props)
+    )
   }
 
   UNSAFE_componentWillMount() {
@@ -134,7 +137,7 @@ class InterfaceList extends Component<PropTypes, StateTypes> {
         {
           current: 1,
         },
-        () => this.handleRequest(nextProps),
+        () => this.handleRequest(nextProps)
       )
     }
   }
@@ -264,11 +267,7 @@ class InterfaceList extends Component<PropTypes, StateTypes> {
         render: (text: string, record: any) => {
           const key = record.key
           return (
-            <Select
-              value={key + '-' + text}
-              className="select"
-              onChange={this.changeInterfaceStatus}
-            >
+            <Select value={key + '-' + text} className="select" onChange={this.changeInterfaceStatus}>
               <Option value={key + '-done'}>
                 <span className="tag-status done">已完成</span>
               </Option>
@@ -304,7 +303,8 @@ class InterfaceList extends Component<PropTypes, StateTypes> {
       },
     ]
 
-    let intername = '', desc = ''
+    let intername = '',
+      desc = ''
     const cat = this.props.curProject ? this.props.curProject.cat : []
 
     if (cat) {
@@ -374,7 +374,7 @@ class InterfaceList extends Component<PropTypes, StateTypes> {
         {this.state.visible && (
           <Modal
             title="添加接口"
-            visible={this.state.visible}
+            open={this.state.visible}
             onCancel={() => this.setState({ visible: false })}
             footer={null}
             className="addCatModal"

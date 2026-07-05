@@ -280,7 +280,7 @@ class UpDateModal extends Component {
       )
     })
     return (
-      <Modal title="修改项目" visible={isUpdateModalShow} onOk={this.handleOk} onCancel={this.handleCancel}>
+      <Modal title="修改项目" open={isUpdateModalShow} onOk={this.handleOk} onCancel={this.handleCancel}>
         <Form>
           <FormItem
             {...formItemLayout}

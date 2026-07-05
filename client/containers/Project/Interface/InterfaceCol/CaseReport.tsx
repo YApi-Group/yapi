@@ -1,8 +1,7 @@
 import { Row, Col, Tabs } from 'antd'
+import type { TabsProps } from 'antd'
 import PropTypes from 'prop-types'
 import React from 'react'
-
-const TabPane = Tabs.TabPane
 
 function jsonFormat(json: any) {
   // console.log('json',json)
@@ -35,10 +34,13 @@ const CaseReport = function (props: PropTypes) {
     validRes = props.validRes.map((item, index) => <div key={index}>{item.message}</div>)
   }
 
-  return (
-    <div className="report">
-      <Tabs defaultActiveKey="request">
-        <TabPane className="case-report-pane" tab="Request" key="request">
+  const items: TabsProps['items'] = [
+    {
+      key: 'request',
+      label: 'Request',
+      className: 'case-report-pane',
+      children: (
+        <>
           <Row className="case-report">
             <Col className="case-report-title" span="6">
               Url
@@ -75,8 +77,15 @@ const CaseReport = function (props: PropTypes) {
               </Col>
             </Row>
           ) : null}
-        </TabPane>
-        <TabPane className="case-report-pane" tab="Response" key="response">
+        </>
+      ),
+    },
+    {
+      key: 'response',
+      label: 'Response',
+      className: 'case-report-pane',
+      children: (
+        <>
           <Row className="case-report">
             <Col className="case-report-title" span="6">
               HttpCode
@@ -105,20 +114,29 @@ const CaseReport = function (props: PropTypes) {
               </Col>
             </Row>
           ) : null}
-        </TabPane>
-        <TabPane className="case-report-pane" tab="验证结果" key="valid">
-          {props.validRes ? (
-            <Row className="case-report">
-              <Col className="case-report-title" span="6">
-                验证结果
-              </Col>
-              <Col span="18">
-                <pre>{validRes}</pre>
-              </Col>
-            </Row>
-          ) : null}
-        </TabPane>
-      </Tabs>
+        </>
+      ),
+    },
+    {
+      key: 'valid',
+      label: '验证结果',
+      className: 'case-report-pane',
+      children: props.validRes ? (
+        <Row className="case-report">
+          <Col className="case-report-title" span="6">
+            验证结果
+          </Col>
+          <Col span="18">
+            <pre>{validRes}</pre>
+          </Col>
+        </Row>
+      ) : null,
+    },
+  ]
+
+  return (
+    <div className="report">
+      <Tabs defaultActiveKey="request" items={items} />
     </div>
   )
 }

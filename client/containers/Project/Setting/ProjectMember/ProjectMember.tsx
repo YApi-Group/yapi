@@ -37,10 +37,11 @@ import '../Setting.scss'
 
 const Option = Select.Option
 
-const arrayAddKey = (arr: any[]) => arr.map((item, index) => ({
-  ...item,
-  key: index,
-}))
+const arrayAddKey = (arr: any[]) =>
+  arr.map((item, index) => ({
+    ...item,
+    key: index,
+  }))
 
 type PropsType = {
   match?: any
@@ -228,8 +229,7 @@ class ProjectMember extends Component<PropsType, StateType> {
     const isEmailEditAble = this.state.role === 'owner' || this.state.role === 'admin'
     const columns = [
       {
-        title:
-          this.props.projectMsg.name + ' 项目成员 (' + this.state.projectMemberList.length + ') 人',
+        title: this.props.projectMsg.name + ' 项目成员 (' + this.state.projectMemberList.length + ') 人',
         dataIndex: 'username',
         key: 'username',
         render: (text: string, record: any) => (
@@ -255,7 +255,12 @@ class ProjectMember extends Component<PropsType, StateType> {
         title:
           this.state.role === 'owner' || this.state.role === 'admin' ? (
             <div className="btn-container">
-              <Button className="btn" type="primary" icon={<PlusOutlined />} onClick={this.showAddMemberModal}>
+              <Button
+                className="btn"
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={this.showAddMemberModal}
+              >
                 添加成员
               </Button>
               <Button className="btn" icon={<PlusOutlined />} onClick={this.showImportMemberModal}>
@@ -301,7 +306,6 @@ class ProjectMember extends Component<PropsType, StateType> {
             return '访客'
           }
           return ''
-
         },
       },
     ]
@@ -318,7 +322,7 @@ class ProjectMember extends Component<PropsType, StateType> {
           {this.state.visible ? (
             <Modal
               title="添加成员"
-              visible={this.state.visible}
+              open={this.state.visible}
               onOk={this.handleOk}
               onCancel={this.handleCancel}
             >
@@ -348,7 +352,7 @@ class ProjectMember extends Component<PropsType, StateType> {
           )}
           <Modal
             title="批量导入成员"
-            visible={this.state.modalVisible}
+            open={this.state.modalVisible}
             onOk={this.handleModalOk}
             onCancel={this.handleModalCancel}
           >
@@ -379,9 +383,7 @@ class ProjectMember extends Component<PropsType, StateType> {
           />
           <Card
             bordered={false}
-            title={
-              this.state.groupName + ' 分组成员 (' + this.state.groupMemberList.length + ') 人'
-            }
+            title={this.state.groupName + ' 分组成员 (' + this.state.groupMemberList.length + ') 人'}
             hoverable={true}
             className="setting-group"
           >
@@ -389,13 +391,7 @@ class ProjectMember extends Component<PropsType, StateType> {
               this.state.groupMemberList.map((item, index) => (
                 <div key={index} className="card-item">
                   <img
-                    src={
-                      location.protocol
-                      + '//'
-                      + location.host
-                      + '/api/user/avatar?uid='
-                      + item.uid
-                    }
+                    src={location.protocol + '//' + location.host + '/api/user/avatar?uid=' + item.uid}
                     className="item-img"
                   />
                   <p className="item-name">

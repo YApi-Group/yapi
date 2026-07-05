@@ -1,4 +1,10 @@
-import { DeleteOutlined, CopyOutlined, FolderOpenOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import {
+  DeleteOutlined,
+  CopyOutlined,
+  FolderOpenOutlined,
+  EditOutlined,
+  PlusOutlined,
+} from '@ant-design/icons'
 import { Input, Button, Modal, message, Tooltip, Tree, Form, FormInstance, TreeDataNode } from 'antd'
 import axios from 'axios'
 import { debounce } from 'lodash-es'
@@ -38,7 +44,7 @@ type PropTypes1 = {
 const ColModalForm = (props: PropTypes1) => {
   const { visible, onCancel, onCreate, formRef, title } = props
   return (
-    <Modal visible={visible} title={title} onCancel={onCancel} onOk={onCreate}>
+    <Modal open={visible} title={title} onCancel={onCancel} onOk={onCreate}>
       <Form layout="vertical" ref={formRef}>
         <FormItem label="集合名" name="colName" rules={[{ required: true, message: '请输入集合命名！' }]}>
           <Input />
@@ -203,7 +209,9 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
 
   // 复制测试集合
   copyInterface = async (item: any) => {
-    if (this._copyInterfaceSign === true) { return }
+    if (this._copyInterfaceSign === true) {
+      return
+    }
 
     this._copyInterfaceSign = true
     const { desc, project_id, _id: col_id } = item
@@ -301,7 +309,9 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
     })
 
     /* use setTimeout wait <ColModalForm/> loaded */
-    setTimeout(() => { this.formRef.current.setFieldsValue(editCol) }, 300)
+    setTimeout(() => {
+      this.formRef.current.setFieldsValue(editCol)
+    }, 300)
   }
 
   selectInterface = (importInterIds: any, selectedProject: any) => {
@@ -470,8 +480,8 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
       list = list.filter(item => {
         item.caseList = item.caseList.filter((inter: any) => {
           if (
-            inter.casename.indexOf(this.state.filterValue) === -1
-            && inter.path.indexOf(this.state.filterValue) === -1
+            inter.casename.indexOf(this.state.filterValue) === -1 &&
+            inter.path.indexOf(this.state.filterValue) === -1
           ) {
             return false
           }
@@ -556,7 +566,10 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
             </Button>
           </Tooltip>
         </div>
-        <div className="tree-wrapper" style={{ maxHeight: parseInt(document.body.clientHeight as any) - headHeight + 'px' }}>
+        <div
+          className="tree-wrapper"
+          style={{ maxHeight: parseInt(document.body.clientHeight as any) - headHeight + 'px' }}
+        >
           <Tree
             className={styles.treeMain}
             treeData={treeData}
@@ -576,13 +589,15 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
           formRef={this.formRef}
           title={colModalType === 'add' ? '添加集合' : '修改集合'}
           visible={colModalVisible}
-          onCancel={() => { this.setState({ colModalVisible: false }) }}
+          onCancel={() => {
+            this.setState({ colModalVisible: false })
+          }}
           onCreate={this.addorEditCol}
         />
 
         <Modal
           title="导入接口到集合"
-          visible={importInterVisible}
+          open={importInterVisible}
           onOk={this.handleImportOk}
           onCancel={this.handleImportCancel}
           className="import-case-modal"

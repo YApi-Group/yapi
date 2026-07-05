@@ -9,7 +9,6 @@ import { withRouter } from 'react-router-dom'
 import { fetchInterfaceColList } from '../../../../../reducer/modules/interfaceCol'
 
 const { TextArea } = Input
-const Panel = Collapse.Panel
 
 @connect(
   state => ({
@@ -17,7 +16,7 @@ const Panel = Collapse.Panel
   }),
   {
     fetchInterfaceColList,
-  },
+  }
 )
 @withRouter
 export default class AddColModal extends Component {
@@ -78,7 +77,7 @@ export default class AddColModal extends Component {
       <Modal
         className="add-col-modal"
         title="添加到集合"
-        visible={this.props.visible}
+        open={this.props.visible}
         onOk={() => this.props.onOk(id, this.state.caseName)}
         onCancel={this.props.onCancel}
       >
@@ -111,40 +110,48 @@ export default class AddColModal extends Component {
             <span>暂无集合，请添加！</span>
           )}
         </ul>
-        <Collapse>
-          <Panel header="添加新集合">
-            <Row gutter={6} className="modal-input">
-              <Col span="5">
-                <div className="label">集合名：</div>
-              </Col>
-              <Col span="15">
-                <Input
-                  placeholder="请输入集合名称"
-                  value={this.state.addColName}
-                  onChange={e => this.setState({ addColName: e.target.value })}
-                />
-              </Col>
-            </Row>
-            <Row gutter={6} className="modal-input">
-              <Col span="5">
-                <div className="label">简介：</div>
-              </Col>
-              <Col span="15">
-                <TextArea
-                  rows={3}
-                  placeholder="请输入集合描述"
-                  value={this.state.addColDesc}
-                  onChange={e => this.setState({ addColDesc: e.target.value })}
-                />
-              </Col>
-            </Row>
-            <Row type="flex" justify="end">
-              <Button style={{ float: 'right' }} type="primary" onClick={this.addCol}>
-                添 加
-              </Button>
-            </Row>
-          </Panel>
-        </Collapse>
+        <Collapse
+          items={[
+            {
+              key: '1',
+              label: '添加新集合',
+              children: (
+                <>
+                  <Row gutter={6} className="modal-input">
+                    <Col span="5">
+                      <div className="label">集合名：</div>
+                    </Col>
+                    <Col span="15">
+                      <Input
+                        placeholder="请输入集合名称"
+                        value={this.state.addColName}
+                        onChange={e => this.setState({ addColName: e.target.value })}
+                      />
+                    </Col>
+                  </Row>
+                  <Row gutter={6} className="modal-input">
+                    <Col span="5">
+                      <div className="label">简介：</div>
+                    </Col>
+                    <Col span="15">
+                      <TextArea
+                        rows={3}
+                        placeholder="请输入集合描述"
+                        value={this.state.addColDesc}
+                        onChange={e => this.setState({ addColDesc: e.target.value })}
+                      />
+                    </Col>
+                  </Row>
+                  <Row type="flex" justify="end">
+                    <Button style={{ float: 'right' }} type="primary" onClick={this.addCol}>
+                      添 加
+                    </Button>
+                  </Row>
+                </>
+              ),
+            },
+          ]}
+        />
       </Modal>
     )
   }

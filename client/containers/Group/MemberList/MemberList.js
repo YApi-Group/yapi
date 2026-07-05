@@ -279,7 +279,7 @@ class MemberList extends Component {
         {this.state.visible ? (
           <Modal
             title="添加成员"
-            visible={this.state.visible}
+            open={this.state.visible}
             onOk={this.handleOk}
             onCancel={this.handleCancel}
           >

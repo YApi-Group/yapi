@@ -5,7 +5,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons'
 import { Tooltip, Input, Button, Row, Col, Spin, Modal, message, Select, Switch } from 'antd'
-import { ColumnType } from 'antd/lib/table'
+import type { ColumnType } from 'antd/es/table'
 import axios from 'axios'
 import copy from 'copy-to-clipboard'
 import produce from 'immer'
@@ -103,8 +103,8 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
   currColId: number
 
   _crossRequestInterval: NodeJS.Timeout
-  
-  aceEditorRef:RefObject<AceEditor> = createRef()
+
+  aceEditorRef: RefObject<AceEditor> = createRef()
   // this.aceEditor = aceEditor
 
   constructor(props: PropTypes) {
@@ -159,7 +159,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
         console.error(e)
         this.reports = {}
       }
-    
+
       this.setState({
         commonSetting: {
           ...this.state.commonSetting,
@@ -253,7 +253,6 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
       const envItem = _.find(this.props.envList, item => item._id === rows[i].project_id)
 
       curitem = {
-
         ...rows[i],
         env: envItem.env,
         pre_script: this.props.currProject.pre_script,
@@ -302,9 +301,9 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
 
   handleTest = async (interfaceData: any) => {
     let requestParams = {}
-    const options:any = handleParams(interfaceData, this.handleValue, requestParams)
+    const options: any = handleParams(interfaceData, this.handleValue, requestParams)
 
-    let result:any = {
+    let result: any = {
       code: 400,
       msg: '数据异常',
       validRes: [] as any,
@@ -319,15 +318,16 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     })
 
     try {
-      const data = await crossRequest(options, interfaceData.pre_script, interfaceData.after_script, createContext(
-        this.props.curUid,
-        this.props.match.params.id,
-        interfaceData.interface_id,
-      ))
+      const data = await crossRequest(
+        options,
+        interfaceData.pre_script,
+        interfaceData.after_script,
+        createContext(this.props.curUid, this.props.match.params.id, interfaceData.interface_id)
+      )
       options.taskId = this.props.curUid
 
       data.res.body = json_parse(data.res.body)
-      const res = data.res.body 
+      const res = data.res.body
 
       result = {
         ...options,
@@ -352,10 +352,9 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
         }
       }
 
-      const validRes:any[] = []
+      const validRes: any[] = []
 
       const responseData = {
-
         status: data.res.status,
         body: res,
         header: data.res.header,
@@ -395,7 +394,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
 
   // response, validRes
   // 断言测试
-  handleScriptTest = async (interfaceData:any, response:any, validRes:any[], requestParams:any) => {
+  handleScriptTest = async (interfaceData: any, response: any, validRes: any[], requestParams: any) => {
     // 是否启动断言
     try {
       const test = await axios.post('/api/col/run_script', {
@@ -418,7 +417,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     }
   }
 
-  handleValue = (val:any, global:any) => {
+  handleValue = (val: any, global: any) => {
     const globalValue = changeArrayToObject(global)
     const context = { global: globalValue, ...this.records }
     return handleParamsValue(val, context)
@@ -427,14 +426,14 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
   onSortEnd = (newRows: any[]) => {
     this.setState({ rows: newRows })
 
-    const changes = newRows.map((item, index) => ({ id: item._id, index: index }))    
+    const changes = newRows.map((item, index) => ({ id: item._id, index: index }))
     // console.log(changes)
     axios.post('/api/col/up_case_index', changes).then(() => {
       this.props.fetchInterfaceColList(this.props.match.params.id)
     })
   }
 
-  onChangeTest = (d:any) => {
+  onChangeTest = (d: any) => {
     this.setState({
       commonSetting: {
         ...this.state.commonSetting,
@@ -446,7 +445,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     })
   }
 
-  handleInsertCode = (code:string) => {
+  handleInsertCode = (code: string) => {
     this.aceEditorRef.current.editor.insertCode(code)
   }
 
@@ -473,7 +472,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     }
   }
 
-  openReport = (id:number) => {
+  openReport = (id: number) => {
     if (!this.reports[id]) {
       return message.warn('还没有生成报告')
     }
@@ -491,7 +490,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     })
   }
 
-  handleScriptChange = (d:any) => {
+  handleScriptChange = (d: any) => {
     this.setState({ curScript: d.text })
   }
 
@@ -550,12 +549,12 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     })
   }
 
-  copyUrl = (url:string) => {
+  copyUrl = (url: string) => {
     copy(url, { format: 'text/plain' })
     message.success('已经成功复制到剪切板')
   }
 
-  modeChange = (mode:string) => {
+  modeChange = (mode: string) => {
     this.setState({ mode })
   }
 
@@ -581,17 +580,15 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     const params = {
       col_id: this.props.currColId,
       ...setting,
-
     }
     console.log(params)
 
-    axios.post('/api/col/up_col', params)
-      .then(res => {
-        if (res.data.errcode) {
-          return message.error(res.data.errmsg)
-        }
-        message.success('配置测试集成功')
-      })
+    axios.post('/api/col/up_col', params).then(res => {
+      if (res.data.errcode) {
+        return message.error(res.data.errmsg)
+      }
+      message.success('配置测试集成功')
+    })
 
     this.setState({
       commonSettingModalVisible: false,
@@ -610,7 +607,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     })
   }
 
-  changeCommonFieldSetting = (key:string) => (e: any) => {
+  changeCommonFieldSetting = (key: string) => (e: any) => {
     let value = e
     if (typeof e === 'object' && e) {
       value = e.target.value
@@ -633,11 +630,9 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
       {
         dataIndex: 'casename',
         title: '用例名称',
-        render: (text:string, record:any) => (
+        render: (text: string, record: any) => (
           <Link to={'/project/' + currProjectId + '/interface/case/' + record._id}>
-            {record.casename.length > 23
-              ? record.casename.substr(0, 20) + '...'
-              : record.casename}
+            {record.casename.length > 23 ? record.casename.substr(0, 20) + '...' : record.casename}
           </Link>
         ),
       },
@@ -648,28 +643,28 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
             title={
               <span>
                 {' '}
-                    每个用例都有唯一的key，用于获取所匹配接口的响应数据，例如使用{' '}
+                每个用例都有唯一的key，用于获取所匹配接口的响应数据，例如使用{' '}
                 <a
                   href="https://hellosean1025.github.io/yapi/documents/case.html#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%8C%E7%BC%96%E8%BE%91%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B"
                   className="link-tooltip"
                   target="blank"
                 >
                   {' '}
-                      变量参数{' '}
+                  变量参数{' '}
                 </a>{' '}
-                    功能{' '}
+                功能{' '}
               </span>
             }
           >
-                Key
+            Key
           </Tooltip>
         ),
-        render: (value:any, record:any) => <span>{record._id}</span>,
+        render: (value: any, record: any) => <span>{record._id}</span>,
       },
       {
         dataIndex: 'test_status',
         title: '状态',
-        render: (value:any, rowData :any) => {
+        render: (value: any, rowData: any) => {
           const id = rowData._id
           const code = this.reports[id] ? this.reports[id].code : 0
           if (rowData.test_status === 'loading') {
@@ -717,7 +712,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
       {
         dataIndex: 'path',
         title: '接口路径',
-        render: (text:string, record:any) => (
+        render: (text: string, record: any) => (
           <Tooltip title="跳转到对应接口">
             <Link to={`/project/${record.project_id}/interface/api/${record.interface_id}`}>
               {record.path.length > 23 ? record.path + '...' : record.path}
@@ -728,7 +723,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
       {
         dataIndex: 'report',
         title: '测试报告',
-        render: (text:string, rowData :any) => {
+        render: (text: string, rowData: any) => {
           const reportFun = () => {
             if (!this.reports[rowData.id]) {
               return null
@@ -743,15 +738,12 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     const { rows } = this.state
     // console.log(rows)
 
-    const localUrl
-      = location.protocol
-      + '//'
-      + location.hostname
-      + (location.port !== '' ? ':' + location.port : '')
+    const localUrl =
+      location.protocol + '//' + location.hostname + (location.port !== '' ? ':' + location.port : '')
     const currColEnvObj = this.handleColEnvObj(this.state.currColEnvObj)
-    const autoTestsUrl = `/api/open/run_auto_test?id=${this.props.currColId}&token=${this.props.token
-    }${currColEnvObj ? currColEnvObj : ''}&mode=${this.state.mode}&email=${this.state.email
-    }&download=${this.state.download}`
+    const autoTestsUrl = `/api/open/run_auto_test?id=${this.props.currColId}&token=${this.props.token}${
+      currColEnvObj ? currColEnvObj : ''
+    }&mode=${this.state.mode}&email=${this.state.email}&download=${this.state.download}`
 
     let col_name = ''
     let col_desc = ''
@@ -768,7 +760,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
       <div className="interface-col">
         <Modal
           title="通用规则配置"
-          visible={this.state.commonSettingModalVisible}
+          open={this.state.commonSettingModalVisible}
           onOk={this.handleCommonSetting}
           onCancel={this.cancelCommonSetting}
           width={'1000px'}
@@ -777,78 +769,124 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
           <div className="common-setting-modal">
             <Row className="setting-item">
               <Col className="col-item" span="4">
-                <label>检查HttpCode:&nbsp;<Tooltip title={'检查 http code 是否为 200'}>
-                  <QuestionCircleOutlined style={{ width: '10px' }} />
-                </Tooltip></label>
+                <label>
+                  检查HttpCode:&nbsp;
+                  <Tooltip title={'检查 http code 是否为 200'}>
+                    <QuestionCircleOutlined style={{ width: '10px' }} />
+                  </Tooltip>
+                </label>
               </Col>
               <Col className="col-item" span="18">
-                <Switch onChange={e => {
-                  const { commonSetting } = this.state
-                  this.setState({
-                    commonSetting: {
-                      ...commonSetting,
-                      checkHttpCodeIs200: e,
-                    },
-                  })
-                }} checked={this.state.commonSetting.checkHttpCodeIs200} checkedChildren="开" unCheckedChildren="关" />
+                <Switch
+                  onChange={e => {
+                    const { commonSetting } = this.state
+                    this.setState({
+                      commonSetting: {
+                        ...commonSetting,
+                        checkHttpCodeIs200: e,
+                      },
+                    })
+                  }}
+                  checked={this.state.commonSetting.checkHttpCodeIs200}
+                  checkedChildren="开"
+                  unCheckedChildren="关"
+                />
               </Col>
             </Row>
 
             <Row className="setting-item">
               <Col className="col-item" span="4">
-                <label>检查返回json:&nbsp;<Tooltip title={'检查接口返回数据字段值，比如检查 code 是不是等于 0'}>
-                  <QuestionCircleOutlined style={{ width: '10px' }} />
-                </Tooltip></label>
+                <label>
+                  检查返回json:&nbsp;
+                  <Tooltip title={'检查接口返回数据字段值，比如检查 code 是不是等于 0'}>
+                    <QuestionCircleOutlined style={{ width: '10px' }} />
+                  </Tooltip>
+                </label>
               </Col>
               <Col className="col-item" span="6">
-                <Input value={this.state.commonSetting.checkResponseField.name} onChange={this.changeCommonFieldSetting('name')} placeholder="字段名" />
+                <Input
+                  value={this.state.commonSetting.checkResponseField.name}
+                  onChange={this.changeCommonFieldSetting('name')}
+                  placeholder="字段名"
+                />
               </Col>
               <Col className="col-item" span="6">
-                <Input onChange={this.changeCommonFieldSetting('value')} value={this.state.commonSetting.checkResponseField.value} placeholder="值" />
+                <Input
+                  onChange={this.changeCommonFieldSetting('value')}
+                  value={this.state.commonSetting.checkResponseField.value}
+                  placeholder="值"
+                />
               </Col>
               <Col className="col-item" span="6">
-                <Switch onChange={this.changeCommonFieldSetting('enable')} checked={this.state.commonSetting.checkResponseField.enable} checkedChildren="开" unCheckedChildren="关" />
+                <Switch
+                  onChange={this.changeCommonFieldSetting('enable')}
+                  checked={this.state.commonSetting.checkResponseField.enable}
+                  checkedChildren="开"
+                  unCheckedChildren="关"
+                />
               </Col>
             </Row>
 
             <Row className="setting-item">
               <Col className="col-item" span="4">
-                <label>检查返回数据结构:&nbsp;<Tooltip title={'只有 response 基于 json-schema 方式定义，该检查才会生效'}>
-                  <QuestionCircleOutlined style={{ width: '10px' }} />
-                </Tooltip></label>
+                <label>
+                  检查返回数据结构:&nbsp;
+                  <Tooltip title={'只有 response 基于 json-schema 方式定义，该检查才会生效'}>
+                    <QuestionCircleOutlined style={{ width: '10px' }} />
+                  </Tooltip>
+                </label>
               </Col>
               <Col className="col-item" span="18">
-                <Switch onChange={e => {
-                  const { commonSetting } = this.state
-                  this.setState({
-                    commonSetting: {
-                      ...commonSetting,
-                      checkResponseSchema: e,
-                    },
-                  })
-                }} checked={this.state.commonSetting.checkResponseSchema} checkedChildren="开" unCheckedChildren="关" />
+                <Switch
+                  onChange={e => {
+                    const { commonSetting } = this.state
+                    this.setState({
+                      commonSetting: {
+                        ...commonSetting,
+                        checkResponseSchema: e,
+                      },
+                    })
+                  }}
+                  checked={this.state.commonSetting.checkResponseSchema}
+                  checkedChildren="开"
+                  unCheckedChildren="关"
+                />
               </Col>
             </Row>
 
             <Row className="setting-item">
               <Col className="col-item  " span="4">
-                <label>全局测试脚本:&nbsp;<Tooltip title={'在跑自动化测试时，优先调用全局脚本，只有全局脚本通过测试，才会开始跑case自定义的测试脚本'}>
-                  <QuestionCircleOutlined style={{ width: '10px' }} />
-                </Tooltip></label>
+                <label>
+                  全局测试脚本:&nbsp;
+                  <Tooltip
+                    title={
+                      '在跑自动化测试时，优先调用全局脚本，只有全局脚本通过测试，才会开始跑case自定义的测试脚本'
+                    }
+                  >
+                    <QuestionCircleOutlined style={{ width: '10px' }} />
+                  </Tooltip>
+                </label>
               </Col>
               <Col className="col-item" span="14">
-                <div><Switch onChange={e => {
-                  const { commonSetting } = this.state
-                  this.setState({
-                    commonSetting: {
-                      ...commonSetting,
-                      checkScript: {
-                        ...this.state.commonSetting.checkScript,
-                        enable: e,
-                      },
-                    },
-                  })
-                }} checked={this.state.commonSetting.checkScript.enable} checkedChildren="开" unCheckedChildren="关" /></div>
+                <div>
+                  <Switch
+                    onChange={e => {
+                      const { commonSetting } = this.state
+                      this.setState({
+                        commonSetting: {
+                          ...commonSetting,
+                          checkScript: {
+                            ...this.state.commonSetting.checkScript,
+                            enable: e,
+                          },
+                        },
+                      })
+                    }}
+                    checked={this.state.commonSetting.checkScript.enable}
+                    checkedChildren="开"
+                    unCheckedChildren="关"
+                  />
+                </div>
                 <AceEditor
                   onChange={this.onChangeTest}
                   className="case-script"
@@ -873,7 +911,6 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
                 </div>
               </Col>
             </Row>
-
           </div>
         </Modal>
         <Row justify="center" align="top">
@@ -885,7 +922,8 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
                 margin: '8px 20px 16px 0px',
               }}
             >
-              测试集合&nbsp;<a
+              测试集合&nbsp;
+              <a
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://hellosean1025.github.io/yapi/documents/case.html"
@@ -925,9 +963,14 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
                     </Button>
                   </Tooltip>
                 )}
-                <Button onClick={this.openCommonSetting} style={{
-                  marginRight: '8px',
-                }} >通用规则配置</Button>
+                <Button
+                  onClick={this.openCommonSetting}
+                  style={{
+                    marginRight: '8px',
+                  }}
+                >
+                  通用规则配置
+                </Button>
                 &nbsp;
                 <Button type="primary" onClick={this.executeTests}>
                   开始测试
@@ -951,7 +994,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
         </Row>
 
         <div className="component-label-wrapper">
-          <Label onChange={(val:any) => this.handleChangeInterfaceCol(val, col_name)} desc={col_desc} />
+          <Label onChange={(val: any) => this.handleChangeInterfaceCol(val, col_name)} desc={col_desc} />
         </div>
 
         {/* <Table
@@ -960,12 +1003,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
           dataSource={rows}
         /> */}
 
-        <CaseTable 
-          rowKey="id"
-          columns={columns}
-          dataSource={rows}        
-          onSortEnd={this.onSortEnd}
-        />
+        <CaseTable rowKey="id" columns={columns} dataSource={rows} onSortEnd={this.onSortEnd} />
 
         <Modal
           title="测试报告"
@@ -973,7 +1011,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
           style={{
             minHeight: '500px',
           }}
-          visible={this.state.visible}
+          open={this.state.visible}
           onCancel={this.handleCancel}
           footer={null}
         >
@@ -986,23 +1024,16 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
           style={{
             minHeight: '500px',
           }}
-          visible={this.state.advVisible}
+          open={this.state.advVisible}
           onCancel={this.handleAdvCancel}
           onOk={this.handleAdvOk}
           maskClosable={false}
         >
           <h3>
             是否开启:&nbsp;
-            <Switch
-              checked={this.state.enableScript}
-              onChange={e => this.setState({ enableScript: e })}
-            />
+            <Switch checked={this.state.enableScript} onChange={e => this.setState({ enableScript: e })} />
           </h3>
-          <AceEditor
-            className="case-script"
-            data={this.state.curScript}
-            onChange={this.handleScriptChange}
-          />
+          <AceEditor className="case-script" data={this.state.curScript} onChange={this.handleScriptChange} />
         </Modal>
         {this.state.autoVisible && (
           <Modal
@@ -1011,7 +1042,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
             style={{
               minHeight: '500px',
             }}
-            visible={this.state.autoVisible}
+            open={this.state.autoVisible}
             onCancel={this.handleAuto}
             className="autoTestsModal"
             footer={null}
@@ -1085,10 +1116,7 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
             </Row>
             <Row justify="space-around" className="row" align="middle">
               <Col span={21} className="autoTestUrl">
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={localUrl + autoTestsUrl} >
+                <a target="_blank" rel="noopener noreferrer" href={localUrl + autoTestsUrl}>
                   {autoTestsUrl}
                 </a>
               </Col>
@@ -1131,4 +1159,7 @@ const actions = {
   fetchCaseEnvList,
 }
 
-export default connect(states, actions)(withRouter(InterfaceColContent as any)) as any as typeof InterfaceColContent
+export default connect(
+  states,
+  actions
+)(withRouter(InterfaceColContent as any)) as any as typeof InterfaceColContent

@@ -1,9 +1,4 @@
-import {
-  StarOutlined,
-  PlusCircleOutlined,
-  DownOutlined,
-  QuestionCircleOutlined,
-} from '@ant-design/icons'
+import { StarOutlined, PlusCircleOutlined, DownOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { Dropdown, Tooltip, Popover, Tag } from 'antd'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -75,7 +70,7 @@ const ToolUser = (props: PropTypes) => {
         title={tipFollow}
         placement="bottomRight"
         arrowPointAtCenter
-        visible={props.studyTip === 1 && !props.study}
+        open={props.studyTip === 1 && !props.study}
       >
         <Tooltip placement="bottom" title={'我的关注'}>
           <li className="toolbar-li">
@@ -91,7 +86,7 @@ const ToolUser = (props: PropTypes) => {
         title={tipAdd}
         placement="bottomRight"
         arrowPointAtCenter
-        visible={props.studyTip === 2 && !props.study}
+        open={props.studyTip === 2 && !props.study}
       >
         <Tooltip placement="bottom" title={'新建项目'}>
           <li className="toolbar-li">
@@ -107,7 +102,7 @@ const ToolUser = (props: PropTypes) => {
         title={tipDoc}
         placement="bottomRight"
         arrowPointAtCenter
-        visible={props.studyTip === 3 && !props.study}
+        open={props.studyTip === 3 && !props.study}
       >
         <Tooltip placement="bottom" title={'使用文档'}>
           <li className="toolbar-li">
@@ -121,7 +116,7 @@ const ToolUser = (props: PropTypes) => {
         <Dropdown
           placement="bottomRight"
           trigger={['click']}
-          overlay={
+          popupRender={() => (
             <MenuUser
               user={props.user}
               msg={props.msg}
@@ -130,7 +125,7 @@ const ToolUser = (props: PropTypes) => {
               relieveLink={props.relieveLink}
               logout={props.logout}
             />
-          }
+          )}
         >
           <a className="dropdown-link">
             <span className="avatar-image">

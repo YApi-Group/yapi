@@ -8,7 +8,6 @@ import {
 } from '@ant-design/icons'
 import {
   Dropdown,
-  Menu,
   Row,
   Col,
   Select,
@@ -499,14 +498,18 @@ const SchemaObject = connect(state => ({
 const DropPlus = (props, context) => {
   const { prefix, name, add } = props
   const Model = context.Model.schema
-  const menu = (
-    <Menu>
-      <Menu.Item>
+  const menuItems = [
+    {
+      key: 'sibling_node',
+      label: (
         <span onClick={() => Model.addFieldAction({ prefix, name })}>
           {LocaleProvider('sibling_node')}
         </span>
-      </Menu.Item>
-      <Menu.Item>
+      ),
+    },
+    {
+      key: 'child_node',
+      label: (
         <span
           onClick={() => {
             Model.setOpenValueAction({ key: [].concat(prefix, name, 'properties'), value: true })
@@ -515,13 +518,13 @@ const DropPlus = (props, context) => {
         >
           {LocaleProvider('child_node')}
         </span>
-      </Menu.Item>
-    </Menu>
-  )
+      ),
+    },
+  ]
 
   return (
     <Tooltip placement="top" title={LocaleProvider('add_node')}>
-      <Dropdown overlay={menu}>
+      <Dropdown menu={{ items: menuItems }}>
         <PlusOutlined className="plus" />
       </Dropdown>
     </Tooltip>

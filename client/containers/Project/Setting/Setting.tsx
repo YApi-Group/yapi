@@ -1,4 +1,5 @@
 import { Tabs } from 'antd'
+import type { TabsProps } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
@@ -12,8 +13,6 @@ import ProjectMock from './ProjectMock/index.js'
 import ProjectRequest from './ProjectRequest/ProjectRequest'
 import ProjectToken from './ProjectToken/ProjectToken'
 import SwaggerAutoSync from './SwaggerAutoSync'
-
-const TabPane = Tabs.TabPane
 
 const routers: { [key: string]: { name: string, component: Component } } = {}
 
@@ -29,44 +28,57 @@ class Setting extends Component<PropTypes> {
     const id = this.props.match.params.id
     plugin.emitHook('sub_setting_nav', routers)
 
+    const items: TabsProps['items'] = [
+      {
+        key: '1',
+        label: '项目配置',
+        children: <ProjectMessage projectId={Number(id)} />,
+      },
+      {
+        key: '2',
+        label: '环境配置',
+        children: <ProjectEnv projectId={Number(id)} />,
+      },
+      {
+        key: '3',
+        label: '请求配置',
+        children: <ProjectRequest projectId={Number(id)} />,
+      },
+      ...(this.props.curProjectRole !== 'guest'
+        ? [{
+            key: '4',
+            label: 'token配置',
+            children: <ProjectToken projectId={Number(id)} curProjectRole={this.props.curProjectRole} />,
+          }]
+        : []),
+      {
+        key: '5',
+        label: '全局mock脚本',
+        children: <ProjectMock projectId={Number(id)} />,
+      },
+      {
+        key: '6',
+        label: '生成 ts services',
+        children: <GenTsService projectId={Number(id)} />,
+      },
+      {
+        key: '7',
+        label: 'Swagger自动同步',
+        children: <SwaggerAutoSync projectId={Number(id)} />,
+      },
+      ...Object.keys(routers).map(key => {
+        const C: any = routers[key].component
+        return {
+          key: routers[key].name,
+          label: routers[key].name,
+          children: <C projectId={Number(id)} />,
+        }
+      }),
+    ]
+
     return (
       <div className="g-row">
-        <Tabs type="card" className="tabs-large" tabBarStyle={{ marginBottom: 0 }}>
-          <TabPane tab="项目配置" key="1">
-            <ProjectMessage projectId={Number(id)} />
-          </TabPane>
-          <TabPane tab="环境配置" key="2">
-            <ProjectEnv projectId={Number(id)} />
-          </TabPane>
-          <TabPane tab="请求配置" key="3">
-            <ProjectRequest projectId={Number(id)} />
-          </TabPane>
-          {this.props.curProjectRole !== 'guest' ? (
-            <TabPane tab="token配置" key="4">
-              <ProjectToken projectId={Number(id)} curProjectRole={this.props.curProjectRole} />
-            </TabPane>
-          ) : null}
-          <TabPane tab="全局mock脚本" key="5">
-            <ProjectMock projectId={Number(id)} />
-          </TabPane>
-
-          <TabPane tab="生成 ts services" key="6" >
-            <GenTsService projectId={Number(id)} />
-          </TabPane>
-
-          <TabPane tab="Swagger自动同步" key="7" >
-            <SwaggerAutoSync projectId={Number(id)} />
-          </TabPane>
-
-          {Object.keys(routers).map(key => {
-            const C: any = routers[key].component
-            return (
-              <TabPane tab={routers[key].name} key={routers[key].name}>
-                <C projectId={Number(id)} />
-              </TabPane>
-            )
-          })}
-        </Tabs>
+        <Tabs type="card" className="tabs-large" tabBarStyle={{ marginBottom: 0 }} items={items} />
       </div>
     )
   }

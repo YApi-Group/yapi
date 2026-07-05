@@ -36,7 +36,6 @@ import './index.css'
 
 const Option = Select.Option
 const { TextArea } = Input
-const TabPane = Tabs.TabPane
 
 class jsonSchema extends React.Component {
   constructor(props) {
@@ -280,7 +279,7 @@ class jsonSchema extends React.Component {
         </Button>
         <Modal
           maskClosable={false}
-          visible={visible}
+          open={visible}
           title={LocalProvider('import_json')}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
@@ -301,14 +300,19 @@ class jsonSchema extends React.Component {
             onChange={key => {
               this.importJsonType = key
             }}
-          >
-            <TabPane tab="JSON" key="json">
-              <AceEditor data="" mode="json" onChange={this.handleImportJson} />
-            </TabPane>
-            <TabPane tab="JSON-SCHEMA" key="schema">
-              <AceEditor data="" mode="json" onChange={this.handleImportJsonSchema} />
-            </TabPane>
-          </Tabs>
+            items={[
+              {
+                key: 'json',
+                label: 'JSON',
+                children: <AceEditor data="" mode="json" onChange={this.handleImportJson} />,
+              },
+              {
+                key: 'schema',
+                label: 'JSON-SCHEMA',
+                children: <AceEditor data="" mode="json" onChange={this.handleImportJsonSchema} />,
+              },
+            ]}
+          />
         </Modal>
 
         <Modal
@@ -330,7 +334,7 @@ class jsonSchema extends React.Component {
             </div>
           }
           maskClosable={false}
-          visible={editVisible}
+          open={editVisible}
           onOk={() => this.handleEditOk(editorModalName)}
           onCancel={this.handleEditCancel}
           okText={LocalProvider('ok')}
@@ -348,7 +352,7 @@ class jsonSchema extends React.Component {
           <Modal
             title={LocalProvider('adv_setting')}
             maskClosable={false}
-            visible={advVisible}
+            open={advVisible}
             onOk={this.handleAdvOk}
             onCancel={this.handleAdvCancel}
             okText={LocalProvider('ok')}

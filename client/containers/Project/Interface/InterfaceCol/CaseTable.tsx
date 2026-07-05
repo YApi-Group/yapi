@@ -3,7 +3,7 @@ import { MenuOutlined } from '@ant-design/icons'
 // import { useSortable, arrayMove, SortableContext,
 //  sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Table } from 'antd'
-import { ColumnsType, ColumnType } from 'antd/lib/table'
+import type { ColumnsType, ColumnType } from 'antd/es/table'
 import React, { Component } from 'react'
 import { SortableContainer, SortableElement, SortableHandle, SortEnd } from 'react-sortable-hoc'
 // import styles from './ct.module.scss'
@@ -43,7 +43,13 @@ class CaseTable extends Component<PropTypes> {
   }
 
   DraggableContainer = (chProps: any) => (
-    <SortableCon useDragHandle disableAutoscroll helperClass="row-dragging" onSortEnd={this.onSortEnd} {...chProps} />
+    <SortableCon
+      useDragHandle
+      disableAutoscroll
+      helperClass="row-dragging"
+      onSortEnd={this.onSortEnd}
+      {...chProps}
+    />
   )
 
   DraggableBodyRow = (chProps: any) => {
