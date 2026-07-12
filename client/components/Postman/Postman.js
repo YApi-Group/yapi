@@ -13,6 +13,7 @@ import {
   Row,
   Col,
   Alert,
+  Space,
 } from 'antd'
 import axios from 'axios'
 import json5 from 'json5'
@@ -42,7 +43,6 @@ import CheckCrossInstall, { initCrossRequest } from './CheckCrossInstall.js'
 import './Postman.scss'
 
 const HTTP_METHOD = constants.HTTP_METHOD
-const InputGroup = Input.Group
 const Option = Select.Option
 
 export const InsertCodeMap = [
@@ -263,7 +263,7 @@ export default class Run extends Component {
     )
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this._crossRequestInterval = initCrossRequest(hasPlugin => {
       this.setState({
         hasPlugin: hasPlugin,
@@ -602,7 +602,7 @@ export default class Run extends Component {
         <CheckCrossInstall hasPlugin={hasPlugin} />
 
         <div className="url">
-          <InputGroup compact style={{ display: 'flex' }}>
+          <Space.Compact block style={{ display: 'flex' }}>
             <Select disabled value={method} style={{ flexBasis: 60 }}>
               {Object.keys(HTTP_METHOD).map(name => {
                 ;<Option value={name.toUpperCase()}>{name.toUpperCase()}</Option>
@@ -628,7 +628,7 @@ export default class Run extends Component {
               spellCheck="false"
               style={{ flexBasis: 180, flexGrow: 1 }}
             />
-          </InputGroup>
+          </Space.Compact>
 
           <Tooltip
             placement="bottom"
@@ -686,7 +686,7 @@ export default class Run extends Component {
                         onChange={e => this.changeParam('req_params', e.target.value, index)}
                         placeholder="参数值"
                         id={`req_params_${index}`}
-                        addonAfter={
+                        suffix={
                           <EditOutlined onClick={() => this.showModal(item.value, index, 'req_params')} />
                         }
                       />
@@ -735,7 +735,7 @@ export default class Run extends Component {
                         onChange={e => this.changeParam('req_query', e.target.value, index)}
                         placeholder="参数值"
                         id={`req_query_${index}`}
-                        addonAfter={
+                        suffix={
                           <EditOutlined onClick={() => this.showModal(item.value, index, 'req_query')} />
                         }
                       />
@@ -775,7 +775,7 @@ export default class Run extends Component {
                         onChange={e => this.changeParam('req_headers', e.target.value, index)}
                         placeholder="参数值"
                         id={`req_headers_${index}`}
-                        addonAfter={
+                        suffix={
                           !item.abled && (
                             <EditOutlined onClick={() => this.showModal(item.value, index, 'req_headers')} />
                           )
@@ -871,7 +871,7 @@ export default class Run extends Component {
                               onChange={e => this.changeBody(e.target.value, index)}
                               placeholder="参数值"
                               id={`req_body_form_${index}`}
-                              addonAfter={
+                              suffix={
                                 <EditOutlined
                                   onClick={() => this.showModal(item.value, index, 'req_body_form')}
                                 />

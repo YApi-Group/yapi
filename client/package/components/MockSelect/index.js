@@ -40,7 +40,7 @@ export default class MockSelect extends React.Component {
           onChange={this.props.onChange}
           disabled={schema.type === 'object' || schema.type === 'array'}
         >
-          <Input addonAfter={<EditOutlined onClick={e => { e.stopPropagation(); this.props.showEdit() }} />} />
+          <Input suffix={<EditOutlined onClick={e => { e.stopPropagation(); this.props.showEdit() }} />} />
         </AutoComplete>
       </div>
     )

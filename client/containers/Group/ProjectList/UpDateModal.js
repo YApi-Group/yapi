@@ -1,5 +1,5 @@
 import { MinusCircleOutlined, QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { Modal, Form, Input, Tooltip, Select, message, Button, Row, Col } from 'antd'
+import { Modal, Form, Input, Tooltip, Select, message, Button, Row, Col, Space } from 'antd'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
@@ -227,46 +227,48 @@ class UpDateModal extends Component {
               label={index === 0 ? <span>环境域名</span> : ''}
               required={false}
               key={secondIndex}
-              name={`envs-domain-${index}`}
-              validateTrigger={['onChange', 'onBlur']}
-              initialValue={envMessage.length !== 0 && k.domain ? k.domain.split('//')[1] : ''}
-              rules={[
-                {
-                  required: false,
-                  whitespace: true,
-                  message: '请输入环境域名',
-                  validator(rule, value, callback) {
-                    if (value) {
-                      if (value.length === 0) {
-                        callback('请输入环境域名')
-                      } else if (!/\S/.test(value)) {
-                        callback('请输入环境域名')
-                      } else {
-                        return callback()
-                      }
-                    } else {
-                      callback('请输入环境域名')
-                    }
-                  },
-                },
-              ]}
             >
-              <Input
-                placeholder="请输入环境域名"
-                style={{ width: '90%', marginRight: 8 }}
-                addonBefore={
-                  <FormItem
-                    name={`envs-protocol-${index}`}
-                    initialValue={envMessage.length !== 0 && k.domain ? k.domain.split('//')[0] + '//' : 'http://'}
-                    rules={[{ required: true }]}
-                  >
-                    <Select>
-                      <Option value="http://">{'http://'}</Option>
-                      <Option value="https://">{'https://'}</Option>
-                    </Select>
-                  </FormItem>
-                }
-              />
+              <Space.Compact style={{ width: '90%', marginRight: 8 }}>
+                <FormItem
+                  name={`envs-protocol-${index}`}
+                  initialValue={envMessage.length !== 0 && k.domain ? k.domain.split('//')[0] + '//' : 'http://'}
+                  rules={[{ required: true }]}
+                  noStyle
+                >
+                  <Select>
+                    <Option value="http://">{'http://'}</Option>
+                    <Option value="https://">{'https://'}</Option>
+                  </Select>
+                </FormItem>
+                <FormItem
+                  name={`envs-domain-${index}`}
+                  validateTrigger={['onChange', 'onBlur']}
+                  initialValue={envMessage.length !== 0 && k.domain ? k.domain.split('//')[1] : ''}
+                  rules={[
+                    {
+                      required: false,
+                      whitespace: true,
+                      message: '请输入环境域名',
+                      validator(rule, value, callback) {
+                        if (value) {
+                          if (value.length === 0) {
+                            callback('请输入环境域名')
+                          } else if (!/\S/.test(value)) {
+                            callback('请输入环境域名')
+                          } else {
+                            return callback()
+                          }
+                        } else {
+                          callback('请输入环境域名')
+                        }
+                      },
+                    },
+                  ]}
+                  noStyle
+                >
+                  <Input placeholder="请输入环境域名" />
+                </FormItem>
+              </Space.Compact>
             </FormItem>
           </Col>
 
@@ -302,18 +304,22 @@ class UpDateModal extends Component {
                 </Tooltip>
               </span>
             }
-            name="prd_host"
-            initialValue={initFormValues.prd_host}
-            rules={[{ required: true, message: '请输入项目线上域名!' }]}
+            required
           >
-            <Input
-              addonBefore={
-                <Select defaultValue={initFormValues.prd_protocol} onChange={this.protocolChange}>
-                  <Option value="http://">{'http://'}</Option>
-                  <Option value="https://">{'https://'}</Option>
-                </Select>
-              }
-            />
+            <Space.Compact block>
+              <Select defaultValue={initFormValues.prd_protocol} onChange={this.protocolChange}>
+                <Option value="http://">{'http://'}</Option>
+                <Option value="https://">{'https://'}</Option>
+              </Select>
+              <FormItem
+                name="prd_host"
+                initialValue={initFormValues.prd_host}
+                rules={[{ required: true, message: '请输入项目线上域名!' }]}
+                noStyle
+              >
+                <Input />
+              </FormItem>
+            </Space.Compact>
           </FormItem>
 
           <FormItem

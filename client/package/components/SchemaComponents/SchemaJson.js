@@ -148,7 +148,7 @@ class SchemaArray extends PureComponent {
                   ) : null}
                 </Col>
                 <Col span={22}>
-                  <Input addonAfter={<Checkbox disabled />} disabled value="Items" />
+                  <Input suffix={<Checkbox disabled />} disabled value="Items" />
                 </Col>
               </Row>
             </Col>
@@ -178,7 +178,7 @@ class SchemaArray extends PureComponent {
             )}
             <Col span={this.context.isMock ? 4 : 5} className="col-item col-item-mock">
               <Input
-                addonAfter={<EditOutlined onClick={() => this.handleShowEdit('title')} />}
+                suffix={<EditOutlined onClick={() => this.handleShowEdit('title')} />}
                 placeholder={LocaleProvider('title')}
                 value={items.title}
                 onChange={this.handleChangeTitle}
@@ -186,7 +186,7 @@ class SchemaArray extends PureComponent {
             </Col>
             <Col span={this.context.isMock ? 4 : 5} className="col-item col-item-desc">
               <Input
-                addonAfter={<EditOutlined onClick={() => this.handleShowEdit('description')} />}
+                suffix={<EditOutlined onClick={() => this.handleShowEdit('description')} />}
                 placeholder={LocaleProvider('description')}
                 value={items.description}
                 onChange={this.handleChangeDesc}
@@ -360,7 +360,7 @@ class SchemaItem extends PureComponent {
               </Col>
               <Col span={22}>
                 <FieldInput
-                  addonAfter={
+                  suffix={
                     <Tooltip placement="top" title={LocaleProvider('required')}>
                       <Checkbox
                         onChange={this.handleEnableRequire}
@@ -412,7 +412,7 @@ class SchemaItem extends PureComponent {
 
           <Col span={this.context.isMock ? 4 : 5} className="col-item col-item-mock">
             <Input
-              addonAfter={<EditOutlined onClick={() => this.handleShowEdit('title')} />}
+              suffix={<EditOutlined onClick={() => this.handleShowEdit('title')} />}
               placeholder={LocaleProvider('title')}
               value={value.title}
               onChange={this.handleChangeTitle}
@@ -421,7 +421,7 @@ class SchemaItem extends PureComponent {
 
           <Col span={this.context.isMock ? 4 : 5} className="col-item col-item-desc">
             <Input
-              addonAfter={<EditOutlined onClick={() => this.handleShowEdit('description')} />}
+              suffix={<EditOutlined onClick={() => this.handleShowEdit('description')} />}
               placeholder={LocaleProvider('description')}
               value={value.description}
               onChange={this.handleChangeDesc}

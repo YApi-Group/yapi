@@ -14,6 +14,7 @@ import {
   Radio,
   AutoComplete,
   Switch,
+  Space,
   RadioChangeEvent,
   FormInstance,
 } from 'antd'
@@ -110,7 +111,6 @@ const Json5Example = `
 const TextArea = Input.TextArea
 const FormItem = Form.Item
 const Option = Select.Option
-const InputGroup = Input.Group
 const RadioButton = Radio.Button
 const RadioGroup = Radio.Group
 
@@ -901,7 +901,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
               initialValue={this.state.path}
               rules={[{ required: true, message: '请输入接口路径!' }]}
             >
-              <InputGroup compact>
+              <Space.Compact block>
                 <Select value={this.state.method} onChange={this.onChangeMethod} style={{ width: '15%' }}>
                   {HTTP_METHOD_KEYS.map(item => (
                     <Option key={item} value={item}>
@@ -925,7 +925,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                   />
                 </Tooltip>
                 <Input onChange={this.handlePath} placeholder="/path" style={{ width: '60%' }} />
-              </InputGroup>
+              </Space.Compact>
               <Row className="interface-edit-item">
                 <Col span={24} offset={0}>
                   {paramsList}

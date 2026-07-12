@@ -392,7 +392,7 @@ class jsonSchema extends React.Component {
                   </Col>
                   <Col span={22}>
                     <Input
-                      addonAfter={
+                      suffix={
                         <Tooltip placement="top" title={'checked_all'}>
                           <Checkbox
                             checked={checked}
@@ -431,7 +431,7 @@ class jsonSchema extends React.Component {
               )}
               <Col span={this.props.isMock ? 4 : 5} className="col-item col-item-mock">
                 <Input
-                  addonAfter={
+                  suffix={
                     <EditOutlined onClick={() => this.showEdit([], 'title', this.props.schema.title)} />
                   }
                   placeholder={'Title'}
@@ -441,7 +441,7 @@ class jsonSchema extends React.Component {
               </Col>
               <Col span={this.props.isMock ? 4 : 5} className="col-item col-item-desc">
                 <Input
-                  addonAfter={
+                  suffix={
                     <EditOutlined onClick={() => this.showEdit([], 'description', this.props.schema.description)} />
                   }
                   placeholder={'description'}

@@ -1,4 +1,4 @@
-import { Form, Input, Select, Button, FormInstance } from 'antd'
+import { Form, Input, Select, Button, Space, FormInstance } from 'antd'
 import React, { PureComponent as Component, FocusEvent, createRef, RefObject } from 'react'
 
 import constants from '@/cons'
@@ -86,12 +86,20 @@ class AddInterfaceForm extends Component<PropTypes> {
         <FormItem
           {...formItemLayout}
           label="接口路径"
-          name="path"
-          rules={[{
-            required: true, message: '请输入接口路径!',
-          }]}
+          required
         >
-          <Input onBlur={this.handlePath} addonBefore={prefixSelector} placeholder="/path" />
+          <Space.Compact block>
+            {prefixSelector}
+            <FormItem
+              name="path"
+              rules={[{
+                required: true, message: '请输入接口路径!',
+              }]}
+              noStyle
+            >
+              <Input onBlur={this.handlePath} placeholder="/path" />
+            </FormItem>
+          </Space.Compact>
         </FormItem>
 
         <FormItem {...formItemLayout} label="注">

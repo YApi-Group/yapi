@@ -1,6 +1,8 @@
 const { isJson5, json_parse, handleJson, joinPath, safeArray } = require('./utils')
 
-const constants = require('../client/cons')
+// client/cons.ts 是 ESM 默认导出，CJS require 拿到的是命名空间对象，需取 .default
+const _consModule = require('../client/cons')
+const constants = _consModule.default || _consModule
 
 const _ = require('underscore')
 
