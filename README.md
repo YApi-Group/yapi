@@ -116,6 +116,16 @@ YApi 是<strong>高效</strong>、<strong>易用</strong>、<strong>功能强大
 * [dwb1994](https://github.com/dwb1994)
 * [fungezi](https://github.com/fungezi)
 
-
-## 发布镜像构建
-`docker build . -f docker/release/Dockerfile -t yapi:latest`
+## 发布运行
++ 构建发布镜像 `docker build . -f docker/release/Dockerfile -t yapi:latest`
++ 运行发布版本 
+```sh
+docker run -d --name yapi-prod -p 3000:3000 `
+  -e YAPI_DB_SERVERNAME=host.docker.internal `
+  -e YAPI_DB_PORT=27017 `
+  -e YAPI_DB_DATABASE=yapi `
+  -e YAPI_DB_USER=root `
+  -e YAPI_DB_PASS=000000 `
+  -e YAPI_DB_AUTH_SOURCE=admin `
+  yapi:latest
+```
