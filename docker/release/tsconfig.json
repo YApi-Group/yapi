@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "ES2019",
-    "module": "commonjs",
-    "declaration": false,
-    "removeComments": false,
-    "moduleResolution": "node",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "newLine": "LF",
-    "sourceMap": false
-  }
+    "types": ["node"],
+    "declaration": false,
+    "sourceMap": false,
+    "newLine": "LF"
+  },
+  "include": ["start.ts"]
 }

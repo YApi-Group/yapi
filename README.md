@@ -117,6 +117,5 @@ YApi 是<strong>高效</strong>、<strong>易用</strong>、<strong>功能强大
 * [fungezi](https://github.com/fungezi)
 
 
-### License
-Apache License 2.0
-
+## 发布镜像构建
+`docker build . -f docker/release/Dockerfile -t yapi:latest`

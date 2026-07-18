@@ -1,16 +1,13 @@
 {
+  "name": "yapi-docker-release",
+  "private": true,
+  "description": "YApi 容器发布：启动引导脚本的编译与镜像构建",
   "scripts": {
     "build": "tsc",
-    "docker-build": "docker build -t jayfong/yapi:latest .",
-    "docker-down": "docker-compose down",
-    "docker-up": "docker-compose down && docker-compose up"
+    "docker:build": "docker build -f ./Dockerfile -t yapi:latest ../../"
   },
-  "dependencies": {
-    "@types/fs-extra": "9.0.1",
-    "@types/node": "12.12.21",
-    "deepmerge": "4.2.2",
-    "fs-extra": "9.0.0",
-    "globby": "11.0.0",
-    "typescript": "3.9.3"
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.2"
   }
 }

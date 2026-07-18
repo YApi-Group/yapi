@@ -4,7 +4,8 @@ import { fileURLToPath } from 'url'
 import fs from 'fs-extra'
 import nodemailer from 'nodemailer'
 
-import config from '../config.json' assert { type: 'json' }
+// 注意：需使用 import attributes 的 `with` 语法（Node 23+ 已移除旧的 `assert` 语法）
+import config from '../config.json' with { type: 'json' }
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
