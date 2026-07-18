@@ -54,15 +54,18 @@ class NewsTimeline extends Component {
     let data = this.props.newsData ? this.props.newsData.list : []
     if (data && data.length) {
       data = data.map(function (item, i) {
-        return (
-          <Timeline.Item key={i}>
-            <span className="logTimeAgo">{timeago(item.add_time)}</span>
-            <span className="logusername">{item.username}</span>
-            <span className="logtype">{item.type}</span>
-            <span className="logtime">{formatTime(item.add_time)}</span>
-            <span className="logcontent">{item.content}</span>
-          </Timeline.Item>
-        )
+        return {
+          key: i,
+          children: (
+            <>
+              <span className="logTimeAgo">{timeago(item.add_time)}</span>
+              <span className="logusername">{item.username}</span>
+              <span className="logtype">{item.type}</span>
+              <span className="logtime">{formatTime(item.add_time)}</span>
+              <span className="logcontent">{item.content}</span>
+            </>
+          ),
+        }
       })
     } else {
       data = ''
@@ -79,7 +82,7 @@ class NewsTimeline extends Component {
     }
     return (
       <section className="news-timeline">
-        {data ? <Timeline pending={pending}>{data}</Timeline> : data}
+        {data ? <Timeline pending={pending} items={data} /> : data}
       </section>
     )
   }

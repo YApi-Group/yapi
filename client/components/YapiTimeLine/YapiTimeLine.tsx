@@ -185,26 +185,27 @@ class YapiTimeLine extends Component<PropTypes, StateTypes> {
         if (item.data && typeof item.data === 'object') {
           interfaceDiff = true
         }
-        return (
-          <Timeline.Item
-            dot={
-              <Link to={`/user/profile/${item.uid}`}>
-                <Avatar src={`/api/user/avatar?uid=${item.uid}`} />
-              </Link>
-            }
-            key={i}
-          >
-            <div className="logMesHead">
-              <span className="logTimeAgo">{timeago(item.add_time)}</span>
-              <span className="logtype">{logType[item.type]}动态</span>
-              <span className="logtime">{formatTime(item.add_time)}</span>
-            </div>
-            <span className="logcontent" dangerouslySetInnerHTML={{ __html: item.content }} />
-            <div style={{ padding: '10px 0 0 10px' }}>
-              {interfaceDiff && <Button onClick={() => this.openDiff(item.data)}>改动详情</Button>}
-            </div>
-          </Timeline.Item>
-        )
+        return {
+          key: i,
+          dot: (
+            <Link to={`/user/profile/${item.uid}`}>
+              <Avatar src={`/api/user/avatar?uid=${item.uid}`} />
+            </Link>
+          ),
+          children: (
+            <>
+              <div className="logMesHead">
+                <span className="logTimeAgo">{timeago(item.add_time)}</span>
+                <span className="logtype">{logType[item.type]}动态</span>
+                <span className="logtime">{formatTime(item.add_time)}</span>
+              </div>
+              <span className="logcontent" dangerouslySetInnerHTML={{ __html: item.content }} />
+              <div style={{ padding: '10px 0 0 10px' }}>
+                {interfaceDiff && <Button onClick={() => this.openDiff(item.data)}>改动详情</Button>}
+              </div>
+            </>
+          ),
+        }
       })
     } else {
       data = ''
@@ -274,9 +275,7 @@ class YapiTimeLine extends Component<PropTypes, StateTypes> {
           </Row>
         )}
         {data ? (
-          <Timeline className="news-content" pending={pending}>
-            {data}
-          </Timeline>
+          <Timeline className="news-content" pending={pending} items={data} />
         ) : (
           <ErrMsg type="noData" />
         )}
