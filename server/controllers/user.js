@@ -596,7 +596,6 @@ class userController extends baseController {
    * @returns {Object}
    * @example
    */
-
   async avatar(ctx) {
     try {
       const uid = ctx.query.uid ? ctx.query.uid : this.getUid()
@@ -604,7 +603,7 @@ class userController extends baseController {
       const data = await avatarInst.get(uid)
       let dataBuffer, type
       if (!data || !data.basecode) {
-        dataBuffer = fs.readFileSync(path.join(cons.WEB_ROOT, 'static/image/avatar.png'))
+        dataBuffer = fs.readFileSync(path.join(cons.WEB_STATIC, 'image/avatar.png'))
         type = 'image/png'
       } else {
         type = data.type

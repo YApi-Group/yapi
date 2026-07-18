@@ -500,7 +500,7 @@ class interfaceController extends baseController {
 
   downloadCrx(ctx) {
     const filename = 'crossRequest.zip'
-    const dataBuffer = fs.readFileSync(path.join(cons.WEB_ROOT, 'static/attachment/cross-request.zip'))
+    const dataBuffer = fs.readFileSync(path.join(cons.WEB_STATIC, 'attachment/cross-request.zip'))
     ctx.set('Content-disposition', 'attachment; filename=' + filename)
     ctx.set('Content-Type', 'application/zip')
     ctx.body = dataBuffer

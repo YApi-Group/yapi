@@ -48,7 +48,7 @@ app.use(async (ctx, next) => {
 app.use(async (ctx, next) => {
   if (ctx.path.indexOf('/prd') === 0) {
     ctx.set('Cache-Control', 'max-age=8640000000')
-    if (commons.fileExist(path.join(cons.WEB_ROOT, 'static', ctx.path + '.gz'))) {
+    if (commons.fileExist(path.join(cons.WEB_STATIC, ctx.path + '.gz'))) {
       ctx.set('Content-Encoding', 'gzip')
       ctx.path = ctx.path + '.gz'
     }
@@ -56,7 +56,7 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-app.use(koaStatic(path.join(cons.WEB_ROOT, 'static'), { index: 'index.html', gzip: true }))
+app.use(koaStatic(cons.WEB_STATIC, { index: 'index.html', gzip: true }))
 
 const server = app.listen(cons.WEB_CONFIG.port)
 
