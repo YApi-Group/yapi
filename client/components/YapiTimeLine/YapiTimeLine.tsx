@@ -1,6 +1,7 @@
 import { Timeline, Spin, Row, Col, Tag, Avatar, Button, Modal, AutoComplete } from 'antd'
-import * as jsondiffpatch from 'jsondiffpatch'
-import { formatters } from 'jsondiffpatch'
+// 0.7.x 起 formatters 拆分为子路径导出；with-text-diffs 入口内置 diff-match-patch（长文本 diff）
+import * as formattersHtml from 'jsondiffpatch/formatters/html'
+import * as jsondiffpatch from 'jsondiffpatch/with-text-diffs'
 import PropTypes from 'prop-types'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
@@ -16,11 +17,9 @@ import { fetchInterfaceList } from '../../reducer/modules/interface.js'
 import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news.js'
 import ErrMsg from '../ErrMsg/ErrMsg'
 
-import 'jsondiffpatch/dist/formatters-styles/annotated.css'
-import 'jsondiffpatch/dist/formatters-styles/html.css'
+import 'jsondiffpatch/formatters/styles/annotated.css'
+import 'jsondiffpatch/formatters/styles/html.css'
 import './YapiTimeLine.scss'
-
-const formattersHtml = formatters.html
 
 // const Option = AutoComplete.Option;
 const { Option } = AutoComplete

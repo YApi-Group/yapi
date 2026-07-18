@@ -1,11 +1,12 @@
 const baseController = require('controllers/base.js')
-const jsondiffpatch = require('jsondiffpatch')
+// jsondiffpatch 0.7.x 为纯 ESM 包，依赖 Node >= 22.12 的 require(ESM) 能力加载
+const jsondiffpatch = require('jsondiffpatch/with-text-diffs')
 const projectModel = require('models/project.js')
 const userModel = require('models/user.js')
 
 const wikiModel = require('./wikiModel.js')
 
-const formattersHtml = jsondiffpatch.formatters.html
+const formattersHtml = require('jsondiffpatch/formatters/html')
 const yapi = require('yapi.js')
 // const util = require('./util.js');
 const fs = require('fs-extra')
@@ -110,12 +111,12 @@ class wikiController extends baseController {
         const annotatedCss = fs.readFileSync(
           path.resolve(
             yapi.WEB_ROOT,
-            'node_modules/jsondiffpatch/dist/formatters-styles/annotated.css',
+            'node_modules/jsondiffpatch/lib/formatters/styles/annotated.css',
           ),
           'utf8',
         )
         const htmlCss = fs.readFileSync(
-          path.resolve(yapi.WEB_ROOT, 'node_modules/jsondiffpatch/dist/formatters-styles/html.css'),
+          path.resolve(yapi.WEB_ROOT, 'node_modules/jsondiffpatch/lib/formatters/styles/html.css'),
           'utf8',
         )
         const project = await this.projectModel.getBaseInfo(params.project_id)

@@ -16,6 +16,9 @@
   },
   "author": "",
   "license": "Apache-2.0",
+  "overrides": {
+    "enhanced-resolve": "^5.24.2"
+  },
   "dependencies": {
     "@ant-design/colors": "^7.2.1",
     "@ant-design/icons": "^5.6.1",
@@ -37,7 +40,7 @@
     "json-schema-faker": "^0.5.0-rcv.42",
     "json-schema-ref-parser": "9.0.9",
     "json5": "2.2.1",
-    "jsondiffpatch": "0.4.1",
+    "jsondiffpatch": "0.7.6",
     "lodash-es": "^4.17.21",
     "markdown-it": "13.0.1",
     "markdown-it-anchor": "8.6.4",

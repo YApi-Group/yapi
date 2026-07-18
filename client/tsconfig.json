@@ -45,7 +45,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@common/*": ["../common/*"]
+      "@common/*": ["../common/*"],
+      /* jsondiffpatch 0.7.x 仅通过 package exports 暴露子路径，
+         moduleResolution "Node" 不识别 exports，这里手动映射到物理路径 */
+      "jsondiffpatch/with-text-diffs": ["./node_modules/jsondiffpatch/lib/with-text-diffs"],
+      "jsondiffpatch/formatters/*": ["./node_modules/jsondiffpatch/lib/formatters/*"]
     }
   },
 

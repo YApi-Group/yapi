@@ -2,7 +2,9 @@ import path from 'path'
 import url from 'url'
 
 import fs from 'fs-extra'
-import * as jsondiffpatch from 'jsondiffpatch'
+// 0.7.x 起 formatters 拆分为子路径导出；with-text-diffs 入口内置 diff-match-patch（长文本 diff）
+import * as formattersHtml from 'jsondiffpatch/formatters/html'
+import * as jsondiffpatch from 'jsondiffpatch/with-text-diffs'
 import _ from 'underscore'
 
 import showDiffMsg from '../common/diff-view.js'
@@ -22,11 +24,6 @@ import * as modelUtils from '../utils/modelUtils.js'
 import yapi from '../yapi.js'
 
 import baseController from './base.js'
-
-const formattersHtml = jsondiffpatch.formatters.html
-
-// import annotatedCss from "jsondiffpatch/public/formatters-styles/annotated.css"
-// import htmlCss from "jsondiffpatch/public/formatters-styles/html.css"
 
 function handleHeaders(values) {
   let isfile = false,
@@ -723,11 +720,11 @@ class interfaceController extends baseController {
     if (params.switch_notice === true) {
       const diffView = showDiffMsg(jsondiffpatch, formattersHtml, logData)
       const annotatedCss = fs.readFileSync(
-        path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/dist/formatters-styles/annotated.css'),
+        path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/lib/formatters/styles/annotated.css'),
         'utf8'
       )
       const htmlCss = fs.readFileSync(
-        path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/dist/formatters-styles/html.css'),
+        path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/lib/formatters/styles/html.css'),
         'utf8'
       )
 
