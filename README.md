@@ -120,7 +120,7 @@ YApi 是<strong>高效</strong>、<strong>易用</strong>、<strong>功能强大
 + 构建发布镜像 `docker build . -f docker/release/Dockerfile -t yapi:latest`
 + 运行发布版本 
 ```sh
-docker run -d --name yapi-prod -p 3000:3000 `
+docker run -d --rm --name yapi-prod -p 3000:3000 `
   -e YAPI_DB_SERVERNAME=host.docker.internal `
   -e YAPI_DB_PORT=27017 `
   -e YAPI_DB_DATABASE=yapi `

@@ -616,7 +616,7 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
               onSelect={this.onSelect}
               onExpand={this.onExpand}
               onDrop={this.onDrop}
-              draggable
+              draggable={{ icon: false }}
               blockNode
             />
           </div>

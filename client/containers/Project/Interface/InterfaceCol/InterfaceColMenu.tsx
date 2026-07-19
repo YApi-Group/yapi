@@ -579,7 +579,7 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
             selectedKeys={currentKes.selects}
             onSelect={this.onSelect}
             autoExpandParent
-            draggable
+            draggable={{ icon: false }}
             onExpand={this.onExpand}
             onDrop={this.onDrop}
           />
