@@ -1,387 +1,259 @@
+// cross-request MV3 —— Service Worker
+//
+// 职责：
+//   1. 接收 relay.js 转来的请求，用 fetch 发起（扩展上下文 + host_permissions，不受 CORS 限制）
+//   2. 浏览器禁设头（Cookie/User-Agent/Host/Referer…）经 declarativeNetRequest 会话规则注入，
+//      替代 MV2 的 webRequestBlocking
+//   3. 用 webRequest 观察模式捕获完整响应头（fetch 的 Headers 读不到 Set-Cookie）
+//   4. 请求在途期间用扩展 API 心跳重置空闲计时器，防止 SW 被 30 秒空闲回收
 'use strict';
 
-var base64 = _base64();
+const DEFAULT_TIMEOUT = 1000000; // 与旧版 background.js 的 xhr.timeout 默认值一致
+
+// fetch 规范禁止脚本直接设置的请求头（对齐旧版 unsafeHeader 列表并补全），统一走 DNR 注入
+const UNSAFE_HEADERS = new Set([
+  'accept-charset',
+  'accept-encoding',
+  'access-control-request-headers',
+  'access-control-request-method',
+  'connection',
+  'content-length',
+  'cookie',
+  'cookie2',
+  'content-transfer-encoding',
+  'date',
+  'dnt',
+  'expect',
+  'host',
+  'keep-alive',
+  'origin',
+  'referer',
+  'te',
+  'trailer',
+  'transfer-encoding',
+  'upgrade',
+  'user-agent',
+  'via',
+]);
+
+function isUnsafeHeader(name) {
+  const n = name.toLowerCase();
+  return UNSAFE_HEADERS.has(n) || n.startsWith('proxy-') || n.startsWith('sec-');
+}
 
 function formUrlencode(data) {
-  if(data && typeof data === 'object'){
-    return Object.keys(data).map(function (key) {
-      return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
-    }).join('&')
+  return Object.keys(data)
+    .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+    .join('&');
+}
+
+// ---- 请求规范化（对齐旧版 sendAjax 的语义）----
+function normalizeRequest(raw) {
+  const src = raw && typeof raw === 'object' ? raw : {};
+  let url = String(src.url || '');
+  const method = String(src.method || 'GET').toUpperCase();
+
+  const headers = {};
+  for (const name of Object.keys(src.headers || {})) {
+    const value = src.headers[name];
+    if (value === undefined || value === null) continue;
+    headers[name] = String(value);
   }
-	return '';
-}
 
-function encode(data) {
-	return base64.encode(encodeURIComponent(JSON.stringify(data)));
-}
+  // Content-Type 多种大小写写法兼容（旧版语义）
+  const ctKey = Object.keys(headers).find(k => k.toLowerCase() === 'content-type');
+  const contentType = ctKey ? headers[ctKey] : undefined;
 
-function decode(data) {
-	return JSON.parse(decodeURIComponent(base64.decode(data)));
-}
-
-
-function _base64() {
-
-	/*--------------------------------------------------------------------------*/
-
-	var InvalidCharacterError = function (message) {
-		this.message = message;
-	};
-	InvalidCharacterError.prototype = new Error;
-	InvalidCharacterError.prototype.name = 'InvalidCharacterError';
-
-	var error = function (message) {
-		// Note: the error messages used throughout this file match those used by
-		// the native `atob`/`btoa` implementation in Chromium.
-		throw new InvalidCharacterError(message);
-	};
-
-	var TABLE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-	// http://whatwg.org/html/common-microsyntaxes.html#space-character
-	var REGEX_SPACE_CHARACTERS = /<%= spaceCharacters %>/g;
-
-	// `decode` is designed to be fully compatible with `atob` as described in the
-	// HTML Standard. http://whatwg.org/html/webappapis.html#dom-windowbase64-atob
-	// The optimized base64-decoding algorithm used is based on @atk’s excellent
-	// implementation. https://gist.github.com/atk/1020396
-	var decode = function (input) {
-		input = String(input)
-			.replace(REGEX_SPACE_CHARACTERS, '');
-		var length = input.length;
-		if (length % 4 == 0) {
-			input = input.replace(/==?$/, '');
-			length = input.length;
-		}
-		if (
-			length % 4 == 1 ||
-			// http://whatwg.org/C#alphanumeric-ascii-characters
-			/[^+a-zA-Z0-9/]/.test(input)
-		) {
-			error(
-				'Invalid character: the string to be decoded is not correctly encoded.'
-			);
-		}
-		var bitCounter = 0;
-		var bitStorage;
-		var buffer;
-		var output = '';
-		var position = -1;
-		while (++position < length) {
-			buffer = TABLE.indexOf(input.charAt(position));
-			bitStorage = bitCounter % 4 ? bitStorage * 64 + buffer : buffer;
-			// Unless this is the first of a group of 4 characters…
-			if (bitCounter++ % 4) {
-				// …convert the first 8 bits to a single ASCII character.
-				output += String.fromCharCode(
-					0xFF & bitStorage >> (-2 * bitCounter & 6)
-				);
-			}
-		}
-		return output;
-	};
-
-	// `encode` is designed to be fully compatible with `btoa` as described in the
-	// HTML Standard: http://whatwg.org/html/webappapis.html#dom-windowbase64-btoa
-	var encode = function (input) {
-		input = String(input);
-		if (/[^\0-\xFF]/.test(input)) {
-			// Note: no need to special-case astral symbols here, as surrogates are
-			// matched, and the input is supposed to only contain ASCII anyway.
-			error(
-				'The string to be encoded contains characters outside of the ' +
-				'Latin1 range.'
-			);
-		}
-		var padding = input.length % 3;
-		var output = '';
-		var position = -1;
-		var a;
-		var b;
-		var c;
-		var d;
-		var buffer;
-		// Make sure any padding is handled outside of the loop.
-		var length = input.length - padding;
-
-		while (++position < length) {
-			// Read three bytes, i.e. 24 bits.
-			a = input.charCodeAt(position) << 16;
-			b = input.charCodeAt(++position) << 8;
-			c = input.charCodeAt(++position);
-			buffer = a + b + c;
-			// Turn the 24 bits into four chunks of 6 bits each, and append the
-			// matching character for each of them to the output.
-			output += (
-				TABLE.charAt(buffer >> 18 & 0x3F) +
-				TABLE.charAt(buffer >> 12 & 0x3F) +
-				TABLE.charAt(buffer >> 6 & 0x3F) +
-				TABLE.charAt(buffer & 0x3F)
-			);
-		}
-
-		if (padding == 2) {
-			a = input.charCodeAt(position) << 8;
-			b = input.charCodeAt(++position);
-			buffer = a + b;
-			output += (
-				TABLE.charAt(buffer >> 10) +
-				TABLE.charAt((buffer >> 4) & 0x3F) +
-				TABLE.charAt((buffer << 2) & 0x3F) +
-				'='
-			);
-		} else if (padding == 1) {
-			buffer = input.charCodeAt(position);
-			output += (
-				TABLE.charAt(buffer >> 2) +
-				TABLE.charAt((buffer << 4) & 0x3F) +
-				'=='
-			);
-		}
-
-		return output;
-	};
-
-	return {
-		'encode': encode,
-		'decode': decode,
-		'version': '<%= version %>'
-	};
-};
-
-
-
-
-
-
-var unsafeHeader = ['Accept-Charset',
-	'Accept-Encoding',
-	'Access-Control-Request-Headers',
-	'Access-Control-Request-Method',
-	'Connection',
-	'Content-Length',
-	'Cookie',
-	'Cookie2',
-	'Content-Transfer-Encoding',
-	'Date',
-	'Expect',
-	'Host',
-	'Keep-Alive',
-	'Origin',
-	'Referer',
-	'TE',
-	'Trailer',
-	'Transfer-Encoding',
-	'Upgrade',
-	'User-Agent',
-	'Via'];
-
-var requestBatch = {};
-
-function handleHeader(headers) {
-	if (!headers) return;
-	var newHeaders = {}, headers = headers.split(/[\r\n]/).forEach(function (header) {
-		var index = header.indexOf(":");
-		var name = header.substr(0, index);
-		var value = header.substr(index + 2);
-		if (name) {
-			newHeaders[name] = value;
-		}
-
-	})
-	return newHeaders;
-}
-
-chrome.runtime.onMessage.addListener(function (request, _, cb) {
-	var data;
-
-	if (request.action === 'get') {
-		data = localStorage.getItem(request.name);
-		if (typeof cb === 'function') {
-			cb(data)
-		}
-	} else if (request.action === 'set') {
-		localStorage.setItem(request.name, request.value);
-		var newdata = data = localStorage.getItem(request.name);
-	}
-})
-
-function sendAjax(req, successFn, errorFn) {
-	var formDatas;
-	var xhr = new XMLHttpRequest();
-
-	req.headers = req.headers || {};
-	req.headers['Content-Type'] = req.headers['Content-Type'] || req.headers['Content-type'] || req.headers['content-type'];// 兼容多种写法
-
-	xhr.timeout = req.timeout || 1000000;
-
-	req.method = req.method || 'GET';
-	req.async = req.async === false ? false : true;
-	req.headers = req.headers || {};
-
-	if (req.method.toLowerCase() !== 'get' && req.method.toLowerCase() !== 'head' && req.method.toLowerCase() !== 'options') {
-		if (!req.headers['Content-Type'] || req.headers['Content-Type'].startsWith('application/x-www-form-urlencoded')) {
-			req.headers['Content-Type'] = req.headers['Content-Type'] || 'application/x-www-form-urlencoded';
-			req.data = formUrlencode(req.data);
-		} else if (typeof req.data === 'object' && req.data) {
-			req.data = JSON.stringify(req.data);
-		}
-	}else{
-    delete req.headers['Content-Type'];
+  let body;
+  if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+    if (ctKey) delete headers[ctKey];
+  } else if (!contentType || contentType.startsWith('application/x-www-form-urlencoded')) {
+    if (ctKey) delete headers[ctKey];
+    headers['Content-Type'] = contentType || 'application/x-www-form-urlencoded';
+    body = src.data && typeof src.data === 'object' ? formUrlencode(src.data) : src.data == null ? '' : String(src.data);
+  } else if (src.data && typeof src.data === 'object') {
+    body = JSON.stringify(src.data);
+  } else if (src.data != null) {
+    body = String(src.data);
   }
-	if (req.query && typeof req.query === 'object') {
-		var getUrl = formUrlencode(req.query);
-		req.url = req.url + '?' + getUrl;
-		req.query = '';
-	}
-	xhr.open(req.method, req.url, req.async);
-	var response = {};
-	if (req.headers) {
-		var unsafeHeaderArr = [];
-		for (var name in req.headers) {
-			if (unsafeHeader.indexOf(name) > -1) {
-				unsafeHeaderArr.push({
-					name: name,
-					value: req.headers[name]
-				})
-			} else {
-				xhr.setRequestHeader(name, req.headers[name]);
-			}
-		}
-		if (unsafeHeaderArr.length > 0) {
-			xhr.setRequestHeader('cross-request-unsafe-headers-list', encode(unsafeHeaderArr));
-		}
-	}
 
-	xhr.setRequestHeader('cross-request-open-sign', '1')
+  if (src.query && typeof src.query === 'object' && Object.keys(src.query).length > 0) {
+    url += (url.includes('?') ? '&' : '?') + formUrlencode(src.query);
+  }
 
-	xhr.onload = function (e) {
-		var headers = xhr.getAllResponseHeaders();
-		headers = handleHeader(headers);
-		var newHeaders;
-		if(headers['cross-response-unsafe-headers-list']){
-			newHeaders = decode(headers['cross-response-unsafe-headers-list'])
-			delete headers['cross-response-unsafe-headers-list'];
-			if(newHeaders && typeof newHeaders === 'object' && Object.keys(newHeaders).length > 0){
-					headers = newHeaders;
-			}
-		}
-		response = {
-			headers: headers,
-			status: xhr.status,
-			statusText: xhr.statusText,
-			body: xhr.responseText
-		}
-		if (xhr.status == 200) {
-			successFn(response);
-		} else {
-			errorFn(response);
-		}
-	};
-	xhr.ontimeout = function (e) {
-		errorFn({
-			body: 'Error:Request timeout that the time is ' + xhr.timeout
-		})
-	};
-	xhr.onerror = function (e) {
-		errorFn({
-			body: xhr.statusText
-		})
-	};
-	xhr.upload.onprogress = function (e) { };
+  const safeHeaders = {};
+  const unsafeHeaders = [];
+  for (const name of Object.keys(headers)) {
+    if (isUnsafeHeader(name)) unsafeHeaders.push({ name: name, value: headers[name] });
+    else safeHeaders[name] = headers[name];
+  }
 
-	try {
-		xhr.send(req.data);
-	} catch (error) {
-		errorFn({
-			body: error.message
-		})
-	}
+  const timeout = Number(src.timeout) > 0 ? Number(src.timeout) : DEFAULT_TIMEOUT;
+  return { url, method, headers: safeHeaders, unsafeHeaders, body, timeout };
 }
 
-chrome.runtime.onConnect.addListener(function (connect) {
-	if (connect.name === 'request') {
-		connect.onMessage.addListener(function (msg) {
-			sendAjax(msg.req, function (res) {
-				connect.postMessage({
-					id: msg.id,
-					res: res
-				})
-			}, function (err) {
-				connect.postMessage({
-					id: msg.id,
-					res: err
-				})
-			})
-		})
-	}
+// ---- 同 URL 串行化 ----
+// DNR 规则与响应头捕获都以「完整 URL」为关联键，同 URL 并发会串号；
+// 串行化后每个 URL 同一时刻至多一个在途请求，不同 URL 仍然并发。
+const urlQueues = new Map();
+
+function enqueue(url, task) {
+  const prev = urlQueues.get(url) || Promise.resolve();
+  const run = prev.then(task, task); // 前一个请求失败不阻塞后续
+  const chain = run.then(() => {}, () => {});
+  urlQueues.set(url, chain);
+  chain.then(() => {
+    if (urlQueues.get(url) === chain) urlQueues.delete(url);
+  });
+  return run;
+}
+
+// ---- 禁设头注入：每个请求一条临时 DNR 会话规则 ----
+// 会话规则存活到浏览器重启，SW 被回收并不清空 —— 启动时先清掉上一世残留的规则
+const sessionRulesReady = chrome.declarativeNetRequest
+  .getSessionRules()
+  .then(rules =>
+    rules.length > 0
+      ? chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: rules.map(r => r.id) })
+      : undefined
+  )
+  .catch(() => {});
+
+let ruleSeq = 0; // 启动时已清空全部会话规则，进程内自增即可保证唯一
+
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+async function withUnsafeHeaders(url, unsafeHeaders, task) {
+  if (unsafeHeaders.length === 0) return task();
+  await sessionRulesReady;
+  const ruleId = ++ruleSeq;
+  await chrome.declarativeNetRequest.updateSessionRules({
+    addRules: [
+      {
+        id: ruleId,
+        action: {
+          type: 'modifyHeaders',
+          requestHeaders: unsafeHeaders.map(h => ({ header: h.name, operation: 'set', value: h.value })),
+        },
+        condition: {
+          regexFilter: '^' + escapeRegExp(url) + '$',
+          // -1 = 不属于任何标签页的请求，即本扩展 SW 自己发起的 fetch，避免误伤页面流量
+          tabIds: [-1],
+        },
+      },
+    ],
+  });
+  try {
+    return await task();
+  } finally {
+    chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: [ruleId] }).catch(() => {});
+  }
+}
+
+// ---- 完整响应头捕获（含 Set-Cookie）----
+// 同 URL 已串行化，先按 URL 认领首跳，之后改用 requestId 跟踪以覆盖重定向后续跳。
+const captureByUrl = new Map();
+const captureById = new Map();
+
+chrome.webRequest.onHeadersReceived.addListener(
+  details => {
+    if (details.tabId !== -1) return;
+    let entry = captureById.get(details.requestId);
+    if (!entry) {
+      entry = captureByUrl.get(details.url);
+      if (!entry || entry.requestId !== null) return;
+      entry.requestId = details.requestId;
+      captureById.set(details.requestId, entry);
+    }
+    entry.responseHeaders = details.responseHeaders || [];
+  },
+  { urls: ['http://*/*', 'https://*/*'] },
+  ['responseHeaders', 'extraHeaders'] // 带 extraHeaders 才能看到 Set-Cookie
+);
+
+// ---- 响应头组装（对齐旧版形状：Set-Cookie 聚合为 cookie 数组，该键恒存在）----
+function buildHeader(captured, fetchHeaders) {
+  const header = { cookie: [] };
+  if (captured && captured.length > 0) {
+    for (const item of captured) {
+      if (item.name.toLowerCase() === 'set-cookie') header.cookie.push(item.value);
+      else header[item.name] = item.value;
+    }
+  } else if (fetchHeaders) {
+    // webRequest 未捕获时的兜底（此时拿不到 Set-Cookie）
+    for (const [name, value] of fetchHeaders.entries()) {
+      header[name] = value;
+    }
+  }
+  return header;
+}
+
+// ---- SW 保活：有请求在途时周期性调用扩展 API 重置 30s 空闲计时器（Chrome 116+）----
+let inflightCount = 0;
+let keepAliveTimer = null;
+
+function beginKeepAlive() {
+  if (++inflightCount === 1) {
+    keepAliveTimer = setInterval(() => chrome.runtime.getPlatformInfo(), 20 * 1000);
+  }
+}
+
+function endKeepAlive() {
+  if (--inflightCount === 0) {
+    clearInterval(keepAliveTimer);
+    keepAliveTimer = null;
+  }
+}
+
+// ---- 请求执行 ----
+async function doFetch(req) {
+  const capture = { requestId: null, responseHeaders: null };
+  captureByUrl.set(req.url, capture);
+  try {
+    return await withUnsafeHeaders(req.url, req.unsafeHeaders, async () => {
+      let resp;
+      try {
+        resp = await fetch(req.url, {
+          method: req.method,
+          headers: req.headers,
+          body: req.body,
+          // 与旧版跨域 XHR 一致：不自动携带浏览器 Cookie；用户显式填写的 Cookie 走 DNR 注入
+          credentials: 'omit',
+          redirect: 'follow',
+          signal: AbortSignal.timeout(req.timeout),
+        });
+      } catch (err) {
+        // 契约：异常时不设 status —— postmanLib 靠 isNaN(status) 判定异常，0/null 都会被误判为成功
+        if (err && err.name === 'TimeoutError') {
+          return { body: 'Error:Request timeout that the time is ' + req.timeout };
+        }
+        return { body: 'Error:' + ((err && err.message) || String(err)) };
+      }
+      const body = await resp.text();
+      // 让出一个宏任务，确保 onHeadersReceived 回调已处理完（事件派发与 fetch 完成的先后无保证）
+      await new Promise(resolve => setTimeout(resolve, 0));
+      return {
+        status: resp.status,
+        statusText: resp.statusText,
+        header: buildHeader(capture.responseHeaders, resp.headers),
+        body: body,
+      };
+    });
+  } finally {
+    if (captureByUrl.get(req.url) === capture) captureByUrl.delete(req.url);
+    if (capture.requestId !== null) captureById.delete(capture.requestId);
+  }
+}
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (!msg || msg.type !== 'crossRequest') return;
+  beginKeepAlive();
+  const req = normalizeRequest(msg.req);
+  enqueue(req.url, () => doFetch(req))
+    .catch(err => ({ body: 'Error:' + ((err && err.message) || String(err)) }))
+    .then(res => sendResponse({ res: res }))
+    .finally(endKeepAlive);
+  return true; // 保持消息通道，异步应答
 });
-
-function ensureItem(arr, name, value) {
-	if (!arr || !Array.isArray(arr)) {
-		return arr;
-	}
-	var find = false;
-	arr = arr.map(function (item) {
-		if (item.name == name) {
-			item.value = value;
-			find = true;
-		}
-		return item;
-	})
-	if (find === false) {
-		arr.push({ name: name, value: value })
-	}
-	return arr;
-}
-
- function responseListener(details) {
-	if (requestBatch[details.requestId] === true) {
-		delete requestBatch[details.requestId];
-		var unsafeHeaderArr = { cookie: [] };
-		var cookie = unsafeHeaderArr.cookie;
-		details.responseHeaders.forEach(function (item) {
-			if (item.name === 'Set-Cookie') {
-				cookie.push(item.value)
-			}
-			else {
-				unsafeHeaderArr[item.name] = item.value;
-			}
-		})
-		details.responseHeaders.push({
-			name: 'cross-response-unsafe-headers-list',
-			value: encode(unsafeHeaderArr)
-		})
-	}
-	return { responseHeaders: details.responseHeaders }
-
-}
-
-function requestListener (details) {
-	var find = false;
-	details.requestHeaders.forEach(function (item, index) {
-		if (item.name === 'cross-request-open-sign' && item.value == '1') {
-			requestBatch[details.requestId] = true;
-		}
-		if (item.name === 'cross-request-unsafe-headers-list') {
-			var val = decode(item.value);
-			val.forEach(function (v) {
-				details.requestHeaders = ensureItem(details.requestHeaders, v.name, v.value)
-			})
-		}
-	})
-
-	return { requestHeaders: details.requestHeaders };
-}
-
-chrome.webRequest.onHeadersReceived.removeListener(responseListener);
-chrome.webRequest.onBeforeSendHeaders.removeListener(requestListener);
-
-chrome.webRequest.onHeadersReceived.addListener(responseListener, {
-		urls: ["<all_urls>"]
-	}, ['blocking', 'responseHeaders', 'extraHeaders']);
-
-chrome.webRequest.onBeforeSendHeaders.addListener(requestListener, {
-		urls: ["<all_urls>"]
-	}, ['blocking', 'requestHeaders', 'extraHeaders']);
-
-

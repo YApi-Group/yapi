@@ -33,20 +33,15 @@ function CheckCrossInstall(props) {
         <Alert
           message={
             <div>
-              重要：当前的接口测试服务，需安装免费测试增强插件,仅支持 chrome
-              浏览器，选择下面任意一种安装方式：
-              {/* <div>
+              重要：当前的接口测试服务，需安装 cross-request 扩展（仅支持 Chrome）。
+              安装方式：获取仓库代码后，在 chrome://extensions 页面开启「开发者模式」，
+              点击「加载已解压的扩展程序」选择 chrome-cross-request 目录，然后刷新本页面。
+              <div>
                 <a
                   target="blank"
-                  href="https://chrome.google.com/webstore/detail/cross-request/cmnlfmgbjmaciiopcgodlhpiklaghbok?hl=en-US"
+                  href="https://github.com/YApi-Group/yapi/tree/master/chrome-cross-request"
                 >
-                  [Google 商店获取（需翻墙]
-                </a>
-              </div> */}
-              <div>
-                <a target="blank" href="https://juejin.im/post/5e3bbd986fb9a07ce152b53d">
-                  {' '}
-                  [谷歌请求插件详细安装教程]{' '}
+                  [获取扩展与安装说明]
                 </a>
               </div>
             </div>

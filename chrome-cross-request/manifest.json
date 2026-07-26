@@ -1,27 +1,29 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "cross-request",
-    "description": "YApi 跨域请求",
-    "version": "3.1",
-    "browser_action": {
+    "description": "YApi 跨域请求（Manifest V3）",
+    "version": "4.0.0",
+    "minimum_chrome_version": "116",
+    "action": {
         "default_icon": "icon.png",
         "default_popup": "popup.html"
     },
-    "permissions": [ "webRequest", "webRequestBlocking" ],
-    "background": 
-    {
-      "scripts" : [
-          "background.js"
-          ]
+    "background": {
+        "service_worker": "background.js"
     },
-    "web_accessible_resources":[
-        "index.js"        
-    ],
-     "content_scripts": [{
-          "matches": ["http://*/*", "https://*/*"],
-        "js": [
-            "response.js"
-        ],
-        "all_frames": true
-    }]
+    "permissions": ["declarativeNetRequest", "webRequest"],
+    "host_permissions": ["http://*/*", "https://*/*"],
+    "content_scripts": [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["relay.js"],
+            "all_frames": true
+        },
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["page-api.js"],
+            "world": "MAIN",
+            "all_frames": true
+        }
+    ]
 }
