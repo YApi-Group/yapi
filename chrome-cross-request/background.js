@@ -207,6 +207,22 @@ function endKeepAlive() {
   }
 }
 
+// ---- 站点访问权限检测 ----
+// 用户在 chrome://extensions 里把「站点访问权限」收窄（withheld）后，SW 对未授权主机的
+// fetch 会退化为受 CORS 约束的普通请求，通常表现为 Failed to fetch —— 主动给出可操作的提示
+async function missingHostPermissionHint(url) {
+  try {
+    const origin = new URL(url).origin;
+    const granted = await chrome.permissions.contains({ origins: [origin + '/*'] });
+    return granted
+      ? ''
+      : '（扩展缺少对 ' + origin + ' 的站点访问权限：请在 chrome://extensions 打开 cross-request 的详情，' +
+        '将「站点访问权限」改为「在所有网站上」后重试）';
+  } catch (e) {
+    return '';
+  }
+}
+
 // ---- 请求执行 ----
 async function doFetch(req) {
   const capture = { requestId: null, responseHeaders: null };
@@ -229,7 +245,7 @@ async function doFetch(req) {
         if (err && err.name === 'TimeoutError') {
           return { body: 'Error:Request timeout that the time is ' + req.timeout };
         }
-        return { body: 'Error:' + ((err && err.message) || String(err)) };
+        return { body: 'Error:' + ((err && err.message) || String(err)) + (await missingHostPermissionHint(req.url)) };
       }
       const body = await resp.text();
       // 让出一个宏任务，确保 onHeadersReceived 回调已处理完（事件派发与 fetch 完成的先后无保证）

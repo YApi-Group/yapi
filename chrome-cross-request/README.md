@@ -81,4 +81,14 @@ crossRequest({
 
 - Service Worker 日志：`chrome://extensions` → 本扩展 → 「服务工作进程 (service worker)」链接打开 DevTools；
 - 页面侧日志：YApi 页面的 DevTools Console（page-api.js / relay.js 运行于页面内）；
-- 请求未生效时优先检查：扩展是否启用、YApi 页面是否在扩展安装后刷新过。
+- 请求由扩展 Service Worker 发出，**YApi 页面 DevTools 的 Network 面板看不到目标请求属正常现象**，要看请求需打开上述 SW 的 DevTools；
+- 请求未生效时优先检查：扩展是否启用、YApi 页面是否在扩展安装/重载后刷新过。
+
+### 报「请求异常 / Error:Failed to fetch」但目标服务正常
+
+大概率是扩展的「站点访问权限」被收窄了（Chrome 会把 manifest 申请的全站点权限扣留，
+只授予用户点选过的站点）。此时内容脚本在 YApi 页面照常注入（插件检测显示已安装），
+但 SW 对未授权主机的 fetch 会退化为受 CORS 约束的普通请求，被不支持 CORS 的目标服务拒绝。
+
+修复：`chrome://extensions` → cross-request → 详情 → 「站点访问权限」（允许此扩展读取和更改您在
+所访问网站上的所有数据）→ 选择「在所有网站上」。

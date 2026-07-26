@@ -327,6 +327,11 @@ async function crossRequest(defaultOptions, preScript, afterScript, commonContex
             '请求异常，请检查 chrome network 错误信息... https://juejin.im/post/5c888a3e5188257dee0322af 通过该链接查看教程"）'
         }
         if (isNaN(data.res.status)) {
+          // 异常时 cross-request 插件会把具体原因放进 res.body（如 Error:Failed to fetch、
+          // 站点访问权限提示等），优先透出，避免界面只剩一句无从排查的通用文案
+          if (!isNode && typeof data.res.body === 'string' && data.res.body) {
+            message = data.res.body
+          }
           reject({
             body: res || message,
             header,
