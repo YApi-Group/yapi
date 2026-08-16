@@ -28,6 +28,7 @@ import LocalProvider from './components/LocalProvider/index'
 import MockSelect from './components/MockSelect/index'
 import SchemaJson from './components/SchemaComponents/SchemaJson'
 import CustomItem from './components/SchemaComponents/SchemaOther'
+import SchemaContext from './context'
 import { handleSchema } from './schema'
 import * as utils from './utils'
 import { SCHEMA_TYPE, debounce } from './utils'
@@ -108,7 +109,8 @@ class jsonSchema extends React.Component {
     this.Model.changeEditorSchemaAction({ value: JSON.parse(data) })
   }
 
-  getChildContext() {
+  // 下发给子组件的上下文，取代已废弃的 getChildContext
+  getContextValue() {
     return {
       getOpenValue: keys => utils.getData(this.props.open, keys),
       changeCustomValue: this.changeCustomValue,
@@ -273,216 +275,211 @@ class jsonSchema extends React.Component {
       = !(this.props.schema.type === 'object' || this.props.schema.type === 'array')
 
     return (
-      <div className="json-schema-react-editor">
-        <Button className="import-json-button" type="primary" onClick={this.showModal}>
-          {LocalProvider('import_json')}
-        </Button>
-        <Modal
-          maskClosable={false}
-          open={visible}
-          title={LocalProvider('import_json')}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-          className="json-schema-react-editor-import-modal"
-          okText={'ok'}
-          cancelText={LocalProvider('cancel')}
-          footer={[
-            <Button key="back" onClick={this.handleCancel}>
-              {LocalProvider('cancel')}
-            </Button>,
-            <Button key="submit" type="primary" onClick={this.handleOk}>
-              {LocalProvider('ok')}
-            </Button>,
-          ]}
-        >
-          <Tabs
-            defaultActiveKey="json"
-            onChange={key => {
-              this.importJsonType = key
-            }}
-            items={[
-              {
-                key: 'json',
-                label: 'JSON',
-                children: <AceEditor data="" mode="json" onChange={this.handleImportJson} />,
-              },
-              {
-                key: 'schema',
-                label: 'JSON-SCHEMA',
-                children: <AceEditor data="" mode="json" onChange={this.handleImportJsonSchema} />,
-              },
-            ]}
-          />
-        </Modal>
-
-        <Modal
-          title={
-            <div>
-              {LocalProvider(editorModalName)}
-              &nbsp;
-              {editorModalName === 'mock' && (
-                <Tooltip title={LocalProvider('mockLink')}>
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://github.com/YMFE/json-schema-editor-visual/issues/38"
-                  >
-                    <QuestionCircleOutlined />
-                  </a>
-                </Tooltip>
-              )}
-            </div>
-          }
-          maskClosable={false}
-          open={editVisible}
-          onOk={() => this.handleEditOk(editorModalName)}
-          onCancel={this.handleEditCancel}
-          okText={LocalProvider('ok')}
-          cancelText={LocalProvider('cancel')}
-        >
-          <TextArea
-            value={this.state[editorModalName]}
-            placeholder={LocalProvider(editorModalName)}
-            onChange={e => this.changeDesc(e.target.value, editorModalName)}
-            autosize={{ minRows: 6, maxRows: 10 }}
-          />
-        </Modal>
-
-        {advVisible && (
+      <SchemaContext.Provider value={this.getContextValue()}>
+        <div className="json-schema-react-editor">
+          <Button className="import-json-button" type="primary" onClick={this.showModal}>
+            {LocalProvider('import_json')}
+          </Button>
           <Modal
-            title={LocalProvider('adv_setting')}
             maskClosable={false}
-            open={advVisible}
-            onOk={this.handleAdvOk}
-            onCancel={this.handleAdvCancel}
-            okText={LocalProvider('ok')}
-            width={780}
+            open={visible}
+            title={LocalProvider('import_json')}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+            className="json-schema-react-editor-import-modal"
+            okText={'ok'}
             cancelText={LocalProvider('cancel')}
-            className="json-schema-react-editor-adv-modal"
+            footer={[
+              <Button key="back" onClick={this.handleCancel}>
+                {LocalProvider('cancel')}
+              </Button>,
+              <Button key="submit" type="primary" onClick={this.handleOk}>
+                {LocalProvider('ok')}
+              </Button>,
+            ]}
           >
-            <CustomItem data={JSON.stringify(this.state.curItemCustomValue, null, 2)} />
+            <Tabs
+              defaultActiveKey="json"
+              onChange={key => {
+                this.importJsonType = key
+              }}
+              items={[
+                {
+                  key: 'json',
+                  label: 'JSON',
+                  children: <AceEditor data="" mode="json" onChange={this.handleImportJson} />,
+                },
+                {
+                  key: 'schema',
+                  label: 'JSON-SCHEMA',
+                  children: <AceEditor data="" mode="json" onChange={this.handleImportJsonSchema} />,
+                },
+              ]}
+            />
           </Modal>
-        )}
 
-        <Row>
-          {this.props.showEditor && (
-            <Col span={8}>
-              <AceEditor
-                className="pretty-editor"
-                mode="json"
-                data={JSON.stringify(schema, null, 2)}
-                onChange={this.handleParams}
-              />
-            </Col>
+          <Modal
+            title={
+              <div>
+                {LocalProvider(editorModalName)}
+                &nbsp;
+                {editorModalName === 'mock' && (
+                  <Tooltip title={LocalProvider('mockLink')}>
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://github.com/YMFE/json-schema-editor-visual/issues/38"
+                    >
+                      <QuestionCircleOutlined />
+                    </a>
+                  </Tooltip>
+                )}
+              </div>
+            }
+            maskClosable={false}
+            open={editVisible}
+            onOk={() => this.handleEditOk(editorModalName)}
+            onCancel={this.handleEditCancel}
+            okText={LocalProvider('ok')}
+            cancelText={LocalProvider('cancel')}
+          >
+            <TextArea
+              value={this.state[editorModalName]}
+              placeholder={LocalProvider(editorModalName)}
+              onChange={e => this.changeDesc(e.target.value, editorModalName)}
+              autosize={{ minRows: 6, maxRows: 10 }}
+            />
+          </Modal>
+
+          {advVisible && (
+            <Modal
+              title={LocalProvider('adv_setting')}
+              maskClosable={false}
+              open={advVisible}
+              onOk={this.handleAdvOk}
+              onCancel={this.handleAdvCancel}
+              okText={LocalProvider('ok')}
+              width={780}
+              cancelText={LocalProvider('cancel')}
+              className="json-schema-react-editor-adv-modal"
+            >
+              <CustomItem data={JSON.stringify(this.state.curItemCustomValue, null, 2)} />
+            </Modal>
           )}
-          <Col span={this.props.showEditor ? 16 : 24} className="wrapper object-style">
-            <Row type="flex" align="middle">
-              <Col span={8} className="col-item name-item col-item-name">
-                <Row type="flex" justify="space-around" align="middle">
-                  <Col span={2} className="down-style-col">
-                    {schema.type === 'object' ? (
-                      <span className="down-style" onClick={this.clickIcon}>
-                        {this.state.show ? (
-                          <CaretDownOutlined className="icon-object" />
-                        ) : (
-                          <CaretRightOutlined className="icon-object" />
-                        )}
-                      </span>
-                    ) : null}
-                  </Col>
-                  <Col span={22}>
-                    <Input
-                      suffix={
-                        <Tooltip placement="top" title={'checked_all'}>
-                          <Checkbox
-                            checked={checked}
-                            disabled={disabled}
-                            onChange={e => this.changeCheckBox(e.target.checked)}
-                          />
-                        </Tooltip>
-                      }
-                      disabled
-                      value="root"
+
+          <Row>
+            {this.props.showEditor && (
+              <Col span={8}>
+                <AceEditor
+                  className="pretty-editor"
+                  mode="json"
+                  data={JSON.stringify(schema, null, 2)}
+                  onChange={this.handleParams}
+                />
+              </Col>
+            )}
+            <Col span={this.props.showEditor ? 16 : 24} className="wrapper object-style">
+              <Row type="flex" align="middle">
+                <Col span={8} className="col-item name-item col-item-name">
+                  <Row type="flex" justify="space-around" align="middle">
+                    <Col span={2} className="down-style-col">
+                      {schema.type === 'object' ? (
+                        <span className="down-style" onClick={this.clickIcon}>
+                          {this.state.show ? (
+                            <CaretDownOutlined className="icon-object" />
+                          ) : (
+                            <CaretRightOutlined className="icon-object" />
+                          )}
+                        </span>
+                      ) : null}
+                    </Col>
+                    <Col span={22}>
+                      <Input
+                        suffix={
+                          <Tooltip placement="top" title={'checked_all'}>
+                            <Checkbox
+                              checked={checked}
+                              disabled={disabled}
+                              onChange={e => this.changeCheckBox(e.target.checked)}
+                            />
+                          </Tooltip>
+                        }
+                        disabled
+                        value="root"
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+                <Col span={3} className="col-item col-item-type">
+                  <Select
+                    className="type-select-style"
+                    onChange={e => this.changeType('type', e)}
+                    value={schema.type || 'object'}
+                  >
+                    {SCHEMA_TYPE.map((item, index) => (
+                      <Option value={item} key={index}>
+                        {item}
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+                {this.props.isMock && (
+                  <Col span={3} className="col-item col-item-mock">
+                    <MockSelect
+                      schema={schema}
+                      showEdit={() => this.showEdit([], 'mock', schema.mock, schema.type)}
+                      onChange={value => this.changeValue(['mock'], value)}
                     />
                   </Col>
-                </Row>
-              </Col>
-              <Col span={3} className="col-item col-item-type">
-                <Select
-                  className="type-select-style"
-                  onChange={e => this.changeType('type', e)}
-                  value={schema.type || 'object'}
-                >
-                  {SCHEMA_TYPE.map((item, index) => (
-                    <Option value={item} key={index}>
-                      {item}
-                    </Option>
-                  ))}
-                </Select>
-              </Col>
-              {this.props.isMock && (
-                <Col span={3} className="col-item col-item-mock">
-                  <MockSelect
-                    schema={schema}
-                    showEdit={() => this.showEdit([], 'mock', schema.mock, schema.type)}
-                    onChange={value => this.changeValue(['mock'], value)}
+                )}
+                <Col span={this.props.isMock ? 4 : 5} className="col-item col-item-mock">
+                  <Input
+                    suffix={
+                      <EditOutlined onClick={() => this.showEdit([], 'title', this.props.schema.title)} />
+                    }
+                    placeholder={'Title'}
+                    value={this.props.schema.title}
+                    onChange={e => this.changeValue(['title'], e.target.value)}
                   />
                 </Col>
-              )}
-              <Col span={this.props.isMock ? 4 : 5} className="col-item col-item-mock">
-                <Input
-                  suffix={
-                    <EditOutlined onClick={() => this.showEdit([], 'title', this.props.schema.title)} />
-                  }
-                  placeholder={'Title'}
-                  value={this.props.schema.title}
-                  onChange={e => this.changeValue(['title'], e.target.value)}
-                />
-              </Col>
-              <Col span={this.props.isMock ? 4 : 5} className="col-item col-item-desc">
-                <Input
-                  suffix={
-                    <EditOutlined onClick={() => this.showEdit([], 'description', this.props.schema.description)} />
-                  }
-                  placeholder={'description'}
-                  value={schema.description}
-                  onChange={e => this.changeValue(['description'], e.target.value)}
-                />
-              </Col>
-              <Col span={2} className="col-item col-item-setting">
-                <span className="adv-set" onClick={() => this.showAdv([], this.props.schema)}>
-                  <Tooltip placement="top" title={LocalProvider('adv_setting')}>
-                    <SettingOutlined />
-                  </Tooltip>
-                </span>
-                {schema.type === 'object' ? (
-                  <span onClick={() => this.addChildField('properties')}>
-                    <Tooltip placement="top" title={LocalProvider('add_child_node')}>
-                      <PlusOutlined className="plus" />
+                <Col span={this.props.isMock ? 4 : 5} className="col-item col-item-desc">
+                  <Input
+                    suffix={
+                      <EditOutlined onClick={() => this.showEdit([], 'description', this.props.schema.description)} />
+                    }
+                    placeholder={'description'}
+                    value={schema.description}
+                    onChange={e => this.changeValue(['description'], e.target.value)}
+                  />
+                </Col>
+                <Col span={2} className="col-item col-item-setting">
+                  <span className="adv-set" onClick={() => this.showAdv([], this.props.schema)}>
+                    <Tooltip placement="top" title={LocalProvider('adv_setting')}>
+                      <SettingOutlined />
                     </Tooltip>
                   </span>
-                ) : null}
-              </Col>
-            </Row>
-            {this.state.show && (
-              <SchemaJson
-                data={this.props.schema}
-                showEdit={this.showEdit}
-                showAdv={this.showAdv}
-              />
-            )}
-          </Col>
-        </Row>
-      </div>
+                  {schema.type === 'object' ? (
+                    <span onClick={() => this.addChildField('properties')}>
+                      <Tooltip placement="top" title={LocalProvider('add_child_node')}>
+                        <PlusOutlined className="plus" />
+                      </Tooltip>
+                    </span>
+                  ) : null}
+                </Col>
+              </Row>
+              {this.state.show && (
+                <SchemaJson
+                  data={this.props.schema}
+                  showEdit={this.showEdit}
+                  showAdv={this.showAdv}
+                />
+              )}
+            </Col>
+          </Row>
+        </div>
+      </SchemaContext.Provider>
     )
   }
-}
-
-jsonSchema.childContextTypes = {
-  getOpenValue: PropTypes.func,
-  changeCustomValue: PropTypes.func,
-  Model: PropTypes.object,
-  isMock: PropTypes.bool,
 }
 
 jsonSchema.propTypes = {

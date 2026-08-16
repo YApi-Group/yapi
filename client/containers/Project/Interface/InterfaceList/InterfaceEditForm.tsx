@@ -287,7 +287,6 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
   }
 
   handleFormValueChange = (changeVals: any, vals: any) => {
-    console.log(changeVals, vals)
     this.setState({ formValues: vals })
   }
 
@@ -831,8 +830,6 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
     const requestBodyList = this.state.req_body_form.map((item: any, index: number) =>
       requestBodyTpl(item, index)
     )
-
-    console.log(this.formRef.current?.getFieldValue('req_body_type'))
 
     return (
       <div>

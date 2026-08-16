@@ -9,10 +9,10 @@ import {
   Tooltip,
   Switch,
 } from 'antd'
-import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { PureComponent, useContext } from 'react'
 import _ from 'underscore'
 
+import SchemaContext from '../../context'
 import AceEditor from '../AceEditor/AceEditor'
 import LocalProvider from '../LocalProvider/index'
 
@@ -27,6 +27,8 @@ const changeOtherValue = (value, name, data, change) => {
 }
 
 class SchemaString extends PureComponent {
+  static contextType = SchemaContext;
+
   constructor(props, context) {
     super(props)
     this.state = {
@@ -208,12 +210,10 @@ class SchemaString extends PureComponent {
     )
   }
 }
-SchemaString.contextTypes = {
-  changeCustomValue: PropTypes.func,
-  Model: PropTypes.object,
-}
 
 class SchemaNumber extends PureComponent {
+  static contextType = SchemaContext;
+
   constructor(props) {
     super(props)
     this.state = {
@@ -406,12 +406,9 @@ class SchemaNumber extends PureComponent {
   }
 }
 
-SchemaNumber.contextTypes = {
-  changeCustomValue: PropTypes.func,
-}
-
-const SchemaBoolean = (props, context) => {
+const SchemaBoolean = props => {
   const { data } = props
+  const { changeCustomValue } = useContext(SchemaContext)
   const value = _.isUndefined(data.default) ? '' : data.default ? 'true' : 'false'
   return (
     <div>
@@ -427,7 +424,7 @@ const SchemaBoolean = (props, context) => {
               e === 'true',
               'default',
               data,
-              context.changeCustomValue,
+              changeCustomValue,
             )
             }
             style={{ width: 200 }}
@@ -441,12 +438,9 @@ const SchemaBoolean = (props, context) => {
   )
 }
 
-SchemaBoolean.contextTypes = {
-  changeCustomValue: PropTypes.func,
-}
-
-const SchemaArray = (props, context) => {
+const SchemaArray = props => {
   const { data } = props
+  const { changeCustomValue } = useContext(SchemaContext)
   return (
     <div>
       <div className="default-setting">{LocalProvider('base_setting')}</div>
@@ -464,7 +458,7 @@ const SchemaArray = (props, context) => {
           <Switch
             checked={data.uniqueItems}
             placeholder="uniqueItems"
-            onChange={e => changeOtherValue(e, 'uniqueItems', data, context.changeCustomValue)}
+            onChange={e => changeOtherValue(e, 'uniqueItems', data, changeCustomValue)}
           />
         </Col>
       </Row>
@@ -478,7 +472,7 @@ const SchemaArray = (props, context) => {
               <InputNumber
                 value={data.minItems}
                 placeholder="minItems"
-                onChange={e => changeOtherValue(e, 'minItems', data, context.changeCustomValue)}
+                onChange={e => changeOtherValue(e, 'minItems', data, changeCustomValue)}
               />
             </Col>
           </Row>
@@ -492,7 +486,7 @@ const SchemaArray = (props, context) => {
               <InputNumber
                 value={data.maxItems}
                 placeholder="maxItems"
-                onChange={e => changeOtherValue(e, 'maxItems', data, context.changeCustomValue)}
+                onChange={e => changeOtherValue(e, 'maxItems', data, changeCustomValue)}
               />
             </Col>
           </Row>
@@ -500,10 +494,6 @@ const SchemaArray = (props, context) => {
       </Row>
     </div>
   )
-}
-
-SchemaArray.contextTypes = {
-  changeCustomValue: PropTypes.func,
 }
 
 const mapping = data => ({
@@ -519,8 +509,9 @@ const handleInputEditor = (e, change) => {
   change(e.jsonData)
 }
 
-const CustomItem = (props, context) => {
+const CustomItem = props => {
   const { data } = props
+  const { changeCustomValue } = useContext(SchemaContext)
   const optionForm = mapping(JSON.parse(data))
 
   return (
@@ -530,14 +521,10 @@ const CustomItem = (props, context) => {
       <AceEditor
         data={data}
         mode="json"
-        onChange={e => handleInputEditor(e, context.changeCustomValue)}
+        onChange={e => handleInputEditor(e, changeCustomValue)}
       />
     </div>
   )
-}
-
-CustomItem.contextTypes = {
-  changeCustomValue: PropTypes.func,
 }
 
 export default CustomItem

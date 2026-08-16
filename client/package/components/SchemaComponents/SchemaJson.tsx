@@ -16,11 +16,11 @@ import {
   message,
   Tooltip,
 } from 'antd'
-import PropTypes from 'prop-types'
-import React, { Component, PureComponent } from 'react'
+import React, { Component, PureComponent, useContext } from 'react'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 
+import SchemaContext from '../../context'
 import { JSONPATH_JOIN_CHAR, SCHEMA_TYPE } from '../../utils'
 import LocaleProvider from '../LocalProvider/index'
 import MockSelect from '../MockSelect/index'
@@ -47,6 +47,8 @@ const mapping = (name, data, showEdit, showAdv) => {
 }
 
 class SchemaArray extends PureComponent {
+  static contextType = SchemaContext;
+
   constructor(props, context) {
     super(props)
     this._tagPaddingLeftStyle = {}
@@ -215,13 +217,9 @@ class SchemaArray extends PureComponent {
   }
 }
 
-SchemaArray.contextTypes = {
-  getOpenValue: PropTypes.func,
-  Model: PropTypes.object,
-  isMock: PropTypes.bool,
-}
-
 class SchemaItem extends PureComponent {
+  static contextType = SchemaContext;
+
   constructor(props, context) {
     super(props)
     this._tagPaddingLeftStyle = {}
@@ -454,12 +452,6 @@ class SchemaItem extends PureComponent {
   }
 }
 
-SchemaItem.contextTypes = {
-  getOpenValue: PropTypes.func,
-  Model: PropTypes.object,
-  isMock: PropTypes.bool,
-}
-
 class SchemaObjectComponent extends Component {
   shouldComponentUpdate(nextProps) {
     if (
@@ -495,9 +487,10 @@ const SchemaObject = connect(state => ({
   open: state.schema.open,
 }))(SchemaObjectComponent)
 
-const DropPlus = (props, context) => {
-  const { prefix, name, add } = props
-  const Model = context.Model.schema
+const DropPlus = props => {
+  const { prefix, name } = props
+  const { Model: ModelInst } = useContext(SchemaContext)
+  const Model = ModelInst.schema
   const menuItems = [
     {
       key: 'sibling_node',
@@ -529,10 +522,6 @@ const DropPlus = (props, context) => {
       </Dropdown>
     </Tooltip>
   )
-}
-
-DropPlus.contextTypes = {
-  Model: PropTypes.object,
 }
 
 const SchemaJson = props => {

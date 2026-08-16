@@ -3,11 +3,14 @@ import { Input, AutoComplete } from 'antd'
 import PropTypes from 'prop-types'
 import React from 'react'
 
+import SchemaContext from '../../context'
 import LocaleProvider from '../LocalProvider/index'
 
 const Option = AutoComplete.Option
 
 export default class MockSelect extends React.Component {
+  static contextType = SchemaContext;
+
   constructor(props, context) {
     super(props)
     this.state = {
@@ -45,8 +48,4 @@ export default class MockSelect extends React.Component {
       </div>
     )
   }
-}
-
-MockSelect.contextTypes = {
-  Model: PropTypes.object,
 }
