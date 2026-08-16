@@ -9,9 +9,9 @@ import { Link } from 'react-router-dom'
 import AceEditor from '@/components/AceEditor/AceEditor'
 import constants from '@/cons'
 
-import { formatTime, safeArray } from '../../../../common.js'
+import { formatTime, safeArray } from '../../../../common'
 import ErrMsg from '../../../../components/ErrMsg/ErrMsg'
-import SchemaTable from '../../../../components/SchemaTable/SchemaTable.js'
+import SchemaTable from '../../../../components/SchemaTable/SchemaTable'
 
 import './View.scss'
 

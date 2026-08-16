@@ -15,7 +15,7 @@ import { withRouter } from 'react-router-dom'
 
 import { AnyFunc } from '@/types.js'
 
-import { arrayChangeIndex } from '../../../../common.js'
+import { arrayChangeIndex } from '../../../../common'
 import {
   fetchInterfaceColList,
   setColData,

@@ -11,7 +11,7 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 
-import { trim } from '../../../common.js'
+import { trim } from '../../../common'
 import {
   changeGroupMsg,
   fetchGroupList,
@@ -19,8 +19,8 @@ import {
   fetchGroupMsg,
   updateGroupList,
   deleteGroup,
-} from '../../../reducer/modules/group.js'
-import { fetchNewsData } from '../../../reducer/modules/news.js'
+} from '../../../reducer/modules/group'
+import { fetchNewsData } from '../../../reducer/modules/news'
 
 import './GroupSetting.scss'
 

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 import { AnyFunc } from '@/types'
 
-import GuideBtns from '../GuideBtns/GuideBtns.js'
+import GuideBtns from '../GuideBtns/GuideBtns'
 
 import { MenuUser } from './MenuUser'
 import Search from './Search/Search'

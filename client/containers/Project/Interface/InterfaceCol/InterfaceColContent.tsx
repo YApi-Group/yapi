@@ -17,15 +17,15 @@ import _ from 'underscore'
 
 import AceEditor from '@/components/AceEditor/AceEditor'
 import CaseEnv from '@/components/CaseEnv'
-import { initCrossRequest } from '@/components/Postman/CheckCrossInstall.js'
-import { InsertCodeMap } from '@/components/Postman/Postman.js'
-import plugin from '@/plugin.js'
+import { initCrossRequest } from '@/components/Postman/CheckCrossInstall'
+import { InsertCodeMap } from '@/components/Postman/Postman'
+import plugin from '@/plugin'
 import { AnyFunc } from '@/types.js'
 import createContext from '@common/createContext'
 import { handleParams, crossRequest, handleCurrDomain, checkNameIsExistInArray } from '@common/postmanLib.js'
 import { handleParamsValue, json_parse, changeArrayToObject } from '@common/utils.js'
 
-import Label from '../../../../components/Label/Label.js'
+import Label from '../../../../components/Label/Label'
 import {
   fetchInterfaceColList,
   fetchCaseList,

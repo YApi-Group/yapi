@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import plugin from '@/plugin.js'
+import plugin from '@/plugin'
 import { AnyFunc } from '@/types'
 
 import './Header.scss'

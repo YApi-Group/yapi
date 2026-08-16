@@ -1,7 +1,7 @@
 import { Row, Col, Card } from 'antd'
 import React, { PureComponent as Component } from 'react'
 
-import LogoSVG from '../../components/LogoSVG/index.js'
+import LogoSVG from '../../components/LogoSVG/index'
 
 import LoginWrap from './LoginWrap'
 

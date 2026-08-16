@@ -11,7 +11,7 @@ import {
   updateInterfaceData,
   fetchInterfaceListMenu,
   fetchInterfaceData,
-} from '../../../../reducer/modules/interface.js'
+} from '../../../../reducer/modules/interface'
 import { getProject } from '../../../../reducer/modules/project'
 import ProjectTag from '../../Setting/ProjectMessage/ProjectTag'
 

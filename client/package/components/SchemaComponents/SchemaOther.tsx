@@ -13,8 +13,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import _ from 'underscore'
 
-import AceEditor from '../AceEditor/AceEditor.js'
-import LocalProvider from '../LocalProvider/index.js'
+import AceEditor from '../AceEditor/AceEditor'
+import LocalProvider from '../LocalProvider/index'
 
 import './schemaJson.css'
 

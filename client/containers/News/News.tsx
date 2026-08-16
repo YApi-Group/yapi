@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import SubNav from '../../components/SubNav/SubNav.tsx'
-import { getMockUrl } from '../../reducer/modules/news.js'
+import { getMockUrl } from '../../reducer/modules/news'
 
 import NewsTimeline from './NewsTimeline/NewsTimeline'
 

@@ -20,9 +20,9 @@ import { connect } from 'react-redux'
 import { AnyFunc } from '@/types'
 
 import ErrMsg from '../../../../components/ErrMsg/ErrMsg'
-import UsernameAutoComplete from '../../../../components/UsernameAutoComplete/UsernameAutoComplete.js'
+import UsernameAutoComplete from '../../../../components/UsernameAutoComplete/UsernameAutoComplete'
 import { fetchGroupMsg } from '../../../../reducer/modules/group'
-import { fetchGroupMemberList } from '../../../../reducer/modules/group.js'
+import { fetchGroupMemberList } from '../../../../reducer/modules/group'
 import {
   fetchProjectList,
   getProjectMemberList,

@@ -9,7 +9,7 @@ import constants from '@/cons'
 import { DispatchCommonFunc, DispatchPromiseFunc } from '@/types'
 
 import { pickRandomProperty, handlePath, nameLengthLimit } from '../../common'
-import { fetchGroupList } from '../../reducer/modules/group.js'
+import { fetchGroupList } from '../../reducer/modules/group'
 import { addProject } from '../../reducer/modules/project'
 import { setBreadcrumb } from '../../reducer/modules/user'
 

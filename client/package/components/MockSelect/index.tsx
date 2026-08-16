@@ -3,7 +3,7 @@ import { Input, AutoComplete } from 'antd'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import LocaleProvider from '../LocalProvider/index.js'
+import LocaleProvider from '../LocalProvider/index'
 
 const Option = AutoComplete.Option
 

@@ -3,7 +3,7 @@ import type { MenuProps } from 'antd'
 import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
-import { fetchNewsData } from '../../../reducer/modules/news.js'
+import { fetchNewsData } from '../../../reducer/modules/news'
 import { AnyFunc } from '../../../types'
 
 type ItemType = Required<MenuProps>['items'][number]

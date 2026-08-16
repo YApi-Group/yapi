@@ -23,7 +23,7 @@ import _ from 'underscore'
 
 import AceEditor from '@/components/AceEditor/AceEditor'
 import constants from '@/cons'
-import plugin from '@/plugin.js'
+import plugin from '@/plugin'
 import createContext from '@common/createContext'
 import {
   handleParams,
@@ -34,11 +34,11 @@ import {
 } from '@common/postmanLib.js'
 import { handleParamsValue, changeArrayToObject, schemaValidator } from '@common/utils.js'
 
-import { isJson, deepCopyJson, json5_parse } from '../../common.js'
+import { isJson, deepCopyJson, json5_parse } from '../../common'
 import ProjectEnv from '../../containers/Project/Setting/ProjectEnv'
-import ModalPostman from '../ModalPostman/index.js'
+import ModalPostman from '../ModalPostman/index'
 
-import CheckCrossInstall, { initCrossRequest } from './CheckCrossInstall.js'
+import CheckCrossInstall, { initCrossRequest } from './CheckCrossInstall'
 
 import './Postman.scss'
 

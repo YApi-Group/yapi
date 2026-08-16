@@ -4,7 +4,7 @@ import React, { PureComponent as Component, FocusEvent, createRef, RefObject } f
 import constants from '@/cons'
 import { AnyFunc } from '@/types'
 
-import { handleApiPath, nameLengthLimit } from '../../../../common.js'
+import { handleApiPath, nameLengthLimit } from '../../../../common'
 
 const HTTP_METHOD = constants.HTTP_METHOD
 const HTTP_METHOD_KEYS = Object.keys(HTTP_METHOD)

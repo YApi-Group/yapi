@@ -26,7 +26,7 @@ import { AnyFunc } from '@/types'
 import handleImportData from '@common/HandleImportData'
 
 import { saveImportData } from '../../../../reducer/modules/interface'
-import { fetchUpdateLogData } from '../../../../reducer/modules/news.js'
+import { fetchUpdateLogData } from '../../../../reducer/modules/news'
 import { handleSwaggerUrlData } from '../../../../reducer/modules/project'
 
 import harImport from './harImport'

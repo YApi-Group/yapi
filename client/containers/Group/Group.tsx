@@ -9,12 +9,12 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { AnyFunc } from '@/types'
 
 import { setCurrGroup } from '../../reducer/modules/group'
-import { fetchNewsData } from '../../reducer/modules/news.js'
+import { fetchNewsData } from '../../reducer/modules/news'
 
 import GroupList from './GroupList/GroupList'
 import GroupLog from './GroupLog/GroupLog'
-import GroupSetting from './GroupSetting/GroupSetting.js'
-import MemberList from './MemberList/MemberList.js'
+import GroupSetting from './GroupSetting/GroupSetting'
+import MemberList from './MemberList/MemberList'
 import ProjectList from './ProjectList/ProjectList'
 
 import './Group.scss'

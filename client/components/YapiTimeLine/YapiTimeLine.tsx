@@ -12,9 +12,9 @@ import { AnyFunc } from '@/types.js'
 
 import showDiffMsg from '../../../common/diff-view.js'
 import { timeago } from '../../../common/utils'
-import { formatTime } from '../../common.js'
-import { fetchInterfaceList } from '../../reducer/modules/interface.js'
-import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news.js'
+import { formatTime } from '../../common'
+import { fetchInterfaceList } from '../../reducer/modules/interface'
+import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news'
 import ErrMsg from '../ErrMsg/ErrMsg'
 
 import 'jsondiffpatch/formatters/styles/annotated.css'

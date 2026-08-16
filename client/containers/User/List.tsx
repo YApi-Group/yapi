@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 
 import { AnyFunc } from '@/types.js'
 
-import { formatTime } from '../../common.js'
+import { formatTime } from '../../common'
 import { setBreadcrumb } from '../../reducer/modules/user'
 
 // import PropTypes from 'prop-types'

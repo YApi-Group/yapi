@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 
 import { AnyFunc } from '@/types.js'
 
-import { formatTime } from '../../common.js'
+import { formatTime } from '../../common'
 import { setBreadcrumb, setImageUrl } from '../../reducer/modules/user'
 
 type PropsType1 = {

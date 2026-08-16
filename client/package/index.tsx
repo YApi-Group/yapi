@@ -3,7 +3,7 @@ import { Provider } from 'react-redux'
 import moox from 'moox'
 import PropTypes from 'prop-types'
 
-import App from './App.js'
+import App from './App'
 import * as utils from './utils'
 import schema from './models/schema'
 

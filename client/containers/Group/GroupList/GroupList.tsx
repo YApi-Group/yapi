@@ -9,10 +9,10 @@ import { Link, withRouter } from 'react-router-dom'
 
 import { AnyFunc } from '@/types.js'
 
-import GuideBtns from '../../../components/GuideBtns/GuideBtns.js'
-import UsernameAutoComplete from '../../../components/UsernameAutoComplete/UsernameAutoComplete.js'
-import { fetchGroupList, setCurrGroup, fetchGroupMsg } from '../../../reducer/modules/group.js'
-import { fetchNewsData } from '../../../reducer/modules/news.js'
+import GuideBtns from '../../../components/GuideBtns/GuideBtns'
+import UsernameAutoComplete from '../../../components/UsernameAutoComplete/UsernameAutoComplete'
+import { fetchGroupList, setCurrGroup, fetchGroupMsg } from '../../../reducer/modules/group'
+import { fetchNewsData } from '../../../reducer/modules/news'
 
 import style from './gl.module.scss'
 

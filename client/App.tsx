@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { connect } from 'react-redux'
 import { Route, BrowserRouter } from 'react-router-dom'
 
-import plugin from '@/plugin.js'
+import plugin from '@/plugin'
 
 import { requireAuthentication } from './components/AuthenticatedComponent'
 import Footer from './components/Footer/Footer'

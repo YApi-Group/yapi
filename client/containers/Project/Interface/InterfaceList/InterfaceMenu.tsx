@@ -17,7 +17,7 @@ import { Link, withRouter } from 'react-router-dom'
 
 import { AnyFunc } from '@/types'
 
-import { arrayChangeIndex } from '../../../../common.js'
+import { arrayChangeIndex } from '../../../../common'
 import {
   fetchInterfaceListMenu,
   fetchInterfaceList,
@@ -26,7 +26,7 @@ import {
   deleteInterfaceData,
   deleteInterfaceCatData,
   initInterface,
-} from '../../../../reducer/modules/interface.js'
+} from '../../../../reducer/modules/interface'
 import { getProject } from '../../../../reducer/modules/project'
 
 import AddInterfaceCatForm from './AddInterfaceCatForm'

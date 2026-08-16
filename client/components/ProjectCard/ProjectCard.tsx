@@ -9,7 +9,7 @@ import constants from '@/cons'
 import { AnyFunc } from '@/types'
 
 import { debounce } from '../../common'
-import { trim } from '../../common.js'
+import { trim } from '../../common'
 import { delFollow, addFollow } from '../../reducer/modules/follow'
 import { getProject, checkProjectName, copyProjectMsg } from '../../reducer/modules/project'
 

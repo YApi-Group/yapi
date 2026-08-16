@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import { NameValueStr, EnvPart, ProjectGetData } from '@/ajax/ProjectGet'
 import { AnyFunc } from '@/types'
 
-import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
+import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort'
 import { updateEnv, getProject, getEnv } from '../../../../reducer/modules/project'
 
 import ProjectEnvContent from './ProjectEnvContent'

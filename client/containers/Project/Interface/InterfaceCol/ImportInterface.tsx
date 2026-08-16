@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 
 import variable from '@/cons'
 
-import { fetchInterfaceListMenu } from '../../../../reducer/modules/interface.js'
+import { fetchInterfaceListMenu } from '../../../../reducer/modules/interface'
 
 const Option = Select.Option
 

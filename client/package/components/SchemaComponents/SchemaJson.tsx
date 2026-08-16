@@ -21,9 +21,9 @@ import React, { Component, PureComponent } from 'react'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 
-import { JSONPATH_JOIN_CHAR, SCHEMA_TYPE } from '../../utils.js'
-import LocaleProvider from '../LocalProvider/index.js'
-import MockSelect from '../MockSelect/index.js'
+import { JSONPATH_JOIN_CHAR, SCHEMA_TYPE } from '../../utils'
+import LocaleProvider from '../LocalProvider/index'
+import MockSelect from '../MockSelect/index'
 
 import FieldInput from './FieldInput'
 

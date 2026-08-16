@@ -32,9 +32,9 @@ import jSchema from '@/package'
 import { AnyFunc, HttpMethod } from '@/types'
 import Editor from '@common/tui-editor/dist/tui-editor-Editor-all.min.js'
 
-import { handlePath, nameLengthLimit } from '../../../../common.js'
-import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort.js'
-import { changeEditStatus } from '../../../../reducer/modules/interface.js'
+import { handlePath, nameLengthLimit } from '../../../../common'
+import EasyDragSort from '../../../../components/EasyDragSort/EasyDragSort'
+import { changeEditStatus } from '../../../../reducer/modules/interface'
 
 import '@common/tui-editor/dist/tui-editor.min.css' // editor ui
 import '@common/tui-editor/dist/tui-editor-contents.min.css' // editor content

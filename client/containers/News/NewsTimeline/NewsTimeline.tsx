@@ -4,8 +4,8 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 
 import { timeago } from '../../../../common/utils'
-import { formatTime } from '../../../common.js'
-import { fetchNewsData } from '../../../reducer/modules/news.js'
+import { formatTime } from '../../../common'
+import { fetchNewsData } from '../../../reducer/modules/news'
 // timeago(new Date().getTime() - 40);
 
 @connect(

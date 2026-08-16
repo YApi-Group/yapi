@@ -3,11 +3,11 @@ import { Alert, Modal, Row, Col, Collapse, Input, Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { trim } from '../../common.js'
+import { trim } from '../../common'
 
-import MethodsList from './MethodsList.js'
-import MockList from './MockList.js'
-import VariablesSelect from './VariablesSelect.js'
+import MethodsList from './MethodsList'
+import MockList from './MockList'
+import VariablesSelect from './VariablesSelect'
 
 import './index.scss'
 const { handleParamsValue } = require('@common/utils.js')

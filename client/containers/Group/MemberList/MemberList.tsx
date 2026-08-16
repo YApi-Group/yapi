@@ -7,14 +7,14 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import ErrMsg from '../../../components/ErrMsg/ErrMsg'
-import UsernameAutoComplete from '../../../components/UsernameAutoComplete/UsernameAutoComplete.js'
+import UsernameAutoComplete from '../../../components/UsernameAutoComplete/UsernameAutoComplete'
 import {
   fetchGroupMemberList,
   fetchGroupMsg,
   addMember,
   delMember,
   changeMemberRole,
-} from '../../../reducer/modules/group.js'
+} from '../../../reducer/modules/group'
 
 import './MemberList.scss'
 

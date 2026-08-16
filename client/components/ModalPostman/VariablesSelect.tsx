@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { fetchVariableParamsList } from '../../reducer/modules/interfaceCol.js'
+import { fetchVariableParamsList } from '../../reducer/modules/interfaceCol'
 
 const TreeNode = Tree.TreeNode
 const CanSelectPathPrefix = 'CanSelectPath-'

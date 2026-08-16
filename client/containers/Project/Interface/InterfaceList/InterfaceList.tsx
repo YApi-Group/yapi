@@ -9,12 +9,12 @@ import { Link } from 'react-router-dom'
 import variable from '@/cons'
 import { AnyFunc } from '@/types.js'
 
-import Label from '../../../../components/Label/Label.js'
+import Label from '../../../../components/Label/Label'
 import {
   fetchInterfaceListMenu,
   fetchInterfaceList,
   fetchInterfaceCatList,
-} from '../../../../reducer/modules/interface.js'
+} from '../../../../reducer/modules/interface'
 import { getProject } from '../../../../reducer/modules/project'
 
 import AddInterfaceForm from './AddInterfaceForm'

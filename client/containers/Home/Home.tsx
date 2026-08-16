@@ -5,10 +5,10 @@ import React, { PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
 
-import plugin from '@/plugin.js'
+import plugin from '@/plugin'
 import { AnyFunc } from '@/types.js'
 
-import LogoSVG from '../../components/LogoSVG/index.js'
+import LogoSVG from '../../components/LogoSVG/index'
 import { changeMenuItem } from '../../reducer/modules/menu'
 
 import './Home.scss'

@@ -38,7 +38,7 @@ import { AnyFunc } from '@/types'
 
 import { nameLengthLimit, entries, trim, htmlFilter } from '../../../../common'
 import { fetchGroupMsg } from '../../../../reducer/modules/group'
-import { fetchGroupList } from '../../../../reducer/modules/group.js'
+import { fetchGroupList } from '../../../../reducer/modules/group'
 import { updateProject, delProject, getProject, upsetProject } from '../../../../reducer/modules/project'
 import { setBreadcrumb } from '../../../../reducer/modules/user'
 

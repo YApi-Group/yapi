@@ -4,7 +4,7 @@ import axios from 'axios'
 import React, { Component, createRef } from 'react'
 import { connect } from 'react-redux'
 
-import { formatTime } from '@/common.js'
+import { formatTime } from '@/common'
 import { handleSwaggerUrlData } from '@/reducer/modules/project'
 import { AnyFunc } from '@/types'
 
