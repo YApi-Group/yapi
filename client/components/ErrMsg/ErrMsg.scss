@@ -1,4 +1,7 @@
 .err-msg {
+  // 该组件常作为 antd Row(flex 容器) 的唯一子元素使用，
+  // flex 子项默认按内容收缩宽度，会导致整体靠左；这里强制撑满以保证居中
+  width: 100%;
   text-align: center;
   font-size: .14rem;
   line-height: 2;
