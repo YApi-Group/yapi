@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import PropTypes from 'prop-types';
 
@@ -32,7 +31,6 @@ export default class EasyDragSort extends React.Component {
   };
 
   render() {
-    const that = this;
     const props = this.props;
     const { onlyChild } = props;
     let container = props.children;
@@ -55,7 +53,6 @@ export default class EasyDragSort extends React.Component {
           if (React.isValidElement(item)) {
             return React.cloneElement(item, {
               draggable: onlyChild ? false : true,
-              ref: 'x' + index,
               'data-ref': 'x' + index,
               onDragStart: function() {
                 curDragIndex = index;
@@ -84,11 +81,8 @@ export default class EasyDragSort extends React.Component {
                 if (!el) {
                   return;
                 }
-                let ref = that.refs[el.getAttribute('data-ref')];
-                let dom = ReactDOM.findDOMNode(ref);
-                if (dom) {
-                  dom.draggable = target.getAttribute(onlyChild) ? true : false;
-                }
+                // el 即带 data-ref 的拖拽项根节点，直接操作它，无需 string ref + findDOMNode
+                el.draggable = target.getAttribute(onlyChild) ? true : false;
               },
               onDragEnter: function() {
                 onChange(curDragIndex, index);

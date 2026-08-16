@@ -650,8 +650,12 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
 
     const queryTpl = (data: any, index: number) => (
       <Row key={index} className="interface-edit-item-content">
-        {/* easy_drag_sort_child="true" */}
-        <Col span="1" className="interface-edit-item-content-col interface-edit-item-content-col-drag">
+        {/* 仅此列（拖拽手柄）可发起拖拽，见 EasyDragSort 的 onlyChild */}
+        <Col
+          span="1"
+          data-easy-drag-sort-child="true"
+          className="interface-edit-item-content-col interface-edit-item-content-col-drag"
+        >
           <BarsOutlined />
         </Col>
         <Col span="4" draggable="false" className="interface-edit-item-content-col">
@@ -692,8 +696,12 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
 
     const headerTpl = (data: any, index: number) => (
       <Row key={index} className="interface-edit-item-content">
-        {/* easy_drag_sort_child="true" */}
-        <Col span="1" className="interface-edit-item-content-col interface-edit-item-content-col-drag">
+        {/* 仅此列（拖拽手柄）可发起拖拽，见 EasyDragSort 的 onlyChild */}
+        <Col
+          span="1"
+          data-easy-drag-sort-child="true"
+          className="interface-edit-item-content-col interface-edit-item-content-col-drag"
+        >
           <BarsOutlined />
         </Col>
 
@@ -736,8 +744,12 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
 
     const requestBodyTpl = (data: any, index: number) => (
       <Row key={index} className="interface-edit-item-content">
-        {/* easy_drag_sort_child="true" */}
-        <Col span="1" className="interface-edit-item-content-col interface-edit-item-content-col-drag">
+        {/* 仅此列（拖拽手柄）可发起拖拽，见 EasyDragSort 的 onlyChild */}
+        <Col
+          span="1"
+          data-easy-drag-sort-child="true"
+          className="interface-edit-item-content-col interface-edit-item-content-col-drag"
+        >
           <BarsOutlined />
         </Col>
 
@@ -897,9 +909,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                   </Tooltip>
                 </span>
               }
-              name="path"
-              initialValue={this.state.path}
-              rules={[{ required: true, message: '请输入接口路径!' }]}
+              required
             >
               <Space.Compact block>
                 <Select value={this.state.method} onChange={this.onChangeMethod} style={{ width: '15%' }}>
@@ -924,7 +934,15 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                     style={{ width: '25%' }}
                   />
                 </Tooltip>
-                <Input onChange={this.handlePath} placeholder="/path" style={{ width: '60%' }} />
+                {/* 仅路径输入框与 path 字段绑定，外层 FormItem 只负责 label 与布局 */}
+                <FormItem
+                  name="path"
+                  noStyle
+                  initialValue={this.state.path}
+                  rules={[{ required: true, message: '请输入接口路径!' }]}
+                >
+                  <Input onChange={this.handlePath} placeholder="/path" style={{ width: '60%' }} />
+                </FormItem>
               </Space.Compact>
               <Row className="interface-edit-item">
                 <Col span={24} offset={0}>
@@ -1016,7 +1034,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 <EasyDragSort
                   data={() => this.formRef.current.getFieldValue('req_query')}
                   onChange={this.handleDragMove('req_query')}
-                  onlyChild="easy_drag_sort_child"
+                  onlyChild="data-easy-drag-sort-child"
                 >
                   {QueryList}
                 </EasyDragSort>
@@ -1033,7 +1051,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 <EasyDragSort
                   data={() => this.formRef.current.getFieldValue('req_headers')}
                   onChange={this.handleDragMove('req_headers')}
-                  onlyChild="easy_drag_sort_child"
+                  onlyChild="data-easy-drag-sort-child"
                 >
                   {headerList}
                 </EasyDragSort>
@@ -1078,7 +1096,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                     <EasyDragSort
                       data={() => this.formRef.current.getFieldValue('req_body_form')}
                       onChange={this.handleDragMove('req_body_form')}
-                      onlyChild="easy_drag_sort_child"
+                      onlyChild="data-easy-drag-sort-child"
                     >
                       {requestBodyList}
                     </EasyDragSort>
