@@ -108,8 +108,27 @@
     padding-bottom: 24px;
     border: none;
 
+    // 作为 .group-item::before 的定位参照
+    .ant-menu-item {
+      position: relative;
+    }
+
     .group-item {
+      display: block;
+      // a 默认取链接色，这里继承菜单项本身的颜色（含选中态、hover 态）
+      color: inherit;
       font-size: 14px;
+
+      // 菜单项的 padding 不属于 a，只包住文字会导致点击留白处不触发跳转、
+      // 右键也识别不到链接，用伪元素把热区撑满整行
+      &::before {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        content: "";
+      }
     }
   }
 }

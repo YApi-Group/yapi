@@ -3,10 +3,9 @@ import { Modal, Input, message, Spin, Row, Menu, Col, Popover, Tooltip } from 'a
 import type { MenuProps } from 'antd'
 import axios from 'axios'
 import PropTypes from 'prop-types'
-import { MenuInfo } from 'rc-menu/lib/interface'
-import React, { ChangeEvent, PureComponent as Component, ReactNode } from 'react'
+import React, { ChangeEvent, PureComponent as Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 
 import { AnyFunc } from '@/types.js'
 
@@ -86,7 +85,10 @@ class GroupList extends Component<PropTypes, StateTypes> {
     }
     if (!currGroup) {
       currGroup = this.props.groupList[0] || { group_name: '', group_desc: '' }
-      this.props.history.replace(`${currGroup._id}`)
+      // 分组列表为空时没有可跳转的目标，跳过重定向，避免落到 /group/undefined
+      if (currGroup._id) {
+        this.props.history.replace(`/group/${currGroup._id}`)
+      }
     }
     this.setState({ groupList: this.props.groupList })
     this.props.setCurrGroup(currGroup)
@@ -153,15 +155,6 @@ class GroupList extends Component<PropTypes, StateTypes> {
     this.setState({ newGroupDesc: e.target.value })
   }
 
-  selectGroup = (e: MenuInfo) => {
-    const groupId = e.key
-    // const currGroup = this.props.groupList.find((group) => { return +group._id === +groupId });
-    const currGroup = this.props.groupList.find(group => Number(group._id) === Number(groupId))
-    this.props.setCurrGroup(currGroup)
-    this.props.history.replace(`${currGroup._id}`)
-    this.props.fetchNewsData(groupId, 'group', 1, 10)
-  }
-
   onUserSelect = (uids: number[]) => {
     this.setState({
       owner_uids: uids,
@@ -189,40 +182,60 @@ class GroupList extends Component<PropTypes, StateTypes> {
     }
   }
 
-  render() {
-    const menuItems: ItemType[] = []
-
-    let label: ReactNode
-    for (const group of this.state.groupList) {
-      if (group.type === 'private') {
-        label = (
-          <div className="group-item" style={{ zIndex: this.props.studyTip === 0 ? 3 : 1 }}>
-            <UserOutlined className={style.itemIcon} />
-            <Popover
-              classNames={{ root: 'popover-index' }}
-              content={<GuideBtns />}
-              title={tip}
-              placement="right"
-              open={this.props.studyTip === 0 && !this.props.study}
-            >
-              {group.group_name}
-            </Popover>
-          </div>
-        )
-      } else {
-        label = (
-          <div className="group-item">
-            <FolderOpenOutlined className={style.itemIcon} />
-            <span className={style.itemText} style={{ marginLeft: '10px' }}>{group.group_name}</span>
-          </div>
-        )
-      }
-
-      menuItems.push({
-        label: label,
-        key: `${group._id}`,
-      })
+  // 分组切换统一由地址栏驱动：点击左侧分组（a 标签导航）、浏览器前进后退、
+  // 直接打开 /group/:groupId 都走这里，保证各入口行为一致
+  componentDidUpdate(prevProps: PropTypes) {
+    const prevGroupId = prevProps.match.params.groupId
+    const nextGroupId = this.props.match.params.groupId
+    if (prevGroupId === nextGroupId) {
+      return
     }
+
+    const currGroup = this.props.groupList?.find(group => Number(group._id) === Number(nextGroupId))
+    if (!currGroup) {
+      return
+    }
+
+    this.props.setCurrGroup?.(currGroup)
+    this.props.fetchNewsData?.(currGroup._id, 'group', 1, 10)
+  }
+
+  render() {
+    const menuItems: ItemType[] = this.state.groupList.map(group => {
+      const isPrivate = group.type === 'private'
+      const groupName = <span className={style.itemText}>{group.group_name}</span>
+
+      return {
+        key: `${group._id}`,
+        // 用 a 标签承载跳转，从而支持右键「在新标签页中打开」、Ctrl/⌘+点击、中键点击
+        label: (
+          <Link
+            className="group-item"
+            to={`/group/${group._id}`}
+            style={isPrivate ? { zIndex: this.props.studyTip === 0 ? 3 : 1 } : undefined}
+          >
+            {isPrivate ? (
+              <UserOutlined className={style.itemIcon} />
+            ) : (
+              <FolderOpenOutlined className={style.itemIcon} />
+            )}
+            {isPrivate ? (
+              <Popover
+                classNames={{ root: 'popover-index' }}
+                content={<GuideBtns />}
+                title={tip}
+                placement="right"
+                open={this.props.studyTip === 0 && !this.props.study}
+              >
+                {groupName}
+              </Popover>
+            ) : (
+              groupName
+            )}
+          </Link>
+        ),
+      }
+    })
 
     const { currGroup } = this.props
     return (
@@ -256,13 +269,7 @@ class GroupList extends Component<PropTypes, StateTypes> {
               }}
             />
           )}
-          <Menu
-            items={menuItems}
-            className="group-list"
-            mode="inline"
-            onClick={this.selectGroup}
-            selectedKeys={[`${currGroup._id}`]}
-          />
+          <Menu items={menuItems} className="group-list" mode="inline" selectedKeys={[`${currGroup._id}`]} />
         </div>
 
         {this.state.addGroupModalVisible ? (
