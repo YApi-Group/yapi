@@ -117,7 +117,7 @@ class ProjectData extends Component<PropsType, StateTyPe> {
     }
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     const pid = this.props.match.params.id
 
     axios.get(`/api/interface/getCatMenu?project_id=${pid}`).then(data => {

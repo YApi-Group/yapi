@@ -123,7 +123,7 @@ class InterfaceList extends Component<PropTypes, StateTypes> {
     )
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.actionId = this.props.match.params.actionId
     this.handleRequest(this.props)
   }

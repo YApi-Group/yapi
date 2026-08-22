@@ -44,7 +44,7 @@ class Content extends Component<PropTypes, StateTypes> {
     }
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     const params = this.props.match.params
     this.actionId = params.actionId
     this.handleRequest(this.props)

@@ -114,7 +114,7 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
     })
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.handleRequest()
   }
 

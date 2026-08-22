@@ -80,6 +80,7 @@ class List extends Component<PropsType, StateType> {
   }
 
   componentDidMount() {
+    this.props.setBreadcrumb([{ name: '用户管理' }])
     this.getUserList()
   }
 
@@ -105,10 +106,6 @@ class List extends Component<PropsType, StateType> {
           message.error(err.message)
         }
       )
-  }
-
-  async UNSAFE_componentWillMount() {
-    this.props.setBreadcrumb([{ name: '用户管理' }])
   }
 
   handleSearch = (value: string) => {

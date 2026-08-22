@@ -117,7 +117,7 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
     }
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.getList()
   }
 

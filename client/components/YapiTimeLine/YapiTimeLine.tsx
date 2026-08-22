@@ -117,7 +117,7 @@ class YapiTimeLine extends Component<PropTypes, StateTypes> {
     })
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.props.fetchNewsData(this.props.typeid, this.props.type, 1, 10)
     if (this.props.type === 'project') {
       this.getApiList()

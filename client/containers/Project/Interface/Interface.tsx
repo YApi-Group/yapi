@@ -73,8 +73,7 @@ class Interface extends Component<PropTypes> {
     this.props.history.push('/project/' + params.id + '/interface/' + action)
   }
 
-  // async UNSAFE_componentWillMount() {
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.props.setColData({
       isShowCol: true,
     })

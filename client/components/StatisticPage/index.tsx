@@ -170,7 +170,7 @@ class StatisticPage extends Component<StatisticPageProps, StatisticPageState> {
     }
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.props.setBreadcrumb([{ name: '系统信息' }])
 
     /* 下方三个并行执行 */

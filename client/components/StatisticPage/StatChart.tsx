@@ -26,7 +26,7 @@ class StatChart extends Component<unknown, StatChartState> {
     }
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.getMockData()
   }
 

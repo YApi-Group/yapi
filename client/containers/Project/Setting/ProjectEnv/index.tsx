@@ -58,7 +58,7 @@ class ProjectEnv extends Component<PropTypes, StateTypes> {
     })
   }
 
-  async UNSAFE_componentWillMount() {
+  async componentDidMount() {
     this._isMounted = true
     await this.props.getProject(this.props.projectId)
     const { env, _id } = this.props.currProject

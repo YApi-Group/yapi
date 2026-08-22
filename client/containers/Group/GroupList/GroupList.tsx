@@ -70,7 +70,7 @@ class GroupList extends Component<PropTypes, StateTypes> {
     owner_uids: [],
   }
 
-  async UNSAFE_componentWillMount() {
+  async componentDidMount() {
     const groupId = !isNaN(this.props.match.params.groupId) ? parseInt(this.props.match.params.groupId) : 0
     await this.props.fetchGroupList()
     let currGroup: any

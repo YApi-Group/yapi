@@ -204,7 +204,7 @@ class ProjectMessage extends Component<PropTypes, StateTypes> {
     })
   }
 
-  async UNSAFE_componentWillMount() {
+  async componentDidMount() {
     await this.props.fetchGroupList()
     await this.props.fetchGroupMsg(this.props.projectMsg.group_id)
   }
