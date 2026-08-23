@@ -36,7 +36,7 @@
 ## 共享与其他
 
 - **`common/`** —— 服务端与客户端共享的代码（通过 `@common`/`common` 别名引入）。
-- **`exts/`** —— 内置扩展，如 `yapi-plugin-wiki`。
+- **`exts/`** —— 曾存放内置扩展，现已清空：最后一个插件 `yapi-plugin-wiki` 已去插件化，内联为 `server/models/wiki.ts`、`server/controllers/wiki.ts` 与 `client/containers/Project/Wiki/`（详见 `design/wiki插件去插件化融入主项目.md`）。
 - **`config.json`**（与 `config_example.json` 对应）保存端口、管理员账号、MongoDB `db` 配置，以及可选的 `mail`（nodemailer）。`server/cons.ts` 将其加载到 `WEB_CONFIG`。注意该文件已被纳入版本控制，请勿提交真实凭据。
 - **`docker/`、`docker-compose.yml`** —— 容器化部署。
 

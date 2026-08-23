@@ -16,6 +16,7 @@ import Interface from './Interface/Interface'
 import ProjectData from './Setting/ProjectData/ProjectData'
 import ProjectMember from './Setting/ProjectMember/ProjectMember'
 import Setting from './Setting/Setting'
+import Wiki from './Wiki/Wiki'
 
 type PropTypes = {
   match?: any
@@ -69,6 +70,8 @@ class Project extends Component<PropTypes> {
       data: { name: '数据管理', path: '/project/:id/data', component: ProjectData },
       members: { name: '成员管理', path: '/project/:id/members', component: ProjectMember },
       setting: { name: '设置', path: '/project/:id/setting', component: Setting },
+      // 原 yapi-plugin-wiki 插件经 sub_nav 钩子注入，现直接内联（保持追加在最后的原顺序）
+      wiki: { name: 'Wiki', path: '/project/:id/wiki', component: Wiki },
     }
 
     plugin.emitHook('sub_nav', routers)

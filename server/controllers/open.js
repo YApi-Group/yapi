@@ -22,6 +22,7 @@ import interfaceCatModel from '../models/interfaceCat.js'
 import interfaceColModel from '../models/interfaceCol.js'
 import projectModel from '../models/project.js'
 import UserModel from '../models/user.js'
+import WikiModel from '../models/wiki.js'
 import * as commons from '../utils/commons.js'
 import * as inst from '../utils/inst.js'
 import * as modelUtils from '../utils/modelUtils.js'
@@ -430,8 +431,7 @@ class openController extends baseController {
       curProject = await this.projectModel.get(pid)
       const basepath = curProject.basepath
       if (isWiki === 'true') {
-        const wikiModel = require('../yapi-plugin-wiki/wikiModel.js')
-        wikiData = await yapi.getInst(wikiModel).get(pid)
+        wikiData = await yapi.getInst(WikiModel).get(pid)
       }
       ctx.set('Content-Type', 'application/octet-stream')
       const list = await this.handleListClass(pid, status)

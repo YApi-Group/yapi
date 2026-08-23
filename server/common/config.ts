@@ -8,7 +8,6 @@ export const exts = [
   { name: 'gen-services' },
   { name: 'export-swagger2-data' },
   { name: 'import-yapi-json' },
-  { name: 'wiki' },
   { name: 'swagger-auto-sync' },
   // { name: 'test' },
 ]

@@ -13,6 +13,7 @@ import projectController from './controllers/project.js'
 import statisticController from './controllers/statistic.js'
 import testController from './controllers/test.js'
 import userController from './controllers/user.js'
+import WikiController from './controllers/wiki.js'
 import { createAction } from './utils/commons.js'
 import yapi from './yapi.js'
 
@@ -30,6 +31,7 @@ export type CtrlType =
   | 'open'
   | 'statistic'
   | 'autoSync'
+  | 'wiki'
 
 const INTERFACE_CONFIG = {
   interface: { prefix: '/interface/', controller: interfaceController },
@@ -45,6 +47,8 @@ const INTERFACE_CONFIG = {
   autoSync: { prefix: '/autoSync/', controller: SyncController },
   data: { prefix: '/data/', controller: DataController },
   advmock: { prefix: '/advmock/', controller: AdvMockController },
+  // 原 yapi-plugin-wiki 插件路由，保持 /api/plugin/wiki_desc/ 前缀以兼容老 URL
+  wiki: { prefix: '/plugin/wiki_desc/', controller: WikiController },
 } as const
 
 const routerConfig = {
@@ -190,6 +194,10 @@ const routerConfig = {
     { method: 'get', path: 'case/list', action: 'list' },
     { method: 'post', path: 'case/del', action: 'delCase' },
     { method: 'post', path: 'case/hide', action: 'hideCase' },
+  ],
+  wiki: [
+    { method: 'get', path: 'get', action: 'getWikiDesc' },
+    { method: 'post', path: 'up', action: 'upWikiDesc' },
   ],
 } as const
 

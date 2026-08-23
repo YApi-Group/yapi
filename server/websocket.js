@@ -1,6 +1,7 @@
 import KoaRouter from '@koa/router'
 
 import interfaceController from './controllers/interface.js'
+import WikiController from './controllers/wiki.js'
 import { createAction } from './utils/commons.js'
 import yapi from './yapi.js'
 
@@ -25,6 +26,8 @@ function addPluginRouter(config) {
 
 function websocket(app) {
   createAction(router, '/api', interfaceController, 'solveConflict', '/interface/solve_conflict', 'get')
+  // 原 yapi-plugin-wiki 插件 ws 路由，路径保持不变（前端 Wiki 页硬编码）
+  createAction(router, '/api', WikiController, 'wikiConflict', '/ws_plugin/wiki_desc/solve_conflict', 'get', true)
 
   yapi.emitHook('add_ws_router', addPluginRouter)
 

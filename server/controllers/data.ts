@@ -8,13 +8,12 @@ import md from '../../common/markdown.js'
 import InterfaceModel from '../models/interface.js'
 import InterfaceCatModel from '../models/interfaceCat.js'
 import ProjectModel from '../models/project.js'
+import WikiModel from '../models/wiki.js'
 import * as commons from '../utils/commons.js'
 import * as inst from '../utils/inst.js'
 
 import BaseController from './base.js'
 import defaultTheme from './defaultTheme.js'
-
-// const wikiModel = require('../yapi-plugin-wiki/wikiModel.js');
 
 // const htmlToPdf = require("html-pdf");
 export default class ExportController extends BaseController {
@@ -58,11 +57,10 @@ export default class ExportController extends BaseController {
     try {
       curProject = await this.projectModel.get(pid)
 
-      // TODO 完善它吧 - ZS - 20221023
-      // if (isWiki === 'true') {
-      //   const wikiModel = require('../yapi-plugin-wiki/wikiModel.js')
-      //   wikiData = await inst.getInst(wikiModel).get(pid)
-      // }
+      // 勾选"添加wiki"时，html/markdown 导出带上项目 wiki 内容
+      if (isWiki === 'true') {
+        wikiData = await inst.getInst(WikiModel).get(pid)
+      }
 
       ctx.set('Content-Type', 'application/octet-stream')
       const list = await this.handleListClass(pid, status)
