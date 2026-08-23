@@ -72,10 +72,11 @@ const devConf: Configuration = {
 
     proxy: [
       {
-        /* 所有 /api/ 请求都代理到后端 */
+        // 所有 /api/ 请求都代理到后端（含 websocket，如接口编辑冲突检测）
         context: '/api/',
         target: 'http://127.0.0.1:3000',
         changeOrigin: true,
+        ws: true,
       },
     ] as any, // 临时 debug 类型提示错误问题
   },

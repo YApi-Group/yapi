@@ -38,7 +38,8 @@ type StateTypes = {
 }
 
 class InterfaceEdit extends Component<PropTypes, StateTypes> {
-  wsIns: WebSocket
+  wsIns?: WebSocket
+  initTimer?: ReturnType<typeof setTimeout>
   tagRef: RefObject<ProjectTag>
   
   constructor(props: PropTypes) {
@@ -74,12 +75,17 @@ class InterfaceEdit extends Component<PropTypes, StateTypes> {
   }
 
   componentWillUnmount() {
-    try {
-      if (this.state.status === 1) {
-        this.wsIns.close()
+    clearTimeout(this.initTimer)
+    // ws 可能从未连接成功（wsIns 未赋值），也可能仍处于 CONNECTING，按实际状态清理
+    const ws = this.wsIns
+    if (ws) {
+      ws.onmessage = ws.onerror = null
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close()
+      } else if (ws.readyState === WebSocket.CONNECTING) {
+        // 握手中直接 close 会触发浏览器告警，改为握手完成后立即关闭
+        ws.onopen = () => ws.close()
       }
-    } catch (e) {
-      console.error(e)
     }
   }
 
@@ -89,7 +95,7 @@ class InterfaceEdit extends Component<PropTypes, StateTypes> {
     // 因后端 node 仅支持 ws， 暂不支持 wss
     const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
 
-    setTimeout(() => {
+    this.initTimer = setTimeout(() => {
       if (initData === false) {
         this.setState({
           curdata: this.props.curdata,
@@ -105,10 +111,8 @@ class InterfaceEdit extends Component<PropTypes, StateTypes> {
           + domain
           + '/api/interface/solve_conflict?id='
           + this.props.match.params.actionId)
-      s.onopen = () => {
-        this.wsIns = s
-        console.log(this.wsIns)
-      }
+      // 立即持有实例，保证卸载时能关闭尚未完成握手的连接
+      this.wsIns = s
 
       s.onmessage = e => {
         initData = true

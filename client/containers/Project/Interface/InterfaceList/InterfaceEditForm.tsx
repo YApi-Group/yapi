@@ -224,7 +224,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
       },
     }
     curdata.hideTabs.req[HTTP_METHOD[curdata.method].default_tab] = ''
-    return {
+    const state: any = {
       submitStatus: false,
       title: '',
       path: '',
@@ -270,12 +270,15 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
       api_opened: false,
       visible: false,
       ...curdata,
-
-      formValues: {
-        req_body_type: 'form',
-        req_body_is_json_schema: false,
-      },
     }
+    // formValues 用于控制各 Body 子区域的显隐，须与 Form 字段的 initialValue 一致，
+    // 否则打开已保存接口时会按默认值误判（如 json body 接口打开后整个区域被 hide）
+    state.formValues = {
+      req_body_type: state.req_body_type,
+      req_body_is_json_schema:
+        state.req_body_is_json_schema || !(this.props.projectMsg && this.props.projectMsg.is_json5),
+    }
+    return state
   }
 
   constructor(props: PropTypes) {
@@ -1027,7 +1030,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
               </Row>
             </FormItem>
             <Row className={'interface-edit-item ' + this.state.hideTabs.req.query}>
-              <Col>
+              <Col span={24}>
                 <EasyDragSort
                   data={() => this.formRef.current.getFieldValue('req_query')}
                   onChange={this.handleDragMove('req_query')}
@@ -1044,7 +1047,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
               </Button>
             </FormItem>
             <Row className={'interface-edit-item ' + this.state.hideTabs.req.headers}>
-              <Col>
+              <Col span={24}>
                 <EasyDragSort
                   data={() => this.formRef.current.getFieldValue('req_headers')}
                   onChange={this.handleDragMove('req_headers')}
@@ -1075,7 +1078,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                     (this.state.formValues.req_body_type === 'form' ? this.state.hideTabs.req.body : 'hide')
                   }
                 >
-                  <Col style={{ minHeight: '50px' }}>
+                  <Col span={24} style={{ minHeight: '50px' }}>
                     <Row justify="space-around">
                       <Col span="12" className="interface-edit-item">
                         <Button size="small" type="primary" onClick={() => this.addParams('req_body_form')}>
@@ -1124,7 +1127,8 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 <Switch checkedChildren="开" unCheckedChildren="关" disabled={!projectMsg.is_json5} />
               </FormItem>
 
-              <Col style={{ marginTop: '5px' }} className="interface-edit-json-info">
+              {/* antd4+ 的 Row 恒为 flex 布局，无 span 的 Col 会收缩为内容宽度，需显式通栏 */}
+              <Col span={24} style={{ marginTop: '5px' }} className="interface-edit-json-info">
                 {!this.state.formValues.req_body_is_json_schema ? (
                   <span>
                     基于 Json5, 参数描述信息用注释的方式实现{' '}
@@ -1149,7 +1153,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 )}
                 {/* isMock={true} TODO !!!! */}
               </Col>
-              <Col>
+              <Col span={24}>
                 {!this.state.formValues.req_body_is_json_schema && (
                   <AceEditor
                     className="interface-editor"
@@ -1163,7 +1167,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
 
             {this.state.formValues.req_body_type === 'file' && this.state.hideTabs.req.body !== 'hide' ? (
               <Row className="interface-edit-item">
-                <Col className="interface-edit-item-other-body">
+                <Col span={24} className="interface-edit-item-other-body">
                   <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
                     <TextArea placeholder="" autoSize={true} />
                   </FormItem>
@@ -1172,7 +1176,7 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
             ) : null}
             {this.state.formValues.req_body_type === 'raw' && this.state.hideTabs.req.body !== 'hide' ? (
               <Row>
-                <Col>
+                <Col span={24}>
                   <FormItem name="req_body_other" initialValue={this.state.req_body_other}>
                     <TextArea placeholder="" autoSize={{ minRows: 8 }} />
                   </FormItem>
@@ -1190,10 +1194,12 @@ class InterfaceEditForm extends Component<PropTypes, StateTypes> {
                 <QuestionCircleOutlined className="tooltip" />{' '}
               </Tooltip>
             )}
+            {/* Form.Item 是块级 div 且自带下边距，需内联化才能与标题同行显示 */}
             <FormItem
               name="res_body_is_json_schema"
               valuePropName="checked"
               initialValue={this.state.res_body_is_json_schema || !projectMsg.is_json5}
+              style={{ display: 'inline-block', marginBottom: 0, verticalAlign: 'middle' }}
             >
               <Switch
                 checkedChildren="json-schema"
