@@ -73,21 +73,20 @@ const prodConf: Configuration = {
         loader: 'babel-loader',
       },
 
+      // webpack 5 下继续用 url-loader/file-loader 会与内置 asset 处理叠加：
+      // css url() 引用的资源会把 loader 输出的 JS 源码当图片二次 emit（体积 60 字节的假文件），
+      // 故迁移到原生 asset modules
       {
         test: /\.(eot|ttf|woff|woff2)(\?\S*)?$/,
-        loader: 'file-loader',
+        type: 'asset/resource',
+        generator: { filename: 'fonts/[contenthash:8][ext]' },
       },
 
       {
         test: /\.(png|jpe?g|gif|svg)(\?\S*)?$/,
-        loader: 'url-loader',
-        options: {
-          limit: 4096,
-          emitFile: true,
-          outputPath: './img/',
-          useRelativePath: false,
-          name: '[contenthash:8].[ext]',
-        },
+        type: 'asset',
+        parser: { dataUrlCondition: { maxSize: 4096 } },
+        generator: { filename: 'img/[contenthash:8][ext]' },
       },
 
       {
@@ -111,7 +110,7 @@ const prodConf: Configuration = {
   plugins: [
     new DefinePlugin({
       VERSION_INFO: JSON.stringify(
-        'version: ' + moment.tz('Asia/Shanghai').format(),
+        'version: ' + moment.tz('Asia/Shanghai').format()
       ) /* 编译时添加版本信息 */,
     }),
 

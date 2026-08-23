@@ -92,6 +92,22 @@
 - antd 5 下按钮图标显示（本次已将 antd3 遗留的字符串 icon 修为 `<EditOutlined />`/`<UploadOutlined />`，此前 antd4 下图标本就不显示，属顺带修复）。
 - "数据管理"页勾选"添加wiki"导出 html/markdown。
 
+## 八点五、人工回归发现的问题与修复
+
+**tui-editor 工具条无图标（2026-08-23 回归发现，全站既有构建 bug，非本次迁移引入）**
+
+- 现象：Wiki 页编辑器工具条按钮全部空白（接口编辑页"备注"的 tui-editor 同样受影响）。
+- 根因：webpack 5 下继续使用已废弃的 url-loader/file-loader，与内置 asset 处理叠加。css-loader 解析
+  `tui-editor.min.css` 中的 `url(tui-editor.png)` 后，url-loader 生成 JS 模块并输出了正确图片到
+  `img/`，但 webpack 5 又把这段 JS 源码文本（`export default __webpack_public_path__ + "img/…"`，
+  恰好 60 字节）当作图片内容二次 emit 到产物根目录，css 最终引用的是这个假文件。
+- 影响面：全项目走"css url() 引用图片"链路的仅 tui-editor 两张工具栏精灵图（scss 中唯一一处图片
+  url 已被注释，JS 中无图片 import），因此该 bug 一直只表现为编辑器图标缺失。
+- 修复：`webpack.prod.ts` / `webpack.dev.ts` 将图片与字体规则迁移到 webpack 5 原生 asset modules
+  （`type: 'asset'` + `dataUrlCondition.maxSize: 4096` 等价替换 url-loader 的 limit；字体
+  `asset/resource`）。重建后假文件消失，`.tui-toolbar-icons` 指向 `img/` 下与源文件字节一致的真实
+  精灵图。webpack 配置变更需重启 client dev server 生效。
+
 ## 九、后续可选项
 
 - **通知子系统**：`utils/notice.js` 的加载在 `app.js` 中被注释且其内部仍是 CommonJS `require`，全站（含 interface 更新通知）邮件通知目前均不可用，属独立修复任务。wiki 控制器已做防御：通知不可用时仅记 warn 日志，不影响保存。

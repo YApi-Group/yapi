@@ -1,5 +1,5 @@
-# ---
-有方法将 client 中的 UNSAFE_componentWillMount / UNSAFE_componentWillReceiveProps 相关调用都移除吗？该用什么替换升级思路呢？
+
+# ONGO 所有插件内置？
 
 # Yapi 优化第0期
 ## ONGO 请求插件修改，支持 V3
@@ -9,7 +9,6 @@
 # Yapi 优化改进 - 一期
 ## DONE 分组要能支持右键新页面打开
 
-## ONGO 所有插件内置？
 - 数据导入导出不再以插件存在，集成进主项目中
 ## 跳转登录后还要能跳回来 `?next=xxxx`
 ## 弹出框不要点击遮罩关闭
