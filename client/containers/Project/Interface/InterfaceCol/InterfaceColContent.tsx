@@ -449,10 +449,13 @@ class InterfaceColContent extends Component<PropTypes, StateTypes> {
     this.aceEditorRef.current.editor.insertCode(code)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
-    const newColId = !isNaN(nextProps.match.params.actionId) ? Number(nextProps.match.params.actionId) : 0
+  componentDidUpdate(prevProps: PropTypes) {
+    const newColId = !isNaN(this.props.match.params.actionId) ? Number(this.props.match.params.actionId) : 0
+    const colChanged = newColId && this.currColId && newColId !== this.currColId
+    // isRander 按上升沿判断：handleColIdChange 内部多个 await 期间的其他重渲染不会重复发请求
+    const renderTriggered = this.props.isRander && !prevProps.isRander
 
-    if ((newColId && this.currColId && newColId !== this.currColId) || nextProps.isRander) {
+    if (colChanged || renderTriggered) {
       this.currColId = newColId
       this.handleColIdChange(newColId)
     }

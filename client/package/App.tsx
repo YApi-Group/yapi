@@ -58,6 +58,17 @@ class jsonSchema extends React.Component {
     this.Model = this.props.Model.schema
     this.jsonSchemaData = null
     this.jsonData = null
+
+    // store 初始化需在首次 render 前同步完成，挪 didMount 会导致首帧闪现上一实例的旧 schema
+    let data = this.props.data
+    if (!data) {
+      data = `{
+        "type": "object",
+        "title": "title",
+        "properties":{}
+      }`
+    }
+    this.Model.changeEditorSchemaAction({ value: JSON.parse(data) })
   }
 
   // json 导入弹窗
@@ -95,18 +106,6 @@ class jsonSchema extends React.Component {
     if (prevProps.data && prevProps.data !== this.props.data) {
       this.Model.changeEditorSchemaAction({ value: JSON.parse(this.props.data) })
     }
-  }
-
-  UNSAFE_componentWillMount() {
-    let data = this.props.data
-    if (!data) {
-      data = `{
-        "type": "object",
-        "title": "title",
-        "properties":{}
-      }`
-    }
-    this.Model.changeEditorSchemaAction({ value: JSON.parse(data) })
   }
 
   // 下发给子组件的上下文，取代已废弃的 getChildContext

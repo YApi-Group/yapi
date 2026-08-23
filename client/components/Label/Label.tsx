@@ -23,8 +23,10 @@ export default class Label extends Component {
   handleChange = event => {
     this.setState({ inputValue: event.target.value })
   };
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.desc === nextProps.desc) {
+  componentDidUpdate(prevProps) {
+    // 仅由 setState 引起的更新中 prevProps 与 this.props 是同一引用，
+    // 借此仅在收到新 props 且 desc 未变时关闭编辑框，避免自身 setState 触发循环
+    if (prevProps !== this.props && prevProps.desc === this.props.desc && this.state.inputShow) {
       this.setState({
         inputShow: false,
       })
