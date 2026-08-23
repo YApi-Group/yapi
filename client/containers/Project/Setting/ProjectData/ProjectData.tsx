@@ -383,7 +383,7 @@ class ProjectData extends Component<PropsType, StateTyPe> {
                   optionFilterProp="children"
                   onChange={this.selectChange.bind(this)}
                   filterOption={(input, option) =>
-                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    String(option?.children ?? '').toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
                 >
                   {this.state.menuList.map((item, key) => (

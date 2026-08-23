@@ -42,18 +42,18 @@ class Search extends Component<PropTypes, StateTypes> {
     this.handleSearch = this.handleSearch.bind(this)
   }
 
+  // antd 5 的 onSelect 第二个参数是 options 中的数据对象本身，直接读字段
   async onSelect(value: string, option: any) {
-    console.log(option)
-    if (option.props.type === 'group') {
+    if (option.type === 'group') {
       this.props.changeMenuItem('/group')
-      this.props.history.push('/group/' + option.props.id)
-      this.props.setCurrGroup({ group_name: value, _id: option.props.id - 0 })
-    } else if (option.props.type === 'project') {
-      await this.props.fetchGroupMsg(option.props.groupId)
-      this.props.history.push('/project/' + option.props.id)
-    } else if (option.props.type === 'interface') {
-      await this.props.fetchInterfaceListMenu(option.props.projectId)
-      this.props.history.push('/project/' + option.props.projectId + '/interface/api/' + option.props.id)
+      this.props.history.push('/group/' + option.id)
+      this.props.setCurrGroup({ group_name: value, _id: option.id - 0 })
+    } else if (option.type === 'project') {
+      await this.props.fetchGroupMsg(option.groupId)
+      this.props.history.push('/project/' + option.id)
+    } else if (option.type === 'interface') {
+      await this.props.fetchInterfaceListMenu(option.projectId)
+      this.props.history.push('/project/' + option.projectId + '/interface/api/' + option.id)
     }
   }
 

@@ -239,7 +239,7 @@ class CaseDesForm extends Component<PropTypes, any> {
     const { name, code, headers, ip, ip_enable, params, paramsArr, paramsForm, res_body, delay } = this.state
 
     const valuesTpl = (values: any[], title: string) => {
-      const dataSource = this.getParamsKey()
+      const dataSource = this.getParamsKey().map(v => ({ value: v }))
       const display = paramsForm === 'json' ? 'none' : ''
       return values.map((item, index) => (
         <div key={index} className="paramsArr" style={{ display }}>
@@ -253,10 +253,10 @@ class CaseDesForm extends Component<PropTypes, any> {
                 {/* {getFieldDecorator(`paramsArr[${index}].name`, { initialValue: item.name })( */}
                 <FormItem name={`paramsArr[${index}].name`}>
                   <AutoComplete
-                    dataSource={dataSource}
+                    options={dataSource}
                     placeholder="参数名称"
                     filterOption={(inputValue, option) =>
-                      option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                      String(option?.value ?? '').toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                     }
                   />
                 </FormItem>
@@ -281,7 +281,7 @@ class CaseDesForm extends Component<PropTypes, any> {
       ))
     }
     const headersTpl = (values: any[], title: string) => {
-      const dataSource = cons.HTTP_REQUEST_HEADER
+      const dataSource = cons.HTTP_REQUEST_HEADER.map((v: string) => ({ value: v }))
       return values.map((item, index) => (
         <div key={index} className="headers">
           <FormItem
@@ -294,10 +294,10 @@ class CaseDesForm extends Component<PropTypes, any> {
                 {/* {getFieldDecorator(`headers[${index}].name`, { initialValue: item.name })( */}
                 <FormItem name={`headers[${index}].name`}>
                   <AutoComplete
-                    dataSource={dataSource}
+                    options={dataSource}
                     placeholder="参数名称"
                     filterOption={(inputValue, option) =>
-                      option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                      String(option?.value ?? '').toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                     }
                   />
                 </FormItem>
