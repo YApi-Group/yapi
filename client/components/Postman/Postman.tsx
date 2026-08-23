@@ -276,15 +276,15 @@ export default class Run extends Component {
     clearInterval(this._crossRequestInterval)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.checkInterfaceData(nextProps.data) && this.checkInterfaceData(this.props.data)) {
-      if (nextProps.data._id !== this.props.data._id) {
-        this.initState(nextProps.data)
-      } else if (nextProps.data.interface_up_time !== this.props.data.interface_up_time) {
-        this.initState(nextProps.data)
+  componentDidUpdate(prevProps) {
+    if (this.checkInterfaceData(this.props.data) && this.checkInterfaceData(prevProps.data)) {
+      if (this.props.data._id !== prevProps.data._id) {
+        this.initState(this.props.data)
+      } else if (this.props.data.interface_up_time !== prevProps.data.interface_up_time) {
+        this.initState(this.props.data)
       }
-      if (nextProps.data.env !== this.props.data.env) {
-        this.initEnvState(this.state.case_env, nextProps.data.env)
+      if (this.props.data.env !== prevProps.data.env) {
+        this.initEnvState(this.state.case_env, this.props.data.env)
       }
     }
   }

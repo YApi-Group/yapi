@@ -312,7 +312,7 @@ type PropTypes = {
 }
 
 class Home extends Component<PropTypes> {
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     if (this.props.login) {
       this.props.history.push('/group/261')
     }

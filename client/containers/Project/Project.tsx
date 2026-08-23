@@ -28,7 +28,7 @@ type PropTypes = {
 }
 
 class Project extends Component<PropTypes> {
-  async UNSAFE_componentWillMount() {
+  async componentDidMount() {
     await this.props.getProject(this.props.match.params.id)
     await this.props.fetchGroupMsg(this.props.curProject.group_id)
 
@@ -43,10 +43,10 @@ class Project extends Component<PropTypes> {
     ])
   }
 
-  async UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
-    const currProjectId = this.props.match.params.id
-    const nextProjectId = nextProps.match.params.id
-    if (currProjectId !== nextProjectId) {
+  async componentDidUpdate(prevProps: PropTypes) {
+    const prevProjectId = prevProps.match.params.id
+    const nextProjectId = this.props.match.params.id
+    if (prevProjectId !== nextProjectId) {
       await this.props.getProject(nextProjectId)
       await this.props.fetchGroupMsg(this.props.curProject.group_id)
       this.props.setBreadcrumb([

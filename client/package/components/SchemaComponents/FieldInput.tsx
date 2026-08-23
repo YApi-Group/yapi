@@ -22,10 +22,10 @@ export default class FieldInput extends PureComponent {
     })
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.value !== this.props.value) {
       this.setState({
-        value: nextProps.value,
+        value: this.props.value,
       })
     }
   }

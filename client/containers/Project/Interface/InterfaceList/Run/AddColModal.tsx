@@ -30,26 +30,28 @@ export default class AddColModal extends Component {
     caseName: PropTypes.string,
   }
 
-  state = {
-    visible: false,
-    addColName: '',
-    addColDesc: '',
-    id: 0,
-    caseName: '',
-  }
-
   constructor(props) {
     super(props)
+    this.state = {
+      visible: false,
+      addColName: '',
+      addColDesc: '',
+      id: 0,
+      caseName: props.caseName,
+    }
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.props.fetchInterfaceColList(this.props.match.params.id)
-    this.setState({ caseName: this.props.caseName })
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    this.setState({ id: nextProps.interfaceColList[0]._id })
-    this.setState({ caseName: nextProps.caseName })
+  componentDidUpdate(prevProps) {
+    if (prevProps.interfaceColList !== this.props.interfaceColList) {
+      this.setState({ id: this.props.interfaceColList[0]._id })
+    }
+    if (prevProps.caseName !== this.props.caseName) {
+      this.setState({ caseName: this.props.caseName })
+    }
   }
 
   addCol = async () => {

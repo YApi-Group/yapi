@@ -54,11 +54,11 @@ class Content extends Component<PropTypes, StateTypes> {
     document.getElementsByTagName('title')[0].innerText = this.title
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
-    const params = nextProps.match.params
+  componentDidUpdate() {
+    const params = this.props.match.params
     if (params.actionId !== this.actionId) {
       this.actionId = params.actionId
-      this.handleRequest(nextProps)
+      this.handleRequest(this.props)
     }
   }
 

@@ -37,10 +37,10 @@ class SchemaString extends PureComponent {
     this.format = context.Model.__jsonSchemaFormat
   }
 
-  UNSAFE_componentWillReceiveProps(nextprops) {
-    if (this.props.data.enum !== nextprops.data.enum) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.data.enum !== this.props.data.enum) {
       this.setState({
-        checked: !_.isUndefined(nextprops.data.enum),
+        checked: !_.isUndefined(this.props.data.enum),
       })
     }
   }
@@ -222,11 +222,11 @@ class SchemaNumber extends PureComponent {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextprops) {
+  componentDidUpdate(prevProps) {
+    const prevEnumStr = _.isUndefined(prevProps.data.enum) ? '' : prevProps.data.enum.join('\n')
     const enumStr = _.isUndefined(this.props.data.enum) ? '' : this.props.data.enum.join('\n')
-    const nextEnumStr = _.isUndefined(nextprops.data.enum) ? '' : nextprops.data.enum.join('\n')
-    if (enumStr !== nextEnumStr) {
-      this.setState({ enum: nextEnumStr })
+    if (prevEnumStr !== enumStr) {
+      this.setState({ enum: enumStr })
     }
   }
 

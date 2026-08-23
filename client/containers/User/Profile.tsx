@@ -173,12 +173,15 @@ class Profile extends Component<PropsType, StateType> {
     this.handleUserinfo(this.props)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: PropsType) {
-    if (!nextProps.match.params.uid) {
+  componentDidUpdate() {
+    const uid = this.props.match.params.uid
+    if (!uid) {
       return
     }
-    if (this._uid !== nextProps.match.params.uid) {
-      this.handleUserinfo(nextProps)
+    if (this._uid !== uid) {
+      // 同步 _uid，避免自身 setState 触发的更新重复拉取
+      this._uid = uid
+      this.handleUserinfo(this.props)
     }
   }
 

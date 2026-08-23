@@ -62,18 +62,22 @@ class ProjectList extends Component<PropTypes, StateTypes> {
     this.props.fetchProjectList(this.props.currGroup._id, this.props.currPage)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: any) {
-    this.props.setBreadcrumb([{ name: String(nextProps.currGroup.group_name || '') }])
+  componentDidMount() {
+    this.props.setBreadcrumb([{ name: String(this.props.currGroup.group_name || '') }])
+  }
 
+  componentDidUpdate(prevProps: any) {
     // 切换分组
-    if (this.props.currGroup !== nextProps.currGroup && nextProps.currGroup._id) {
-      this.props.fetchProjectList(nextProps.currGroup._id, this.props.currPage)
+    if (prevProps.currGroup !== this.props.currGroup) {
+      this.props.setBreadcrumb([{ name: String(this.props.currGroup.group_name || '') }])
+      if (this.props.currGroup._id) {
+        this.props.fetchProjectList(this.props.currGroup._id, this.props.currPage)
+      }
     }
 
     // 切换项目列表
-    if (this.props.projectList !== nextProps.projectList) {
-      // console.log(nextProps.projectList);
-      const data = nextProps.projectList.map((item: any, index: number) => {
+    if (prevProps.projectList !== this.props.projectList) {
+      const data = this.props.projectList.map((item: any, index: number) => {
         item.key = index
         return item
       })

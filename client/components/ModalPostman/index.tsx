@@ -51,7 +51,7 @@ class ModalPostman extends Component {
       methodsShow: false,
       methodsShowMore: false,
       methodsList: [],
-      constantInput: '',
+      constantInput: props.inputValue,
       activeKey: '1',
       methodsParamsList: [
         {
@@ -63,11 +63,8 @@ class ModalPostman extends Component {
     }
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     const { inputValue } = this.props
-    this.setState({
-      constantInput: inputValue,
-    })
     // this.props.inputValue && this.handleConstantsInput(this.props.inputValue, 0);
     inputValue && this.handleInitList(inputValue)
   }

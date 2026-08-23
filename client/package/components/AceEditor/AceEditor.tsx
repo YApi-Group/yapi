@@ -47,16 +47,16 @@ class AceEditor extends React.PureComponent {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
     if (!this.editor) { return }
 
     if (
-      isNotMatch(nextProps.data, this.props.data)
-      && isNotMatch(this.editor.getValue(), nextProps.data)
+      isNotMatch(this.props.data, prevProps.data)
+      && isNotMatch(this.editor.getValue(), this.props.data)
     ) {
-      this.editor.setValue(nextProps.data)
+      this.editor.setValue(this.props.data)
 
-      const mode = nextProps.mode || 'javascript'
+      const mode = this.props.mode || 'javascript'
       this.editor.editor.getSession().setMode(getMode(mode))
       this.editor.editor.clearSelection()
     }

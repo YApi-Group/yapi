@@ -128,8 +128,8 @@ class InterfaceList extends Component<PropTypes, StateTypes> {
     this.handleRequest(this.props)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
-    const _actionId = nextProps.match.params.actionId
+  componentDidUpdate() {
+    const _actionId = this.props.match.params.actionId
 
     if (this.actionId !== _actionId) {
       this.actionId = _actionId
@@ -137,7 +137,7 @@ class InterfaceList extends Component<PropTypes, StateTypes> {
         {
           current: 1,
         },
-        () => this.handleRequest(nextProps)
+        () => this.handleRequest(this.props)
       )
     }
   }

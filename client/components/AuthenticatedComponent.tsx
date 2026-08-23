@@ -24,11 +24,11 @@ const actions = {
 
 export function requireAuthentication(Comp: typeof React.Component) {
   class AuthenticatedComponent extends React.PureComponent<PropTypes> {
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
       this.checkAuth()
     }
 
-    UNSAFE_componentWillReceiveProps() {
+    componentDidUpdate() {
       this.checkAuth()
     }
 

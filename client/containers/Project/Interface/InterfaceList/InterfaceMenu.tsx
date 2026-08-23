@@ -118,11 +118,10 @@ class InterfaceMenu extends Component<PropTypes, StateTypes> {
     this.handleRequest()
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: any) {
-    if (this.props.list !== nextProps.list) {
-      // console.log('next', nextProps.list)
+  componentDidUpdate(prevProps: any) {
+    if (prevProps.list !== this.props.list) {
       this.setState({
-        list: nextProps.list,
+        list: this.props.list,
       })
     }
   }

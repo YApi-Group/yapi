@@ -1,3 +1,6 @@
+# ---
+有方法将 client 中的 UNSAFE_componentWillMount / UNSAFE_componentWillReceiveProps 相关调用都移除吗？该用什么替换升级思路呢？
+
 # Yapi 优化第0期
 ## ONGO 请求插件修改，支持 V3
 

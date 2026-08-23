@@ -48,8 +48,8 @@ export default class ProjectMock extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      is_mock_open: false,
-      project_mock_script: '',
+      is_mock_open: props.projectMsg.is_mock_open,
+      project_mock_script: props.projectMsg.project_mock_script,
     }
   }
 
@@ -69,13 +69,6 @@ export default class ProjectMock extends Component {
       message.success('保存失败, ' + result.payload.data.errmsg)
     }
   };
-
-  UNSAFE_componentWillMount() {
-    this.setState({
-      is_mock_open: this.props.projectMsg.is_mock_open,
-      project_mock_script: this.props.projectMsg.project_mock_script,
-    })
-  }
 
   // 是否开启
   onChange = v => {

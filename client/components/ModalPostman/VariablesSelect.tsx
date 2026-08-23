@@ -73,9 +73,10 @@ class VariablesSelect extends Component {
     }
   }
 
-  async UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.records && nextProps.id && this.id !== nextProps.id) {
-      this.handleRecordsData(nextProps.id)
+  componentDidUpdate() {
+    // handleRecordsData 内部会同步 this.id，不会因自身 setState 重复触发
+    if (this.records && this.props.id && this.id !== this.props.id) {
+      this.handleRecordsData(this.props.id)
     }
   }
 

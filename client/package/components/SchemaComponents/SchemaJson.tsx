@@ -51,16 +51,11 @@ class SchemaArray extends PureComponent {
 
   constructor(props, context) {
     super(props)
-    this._tagPaddingLeftStyle = {}
-    this.Model = context.Model.schema
-  }
-
-  UNSAFE_componentWillMount() {
-    const { prefix } = this.props
-    const length = prefix.filter(name => name != 'properties').length
+    const length = props.prefix.filter(name => name != 'properties').length
     this.__tagPaddingLeftStyle = {
       paddingLeft: `${20 * (length + 1)}px`,
     }
+    this.Model = context.Model.schema
   }
 
   getPrefix() {
@@ -222,17 +217,12 @@ class SchemaItem extends PureComponent {
 
   constructor(props, context) {
     super(props)
-    this._tagPaddingLeftStyle = {}
-    // this.num = 0
-    this.Model = context.Model.schema
-  }
-
-  UNSAFE_componentWillMount() {
-    const { prefix } = this.props
-    const length = prefix.filter(name => name != 'properties').length
+    const length = props.prefix.filter(name => name != 'properties').length
     this.__tagPaddingLeftStyle = {
       paddingLeft: `${20 * (length + 1)}px`,
     }
+    // this.num = 0
+    this.Model = context.Model.schema
   }
 
   getPrefix() {

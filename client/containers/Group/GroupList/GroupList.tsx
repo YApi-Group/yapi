@@ -173,18 +173,16 @@ class GroupList extends Component<PropTypes, StateTypes> {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
-    // GroupSetting 组件设置的分组信息，通过redux同步到左侧分组菜单中
-    if (this.props.groupList !== nextProps.groupList) {
-      this.setState({
-        groupList: nextProps.groupList,
-      })
-    }
-  }
-
   // 分组切换统一由地址栏驱动：点击左侧分组（a 标签导航）、浏览器前进后退、
   // 直接打开 /group/:groupId 都走这里，保证各入口行为一致
   componentDidUpdate(prevProps: PropTypes) {
+    // GroupSetting 组件设置的分组信息，通过redux同步到左侧分组菜单中
+    if (prevProps.groupList !== this.props.groupList) {
+      this.setState({
+        groupList: this.props.groupList,
+      })
+    }
+
     const prevGroupId = prevProps.match.params.groupId
     const nextGroupId = this.props.match.params.groupId
     if (prevGroupId === nextGroupId) {

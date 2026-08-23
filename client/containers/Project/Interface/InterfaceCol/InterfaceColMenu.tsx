@@ -121,10 +121,10 @@ class InterfaceColMenu extends Component<PropTypes, StateTypes> {
     this.getList()
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: PropTypes) {
-    if (this.props.interfaceColList !== nextProps.interfaceColList) {
+  componentDidUpdate(prevProps: PropTypes) {
+    if (prevProps.interfaceColList !== this.props.interfaceColList) {
       this.setState({
-        list: nextProps.interfaceColList,
+        list: this.props.interfaceColList,
       })
     }
   }

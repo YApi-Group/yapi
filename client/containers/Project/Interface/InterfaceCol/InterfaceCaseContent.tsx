@@ -77,7 +77,7 @@ export default class InterfaceCaseContent extends Component {
     return currColId
   }
 
-  async UNSAFE_componentWillMount() {
+  async componentDidMount() {
     const result = await this.props.fetchInterfaceColList(this.props.match.params.id)
     let { currCaseId } = this.props
     const params = this.props.match.params
@@ -94,12 +94,11 @@ export default class InterfaceCaseContent extends Component {
     this.setState({ editCasename: this.props.currCase.casename })
   }
 
-  async UNSAFE_componentWillReceiveProps(nextProps) {
-    const oldCaseId = this.props.match.params.actionId
-    const newCaseId = nextProps.match.params.actionId
-    const { interfaceColList } = nextProps
-    const currColId = this.getColId(interfaceColList, newCaseId)
+  async componentDidUpdate(prevProps) {
+    const oldCaseId = prevProps.match.params.actionId
+    const newCaseId = this.props.match.params.actionId
     if (oldCaseId !== newCaseId) {
+      const currColId = this.getColId(this.props.interfaceColList, newCaseId)
       await this.props.fetchCaseData(newCaseId)
       this.props.setColData({ currCaseId: Number(newCaseId), currColId, isShowCol: false })
       await this.props.getEnv(this.props.currCase.project_id)

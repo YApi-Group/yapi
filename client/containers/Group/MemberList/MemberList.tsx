@@ -144,17 +144,14 @@ class MemberList extends Component {
     })
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this._groupId !== this._groupId) {
-      return null
-    }
-    if (this.props.currGroup._id !== nextProps.currGroup._id) {
-      this.props.fetchGroupMemberList(nextProps.currGroup._id).then(res => {
+  componentDidUpdate(prevProps) {
+    if (prevProps.currGroup._id !== this.props.currGroup._id) {
+      this.props.fetchGroupMemberList(this.props.currGroup._id).then(res => {
         this.setState({
           userInfo: arrayAddKey(res.payload.data.data),
         })
       })
-      this.props.fetchGroupMsg(nextProps.currGroup._id).then(res => {
+      this.props.fetchGroupMsg(this.props.currGroup._id).then(res => {
         this.setState({
           role: res.payload.data.data.role,
         })

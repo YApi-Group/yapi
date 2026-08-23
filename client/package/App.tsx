@@ -86,14 +86,14 @@ class jsonSchema extends React.Component {
     this.setState({ visible: false })
   };
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (typeof this.props.onChange === 'function' && this.props.schema !== nextProps.schema) {
-      const oldData = JSON.stringify(this.props.schema || '')
-      const newData = JSON.stringify(nextProps.schema || '')
+  componentDidUpdate(prevProps) {
+    if (typeof this.props.onChange === 'function' && prevProps.schema !== this.props.schema) {
+      const oldData = JSON.stringify(prevProps.schema || '')
+      const newData = JSON.stringify(this.props.schema || '')
       if (oldData !== newData) { return this.props.onChange(newData) }
     }
-    if (this.props.data && this.props.data !== nextProps.data) {
-      this.Model.changeEditorSchemaAction({ value: JSON.parse(nextProps.data) })
+    if (prevProps.data && prevProps.data !== this.props.data) {
+      this.Model.changeEditorSchemaAction({ value: JSON.parse(this.props.data) })
     }
   }
 

@@ -93,7 +93,7 @@ class ProjectList extends Component<PropTypes, StateTypes> {
       .catch(err => { console.error(err) })
   }
 
-  async UNSAFE_componentWillMount(): Promise<any> {
+  async componentDidMount(): Promise<any> {
     this.props.setBreadcrumb([{ name: '新建项目' }])
     if (!this.props.currGroup._id) {
       await this.props.fetchGroupList()

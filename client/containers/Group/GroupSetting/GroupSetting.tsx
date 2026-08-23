@@ -47,11 +47,11 @@ class GroupSetting extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      currGroupDesc: '',
-      currGroupName: '',
+      currGroupDesc: props.currGroup.group_desc,
+      currGroupName: props.currGroup.group_name,
       showDangerOptions: false,
-      custom_field1_name: '',
-      custom_field1_enable: false,
+      custom_field1_name: props.currGroup.custom_field1.name,
+      custom_field1_enable: props.currGroup.custom_field1.enable,
       custom_field1_rule: false,
     }
   }
@@ -107,11 +107,6 @@ class GroupSetting extends Component {
       custom_field1_enable: e,
       custom_field1_rule,
     })
-  }
-
-  UNSAFE_componentWillMount() {
-    // console.log('custom_field1',this.props.currGroup.custom_field1)
-    this.initState(this.props)
   }
 
   // 点击“查看危险操作”按钮
@@ -199,10 +194,10 @@ class GroupSetting extends Component {
     })
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
     // 切换分组时，更新分组信息并关闭删除分组操作
-    if (this.props.currGroup._id !== nextProps.currGroup._id) {
-      this.initState(nextProps)
+    if (prevProps.currGroup._id !== this.props.currGroup._id) {
+      this.initState(this.props)
       this.setState({
         showDangerOptions: false,
       })
