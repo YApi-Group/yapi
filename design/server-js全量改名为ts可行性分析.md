@@ -38,7 +38,7 @@
 
 - `server/package.json`：`main`、`dev`、`dev:init-db`、`start`、`start:init-db` 中的 `app.js` / `install.js`
 - 根 `package.json`：`main`、`start`、`install-server`
-- `server/tsconfig.json`：`include` 里显式列出的 `./app.js`、`./install.js`、`plugin.js` 可删（`**/*.ts` 已覆盖）；`allowJs` 保留（`controllers/data.ts` 仍引用根 `common/markdown.js`）
+- `server/tsconfig.json`：`include` 里显式列出的 `./app.js`、`./install.js`、`plugin.js` 可删（`**/*.ts` 已覆盖）；`allowJs` 现已无 js 依赖，可择机关闭（`data.ts` 对根 `common/markdown.js` 的引用已切到 server 副本）
 - `docker/release/start.ts` 第 362、375 行：`install.js` → `install.ts`、`app.js` → `app.ts`
 - `CLAUDE.md`：文中提到的 `server/app.js`、`utils/db.js`、`server/hook.js`、`middleware/mockServer.js` 等文件名
 - `README.md`、`docs/devops/index.md`、`docs/documents/redev.md` 中的 `node server/app.js`（文档，可选）
@@ -48,8 +48,8 @@
 
 ## 5. 顺带发现的既有问题（与改名无关，建议单独处理）
 
-- `server/controllers/data.ts` 引用的是**根目录** `../../common/markdown.js`（CJS，依赖根 `node_modules/underscore`），而 `controllers/open.js` 引用的是 `server/common/markdown.js`（ESM 副本）。建议统一到 server 副本，切断 server 对根 `common/` 的运行时依赖。
-- `server/common/` 下 `formats.js`、`lib.js`、`power-string.js`、`schema-transformTo-table.js` 在 server 内无人引用（`schema-transformTo-table` 仅被 `markdown.js` 内部使用），`formats.js` 还是 CJS 导出，可考虑删除或补 `export default`。
+- ~~已处理~~ `server/controllers/data.ts` 曾引用**根目录** `../../common/markdown.js`（CJS，依赖根 `node_modules/underscore`），而 `controllers/open.js` 引用的是 `server/common/markdown.js`（ESM 副本）。建议统一到 server 副本，切断 server 对根 `common/` 的运行时依赖。
+- ~~已处理~~ `server/common/` 下真正无人引用的是 `formats.js`（CJS 导出，连 import 都失败）与 `lib.js`，已删除；`power-string.js`、`schema-transformTo-table.js` 实际有引用，保留。
 - ESM 文件里的函数内 `require()`：`common/utils.js#schemaValidator`（`ajv/lib/refs/json-schema-draft-04.json`、`ajv-i18n`）、`common/postmanLib.js`（`vm-browserify`）、`common/plugin.js`、`utils/notice.js`（未被引用）。ESM 作用域下 `require` 未定义，这些路径一旦执行到就会抛错，属于 ESM 迁移遗留，改名后 TS 不会报类型错（`@types/node` 声明了 `require`），需要人工确认是否为死路径。
 
 ## 6. 建议的实施方式

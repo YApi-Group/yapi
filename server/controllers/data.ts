@@ -4,7 +4,7 @@ import markdownItAnchor from 'markdown-it-anchor'
 // @ts-ignore 考虑替换为 https://www.npmjs.com/package/@mdit-vue/plugin-toc
 import markdownItTableOfContents from 'markdown-it-table-of-contents'
 
-import md from '../../common/markdown.js'
+import md from '../common/markdown.js'
 import InterfaceModel from '../models/interface.js'
 import InterfaceCatModel from '../models/interfaceCat.js'
 import ProjectModel from '../models/project.js'
