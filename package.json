@@ -2,14 +2,14 @@
   "name": "yapi-vendor",
   "version": "1.9.2",
   "description": "YAPI",
-  "main": "server/app.js",
+  "main": "server/app.ts",
   "scripts": {
     "postinstall": "concurrently \"cd server && npm i\" \"cd client && npm i\"",
     "clean": "rimraf ./node_modules/ ./server/node_modules/ ./client/node_modules/",
     "dev": "concurrently -n svr,web -c cyan,green -k \"cd server && npm run dev\" \"cd client && npm run dev\"",
     "prod:client": "cd ./client && npm run prod",
-    "install-server": "node server/install.js",
-    "start": "node server/app.js",
+    "install-server": "cd server && node --import tsx install.ts",
+    "start": "cd server && node --import tsx app.ts",
     "test": "ava",
     "npm-publish": "node ./npm-publish.js",
     "docs": "ydoc build"

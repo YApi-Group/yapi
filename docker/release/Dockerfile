@@ -17,7 +17,7 @@ COPY server/package.json server/package-lock.json ./server/
 COPY client/package.json client/package-lock.json client/.npmrc ./client/
 RUN npm i
 
-# 拷贝源码，构建前端产物并放入服务端静态目录（server/app.js 从 WEB_ROOT/static 提供页面）
+# 拷贝源码，构建前端产物并放入服务端静态目录（server/app.ts 从 WEB_ROOT/static 提供页面）
 COPY . .
 RUN npm run prod:client \
   && mkdir -p ./static \

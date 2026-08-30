@@ -17,13 +17,13 @@
 
 ## 服务端架构
 
-- **入口** `server/app.js` —— 构建 Koa 应用（用 `websockify` 支持 websocket），连接 Mongo（`utils/db.js`），挂载 `koaBody`、`mockServer` 中间件与路由，随后从 `WEB_ROOT/static` 提供已构建的客户端（支持 gzip，并将单页路由回退到 `/`）。
-- **配置驱动的路由** —— `server/router.ts` 是 API 路由的唯一来源。每条路由形如 `{ action, path, method }`，按控制器分组在 `routerConfig` 中，并结合 `INTERFACE_CONFIG` 提供的 `/api/<prefix>/` 前缀。`createAction`（位于 `utils/commons.js`）负责装配每条路由：它在每次请求时实例化控制器，调用 `init(ctx)`（鉴权/登录校验），如存在则按控制器的 `schemaMap[action]` 校验参数，最后分发到 `inst[action](ctx)`。**新增接口的方式：在控制器中添加方法，并在 `routerConfig` 中注册。**
+- **入口** `server/app.ts` —— 构建 Koa 应用（用 `websockify` 支持 websocket），连接 Mongo（`utils/db.ts`），挂载 `koaBody`、`mockServer` 中间件与路由，随后从 `WEB_ROOT/static` 提供已构建的客户端（支持 gzip，并将单页路由回退到 `/`）。
+- **配置驱动的路由** —— `server/router.ts` 是 API 路由的唯一来源。每条路由形如 `{ action, path, method }`，按控制器分组在 `routerConfig` 中，并结合 `INTERFACE_CONFIG` 提供的 `/api/<prefix>/` 前缀。`createAction`（位于 `utils/commons.ts`）负责装配每条路由：它在每次请求时实例化控制器，调用 `init(ctx)`（鉴权/登录校验），如存在则按控制器的 `schemaMap[action]` 校验参数，最后分发到 `inst[action](ctx)`。**新增接口的方式：在控制器中添加方法，并在 `routerConfig` 中注册。**
 - **控制器** `server/controllers/*` 继承自 `BaseController`（`base.ts`），后者在 `init()` 中处理登录/token 鉴权，并暴露 `$user`、`$uid`、`$auth`。部分路由为公开路由（`ignoreRouter`）或开放 API token 路由（`openApiRouter`）—— 详见 `base.ts`。
 - **模型** `server/models/*` 继承自 `base.ts` 并封装 Mongoose。通过**单例注册表** `yapi.getInst(SomeModel)`（`utils/inst.ts`）获取模型实例 —— 请勿在请求处理中直接 `new` 模型，而应复用缓存实例。
 - **`yapi` 全局对象**（`server/yapi.ts`）聚合了 `cons`（配置/常量）、`inst`（模型注册表）、`commons`/`modelUtils`，以及 `bindHook`/`emitHook` 接口。需要跨模块访问时引入它。
-- **钩子与插件** —— `server/hook.js` 定义扩展点（如 `third_login`、`interface_add`、`add_router`）。插件通过这些钩子注册；`add_router` 允许插件新增 `/api/.../plugin/...` 路由。`app.js` 中旧的动态 require 插件加载逻辑目前被注释（正在重新设计）。
-- **Mock 服务** `middleware/mockServer.js` 拦截非 `/api` 的项目路径以返回 mock 响应（随机 mock + "期望"规则）。`advMock` 控制器/模型支撑了高级 mock 与 case 功能。
+- **钩子与插件** —— `server/hook.ts` 定义扩展点（如 `third_login`、`interface_add`、`add_router`）。插件通过这些钩子注册；`add_router` 允许插件新增 `/api/.../plugin/...` 路由。`app.ts` 中旧的动态 require 插件加载逻辑目前被注释（正在重新设计）。
+- **Mock 服务** `middleware/mockServer.ts` 拦截非 `/api` 的项目路径以返回 mock 响应（随机 mock + "期望"规则）。`advMock` 控制器/模型支撑了高级 mock 与 case 功能。
 
 ## 客户端架构
 

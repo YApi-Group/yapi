@@ -2,14 +2,14 @@
   "name": "yapi-server",
   "version": "1.9.2",
   "description": "YApi server",
-  "main": "app.js",
+  "main": "app.ts",
   "type": "module",
   "scripts": {
-    "dev": "nodemon app.js dev",
-    "dev:init-db": "tsx install.js",
+    "dev": "nodemon app.ts dev",
+    "dev:init-db": "tsx install.ts",
     "prod": "tsc",
-    "start": "node app.js",
-    "start:init-db": "node install.js",
+    "start": "node --import tsx app.ts",
+    "start:init-db": "node --import tsx install.ts",
     "test": "ava"
   },
   "scripts-info": {

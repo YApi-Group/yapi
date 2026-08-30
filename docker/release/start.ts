@@ -6,11 +6,11 @@
  * 2. 将最终配置写入 /yapi/vendors/config.json（服务端 server/cons.ts 固定从该文件读取）
  * 3. 启动引导页服务，在 YApi 就绪前展示启动日志
  * 4. 等待 MongoDB 端口可用
- * 5. 首次启动时执行数据库初始化（server/install.js，成功后生成 init.lock）
+ * 5. 首次启动时执行数据库初始化（server/install.ts，成功后生成 init.lock）
  * 6. 通过 tsx 启动 YApi 服务端（与开发环境 nodemon 的 execMap 行为一致）
  *
  * 注：原 docker-YApi 支持启动时按配置安装 yapi 插件，本仓库的插件动态加载机制
- * 正在重新设计（见 server/app.js 中被注释的 plugin 逻辑），故未保留该能力。
+ * 正在重新设计（见 server/app.ts 中被注释的 plugin 逻辑），故未保留该能力。
  */
 import childProcess from 'child_process'
 import fs from 'fs'
@@ -359,7 +359,7 @@ class Main {
       this.log('检测到 init.lock，跳过数据库初始化', true)
       return
     }
-    const result = await Helper.exec(`cd ${SERVER_DIR} && node --import tsx install.js`, message =>
+    const result = await Helper.exec(`cd ${SERVER_DIR} && node --import tsx install.ts`, message =>
       this.log(message, true),
     )
     if (result.code !== 0) {
@@ -372,7 +372,7 @@ class Main {
    * 启动 YApi 服务端并转发退出信号。
    */
   startServer() {
-    const child = childProcess.spawn('node', ['--import', 'tsx', 'app.js'], {
+    const child = childProcess.spawn('node', ['--import', 'tsx', 'app.ts'], {
       cwd: SERVER_DIR,
       stdio: 'inherit',
     })
