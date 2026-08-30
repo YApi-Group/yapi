@@ -94,6 +94,15 @@ const prodConf: Configuration = {
         loader: 'json5-loader',
         type: 'javascript/auto',
       },
+      {
+        // ../common 是共享源码、没有自己的 node_modules：其第三方依赖优先从 client/node_modules 解析，
+        // 避免沿目录向上落到根目录的 node_modules（此前 ajv 就因此实际用的是根目录的 5.x）。
+        // 只对 common/ 生效——若放到全局 resolve.modules，会破坏 client/node_modules 内各包对自身嵌套依赖的就近解析
+        include: path.resolve(__dirname, '../common'),
+        resolve: {
+          modules: [path.resolve(__dirname, 'node_modules'), 'node_modules'],
+        },
+      },
     ],
   },
 

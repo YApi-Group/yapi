@@ -26,9 +26,11 @@
     "@dnd-kit/core": "^6.0.3",
     "@dnd-kit/sortable": "^7.0.0",
     "ajv": "^8.11.0",
+    "ajv-draft-04": "^1.0.0",
     "ajv-i18n": "^4.2.0",
     "antd": "5.29.3",
     "axios": "0.27.2",
+    "compare-versions": "^3.6.0",
     "copy-to-clipboard": "3.3.1",
     "crypto-js": "^4.1.1",
     "D": "^1.0.0",
@@ -41,6 +43,7 @@
     "json-schema-ref-parser": "9.0.9",
     "json5": "2.2.1",
     "jsondiffpatch": "0.7.6",
+    "jsrsasign": "^10.9.0",
     "lodash-es": "^4.17.21",
     "markdown-it": "13.0.1",
     "markdown-it-anchor": "8.6.4",
@@ -71,6 +74,7 @@
     "table-resolver": "^4.1.1",
     "underscore": "1.13.4",
     "url": "0.11.0",
+    "vm-browserify": "^1.1.2",
     "vm2": "^3.9.9"
   },
   "devDependencies": {
