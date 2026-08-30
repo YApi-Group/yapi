@@ -717,58 +717,10 @@ class interfaceController extends baseController {
     })
 
     this.projectModel.up(interfaceData.project_id, { up_time: new Date().getTime() }).then()
-    if (params.switch_notice === true) {
-      const diffView = showDiffMsg(jsondiffpatch, formattersHtml, logData)
-      const annotatedCss = fs.readFileSync(
-        path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/lib/formatters/styles/annotated.css'),
-        'utf8'
-      )
-      const htmlCss = fs.readFileSync(
-        path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/lib/formatters/styles/html.css'),
-        'utf8'
-      )
-
-      const project = await this.projectModel.getBaseInfo(interfaceData.project_id)
-
-      const interfaceUrl = `${ctx.request.origin}/project/${interfaceData.project_id}/interface/api/${id}`
-
-      commons.sendNotice(interfaceData.project_id, {
-        title: `${username} 更新了接口`,
-        content: `<html>
-        <head>
-        <style>
-        ${annotatedCss}
-        ${htmlCss}
-        </style>
-        </head>
-        <body>
-        <div><h3>${username}更新了接口(${data.title})</h3>
-        <p>项目名：${project.name} </p>
-        <p>修改用户: ${username}</p>
-        <p>接口名: <a href="${interfaceUrl}">${data.title}</a></p>
-        <p>接口路径: [${data.method}]${data.path}</p>
-        <p>详细改动日志: ${this.diffHTML(diffView)}</p></div>
-        </body>
-        </html>`,
-      })
-    }
 
     yapi.emitHook('interface_update', id).then()
     ctx.body = commons.resReturn(result)
     return 1
-  }
-
-  diffHTML(html) {
-    if (html.length === 0) {
-      return '<span style="color: #555">没有改动，该操作未改动Api数据</span>'
-    }
-
-    return html.map(
-      item => `<div>
-      <h4 class="title">${item.title}</h4>
-      <div>${item.content}</div>
-    </div>`
-    )
   }
 
   /**

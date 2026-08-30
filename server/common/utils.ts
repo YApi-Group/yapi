@@ -1,4 +1,5 @@
-import Ajv from 'ajv'
+import Ajv04 from 'ajv-draft-04'
+import localize from 'ajv-i18n'
 import json5 from 'json5'
 import Mock from 'mockjs'
 
@@ -231,22 +232,24 @@ export const timeago = function (timestamp) {
 }
 
 // json schema 验证器
+// YApi 存储的接口 schema（schema 编辑器、swagger 导入）均为 draft-04 语义，与前端校验保持一致，统一用 ajv-draft-04 编译
 export const schemaValidator = function (schema, params) {
   try {
-    const ajv = new Ajv({
-      format: false,
-      meta: false,
+    const ajv = new Ajv04({
+      allErrors: true,
+      strict: false,
+      validateFormats: false,
     })
-    const metaSchema = require('ajv/lib/refs/json-schema-draft-04.json')
-    ajv.addMetaSchema(metaSchema)
-    ajv._opts.defaultMeta = metaSchema.id
-    ajv._refs['http://json-schema.org/schema'] = 'http://json-schema.org/draft-04/schema'
-    const localize = require('ajv-i18n')
 
     schema = schema || {
       type: 'object',
       title: 'empty object',
       properties: {},
+    }
+    // 仅识别 draft-04 元 schema；其它 $schema（如历史数据中的 http://json-schema.org/schema）一律按 draft-04 处理
+    if (schema.$schema !== undefined && !/draft-04/.test(String(schema.$schema))) {
+      schema = { ...schema }
+      delete schema.$schema
     }
     const validate = ajv.compile(schema)
     const valid = validate(params)

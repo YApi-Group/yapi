@@ -1,3 +1,5 @@
+import assert from 'assert'
+
 import { schemaValidator } from '../common/utils.js'
 import InterfaceModel from '../models/interface.js'
 import interfaceCaseModel from '../models/interfaceCase.js'
@@ -61,7 +63,7 @@ export async function runCaseScript(params: any, colId: any, interfaceId: any) {
   const colData = await colInst.get(colId)
   const logs = []
   const context = {
-    assert: require('assert'),
+    assert,
     status: params.response.status,
     body: params.response.body,
     header: params.response.header,

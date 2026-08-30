@@ -192,8 +192,6 @@ class openController extends baseController {
     if (!this.$tokenAuth) {
       return (ctx.body = commons.resReturn(null, 40022, 'token 验证失败'))
     }
-    // console.log(1231312)
-    const token = ctx.query.token
 
     this.records = {}
     this.reports = {}
@@ -278,26 +276,6 @@ class openController extends baseController {
       list: testList,
     }
 
-    if (ctx.params.email === true && reportsResult.message.failedNum !== 0) {
-      const autoTestUrl = `${ctx.request.origin}/api/open/run_auto_test?id=${id}&token=${token}&mode=${ctx.params.mode}`
-      commons.sendNotice(projectId, {
-        title: 'YApi自动化测试报告',
-        content: `
-        <html>
-        <head>
-        <title>测试报告</title>
-        <meta charset="utf-8" />
-        <body>
-        <div>
-        <h3>测试结果：</h3>
-        <p>${reportsResult.message.msg}</p>
-        <h3>测试结果详情如下：</h3>
-        <p>${autoTestUrl}</p>
-        </div>
-        </body>
-        </html>`,
-      })
-    }
     const mode = ctx.params.mode || 'html'
     if (ctx.params.download === true) {
       ctx.set('Content-Disposition', `attachment; filename=test.${mode}`)

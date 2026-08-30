@@ -1,15 +1,16 @@
+import https from 'https'
 import URL from 'url'
+import vm from 'vm'
 
 import axios from 'axios'
 import CryptoJS from 'crypto-js'
 import jsrsasign from 'jsrsasign'
-// import qs from 'qs'
+import qs from 'qs'
 import _ from 'underscore'
 
 import constants from './cons.js'
 import { utils } from './power-string.js'
 import { isJson5, json_parse, handleJson, joinPath, safeArray } from './utils.js'
-// import https from 'https'
 
 const HTTP_METHOD = constants.HTTP_METHOD
 
@@ -53,78 +54,76 @@ const getStorage = async id => {
   }
 }
 
-// async function httpRequestByNode(options) {
-//   function handleRes(response) {
-//     if (!response || typeof response !== 'object') {
-//       return {
-//         res: {
-//           status: 500,
-//           body: isNode
-//             ? '请求出错, 内网服务器自动化测试无法访问到，请检查是否为内网服务器！'
-//             : '请求出错'
-//         }
-//       };
-//     }
-//     return {
-//       res: {
-//         header: response.headers,
-//         status: response.status,
-//         body: response.data
-//       }
-//     };
-//   }
+// node 端发请求（服务端自动化测试）。2023-02 迁 ESM 时因 require 问题被整段注释，现按 ESM 恢复
+async function httpRequestByNode(options) {
+  function handleRes(response) {
+    if (!response || typeof response !== 'object') {
+      return {
+        res: {
+          status: 500,
+          body: '请求出错, 内网服务器自动化测试无法访问到，请检查是否为内网服务器！',
+        },
+      }
+    }
+    return {
+      res: {
+        header: response.headers,
+        status: response.status,
+        body: response.data,
+      },
+    }
+  }
 
-//   function handleData() {
-//     let contentTypeItem;
-//     if (!options) return;
-//     if (typeof options.headers === 'object' && options.headers) {
-//       Object.keys(options.headers).forEach(key => {
-//         if (/content-type/i.test(key)) {
-//           if (options.headers[key]) {
-//             contentTypeItem = options.headers[key]
-//               .split(';')[0]
-//               .trim()
-//               .toLowerCase();
-//           }
-//         }
-//         if (!options.headers[key]) delete options.headers[key];
-//       });
+  function handleData() {
+    let contentTypeItem
+    if (!options) {
+      return
+    }
+    if (typeof options.headers === 'object' && options.headers) {
+      Object.keys(options.headers).forEach(key => {
+        if (/content-type/i.test(key) && options.headers[key]) {
+          contentTypeItem = options.headers[key].split(';')[0].trim().toLowerCase()
+        }
+        if (!options.headers[key]) {
+          delete options.headers[key]
+        }
+      })
 
-//       if (
-//         contentTypeItem === 'application/x-www-form-urlencoded' &&
-//         typeof options.data === 'object' &&
-//         options.data
-//       ) {
-//         options.data = qs.stringify(options.data);
-//       }
-//     }
-//   }
+      if (
+        contentTypeItem === 'application/x-www-form-urlencoded' &&
+        typeof options.data === 'object' &&
+        options.data
+      ) {
+        options.data = qs.stringify(options.data)
+      }
+    }
+  }
 
-//   try {
-//     handleData(options);
-//     let response = await axios({
-//       method: options.method,
-//       url: options.url,
-//       headers: options.headers,
-//       timeout: 10000,
-//       maxRedirects: 0,
-//       httpsAgent: new https.Agent({
-//         rejectUnauthorized: false
-//       }),
-//       data: options.data
-//     });
-//     return handleRes(response);
-//   } catch (err) {
-//     if (err.response === undefined) {
-//       return handleRes({
-//         headers: {},
-//         status: null,
-//         data: err.message
-//       });
-//     }
-//     return handleRes(err.response);
-//   }
-// }
+  try {
+    handleData()
+    const response = await axios({
+      method: options.method,
+      url: options.url,
+      headers: options.headers,
+      timeout: 10000,
+      maxRedirects: 0,
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false,
+      }),
+      data: options.data,
+    })
+    return handleRes(response)
+  } catch (err) {
+    if (err.response === undefined) {
+      return handleRes({
+        headers: {},
+        status: null,
+        data: err.message,
+      })
+    }
+    return handleRes(err.response)
+  }
+}
 
 function handleContentType(headers) {
   if (!headers || typeof headers !== 'object') {
@@ -172,9 +171,8 @@ function handleCurrDomain(domains, case_env) {
 }
 
 function sandboxByNode(sandbox = {}, script) {
-  const vm = require('vm-browserify')
   script = new vm.Script(script)
-  const context = new vm.createContext(sandbox)
+  const context = vm.createContext(sandbox)
   script.runInContext(context, {
     timeout: 10000,
   })
@@ -311,8 +309,7 @@ async function crossRequest(defaultOptions, preScript, afterScript, commonContex
   let data
 
   if (isNode) {
-    // TODO node 和 browser 分离开
-    // data = await httpRequestByNode(options);
+    data = await httpRequestByNode(options)
     data.req = options
   } else {
     data = await new Promise((resolve, reject) => {

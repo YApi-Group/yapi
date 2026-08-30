@@ -7,23 +7,23 @@ export default function storageCreator(id) {
 
   return {
     getItem: async (name = '') => {
-      const inst = inst.getInst(storageModel)
-      let data = await inst.get(id)
+      const storageInst = inst.getInst(storageModel)
+      let data = await storageInst.get(id)
       data = data || defaultData
       if (name) { return data[name] }
       return data
     },
 
     setItem: async (name, value) => {
-      const inst = inst.getInst(storageModel)
-      const curData = await inst.get(id)
+      const storageInst = inst.getInst(storageModel)
+      const curData = await storageInst.get(id)
       const data = curData || defaultData
       let result
       data[name] = value
       if (!curData) {
-        result = await inst.save(id, data, true)
+        result = await storageInst.save(id, data, true)
       } else {
-        result = await inst.save(id, data, false)
+        result = await storageInst.save(id, data, false)
       }
 
       return result

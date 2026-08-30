@@ -1,10 +1,10 @@
 import path from 'path'
 
 import { exts } from './common/config.js'
-import { initPlugins } from './common/plugin.js'
 import cons from './cons.js'
 import yapi from './yapi.js'
 
+// 注：原 initPlugins（common/plugin.ts）依赖 CommonJS require 且无调用方，已删除；重新设计插件加载时可从 git 历史找回
 // const plugin_path = path.join(cons.WEB_ROOT, 'node_modules')
 // const plugin_system_path = path.join(cons.WEB_ROOT, 'exts')
 

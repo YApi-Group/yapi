@@ -1,22 +1,11 @@
-import path from 'path'
-
 import { Context } from 'koa'
-import fs from 'fs-extra'
-// 0.7.x 起 formatters 拆分为子路径导出；with-text-diffs 入口内置 diff-match-patch（长文本 diff）
-// @ts-ignore moduleResolution=node10 解析不了 package exports 子路径，运行时（node ESM）正常
-import * as formattersHtml from 'jsondiffpatch/formatters/html'
-// @ts-ignore 同上
-import * as jsondiffpatch from 'jsondiffpatch/with-text-diffs'
 
-import showDiffMsg from '../common/diff-view.js'
-import cons from '../cons.js'
 import ProjectModel from '../models/project.js'
 import UserModel from '../models/user.js'
 import WikiModel from '../models/wiki.js'
 import * as commons from '../utils/commons.js'
 import * as inst from '../utils/inst.js'
 import * as modelUtils from '../utils/modelUtils.js'
-import yapi from '../yapi.js'
 
 import BaseController from './base.js'
 
@@ -76,7 +65,7 @@ export default class WikiController extends BaseController {
         }
       }
 
-      const notice = params.email_notice
+      // email_notice 仅是前端表单字段，不落库
       delete params.email_notice
       const username = this.getUsername()
       const uid = this.getUid()
@@ -110,48 +99,6 @@ export default class WikiController extends BaseController {
       }
       const wikiUrl = `${ctx.request.origin}/project/${params.project_id}/wiki`
 
-      if (notice) {
-        // 通知子系统（utils/notice.js 挂载 sendNotice）可能未启用；通知失败不影响保存结果
-        try {
-          const sendNotice = (yapi.commons as any).sendNotice
-          if (typeof sendNotice === 'function') {
-            const diffView = showDiffMsg(jsondiffpatch, formattersHtml, logData)
-            const annotatedCss = fs.readFileSync(
-              path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/lib/formatters/styles/annotated.css'),
-              'utf8'
-            )
-            const htmlCss = fs.readFileSync(
-              path.resolve(cons.WEB_ROOT, 'node_modules/jsondiffpatch/lib/formatters/styles/html.css'),
-              'utf8'
-            )
-            const project = await this.projectModel.getBaseInfo(params.project_id)
-
-            sendNotice(params.project_id, {
-              title: `${username} 更新了wiki说明`,
-              content: `<html>
-              <head>
-              <meta charset="utf-8" />
-              <style>
-              ${annotatedCss}
-              ${htmlCss}
-              </style>
-              </head>
-              <body>
-              <div><h3>${username}更新了wiki说明</h3>
-              <p>修改用户: ${username}</p>
-              <p>修改项目: <a href="${wikiUrl}">${project.name}</a></p>
-              <p>详细改动日志: ${this.diffHTML(diffView)}</p></div>
-              </body>
-              </html>`,
-            })
-          } else {
-            commons.log('通知功能未启用（utils/notice.js 未加载），跳过 wiki 更新通知', 'warn')
-          }
-        } catch (noticeErr) {
-          commons.log(noticeErr, 'error')
-        }
-      }
-
       // 保存修改日志信息（项目动态，type: wiki）
       modelUtils.saveLog({
         content: `<a href="/user/profile/${uid}">${username}</a> 更新了 <a href="${wikiUrl}">wiki</a> 的信息`,
@@ -165,19 +112,6 @@ export default class WikiController extends BaseController {
     } catch (err: any) {
       ctx.body = commons.resReturn(null, 400, err.message)
     }
-  }
-
-  diffHTML(html: any[]) {
-    if (html.length === 0) {
-      return '<span style="color: #555">没有改动，该操作未改动wiki数据</span>'
-    }
-
-    return html.map(
-      item => `<div>
-      <h4 class="title">${item.title}</h4>
-      <div>${item.content}</div>
-    </div>`
-    )
   }
 
   // 处理编辑冲突（ws），消息协议：start / editor / end
