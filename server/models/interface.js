@@ -232,7 +232,7 @@ class InterfaceModel extends BaseModel {
       .sort({ index: 1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .select('_id title uid path method project_id catid edit_uid api_opened status add_time up_time, index, tag')
+      .select('_id title uid path method project_id catid edit_uid api_opened status add_time up_time index tag')
       .exec()
   }
 
@@ -244,7 +244,7 @@ class InterfaceModel extends BaseModel {
       .sort({ index: 1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .select('_id title uid path method project_id catid edit_uid api_opened status add_time up_time, index, tag')
+      .select('_id title uid path method project_id catid edit_uid api_opened status add_time up_time index tag')
       .exec()
   }
 

@@ -294,12 +294,13 @@ class InterfaceList extends Component<PropTypes, StateTypes> {
         dataIndex: 'tag',
         key: 'tag',
         width: 14,
-        render: (text: string[]) => {
-          const textMsg = text.length > 0 ? text.join('\n') : '未设置'
+        render: (text?: string[]) => {
+          // 部分列表接口（如 limit=all）不返回 tag 字段，做兜底
+          const textMsg = Array.isArray(text) && text.length > 0 ? text.join('\n') : '未设置'
           return <div className="table-desc">{textMsg}</div>
         },
         filters: tagFilter,
-        onFilter: (value: string, record: any) => record.tag.indexOf(value) >= 0,
+        onFilter: (value: string, record: any) => Array.isArray(record.tag) && record.tag.indexOf(value) >= 0,
       },
     ]
 

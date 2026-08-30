@@ -1,4 +1,5 @@
 import { Timeline, Spin, Row, Col, Tag, Avatar, Button, Modal, AutoComplete } from 'antd'
+import axios from 'axios'
 // 0.7.x 起 formatters 拆分为子路径导出；with-text-diffs 入口内置 diff-match-patch（长文本 diff）
 import * as formattersHtml from 'jsondiffpatch/formatters/html'
 import * as jsondiffpatch from 'jsondiffpatch/with-text-diffs'
@@ -13,7 +14,6 @@ import { AnyFunc } from '@/types.js'
 import showDiffMsg from '../../../common/diff-view.js'
 import { timeago } from '../../../common/utils'
 import { formatTime } from '../../common'
-import { fetchInterfaceList } from '../../reducer/modules/interface'
 import { fetchNewsData, fetchMoreNews } from '../../reducer/modules/news'
 import ErrMsg from '../ErrMsg/ErrMsg'
 
@@ -64,7 +64,6 @@ type PropTypes = {
   typeid?: number
   curUid?: number
   type?: string
-  fetchInterfaceList?: AnyFunc
 }
 
 type StateTypes = {
@@ -131,13 +130,18 @@ class YapiTimeLine extends Component<PropTypes, StateTypes> {
     })
   }
 
+  // 仅用于日志筛选下拉的接口列表，直接请求即可。
+  // 不能复用 redux 的 fetchInterfaceList：它会把这份 limit=all（且不含 tag 字段）的列表
+  // 写进 state.inter.totalTableList，切到「接口」tab 时 InterfaceList 首帧会拿它渲染而报错。
   async getApiList() {
-    const result = await this.props.fetchInterfaceList({
-      project_id: this.props.typeid,
-      limit: 'all',
+    const result = await axios.get('/api/interface/list', {
+      params: { project_id: this.props.typeid, limit: 'all' },
     })
+    if (result.data.errcode !== 0) {
+      return
+    }
     this.setState({
-      apiList: result.payload.data.data.list,
+      apiList: result.data.data.list,
     })
   }
 
@@ -292,7 +296,6 @@ const states = (state: any) => ({
 const actions = {
   fetchNewsData,
   fetchMoreNews,
-  fetchInterfaceList,
 }
 
 export default connect(states, actions)(YapiTimeLine) as typeof YapiTimeLine
