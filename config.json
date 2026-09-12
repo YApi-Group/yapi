@@ -8,6 +8,13 @@
   "ldapLogin": {
     "enable": false
   },
+  "oidc": {
+    "enable": true,
+    "issuer": "https://xapitable-test.yottastudios.com:15556",
+    "id": "local8080",
+    "secret": "local8080",
+    "name": "Yotta OA"
+  },
   "db": {
     "servername": "127.0.0.1",
     "DATABASE": "yapi",

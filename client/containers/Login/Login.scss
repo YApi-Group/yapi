@@ -18,7 +18,8 @@
   margin-bottom: .1rem;
 }
 
-.qsso-breakline{
+// 第三方登录（OIDC）与普通登录之间的"或"分隔线
+.login-breakline{
   display: flex;
   align-items: center;
   color: #6d7c90;
@@ -30,9 +31,13 @@
     flex: 1;
     border-top: .01rem solid #6d7c90;
   }
-  .qsso-breakword{
+  .login-breakword{
     padding: 0 .1rem;
   }
+}
+
+.login-oidc-button {
+  width: 100%;
 }
 
 .card-login {

@@ -9,6 +9,7 @@ import tokenModel from '../models/token.js'
 import UserModel from '../models/user.js'
 import * as commons from '../utils/commons.js'
 import * as inst from '../utils/inst.js'
+import * as oidc from '../utils/oidc.js'
 import { parseToken } from '../utils/token.js'
 
 class BaseController {
@@ -45,6 +46,8 @@ class BaseController {
       '/api/user/logout',
       '/api/user/avatar',
       '/api/user/login_by_ldap',
+      '/api/user/login_by_oidc',
+      '/api/user/login_by_oidc/callback',
     ]
     if (ignoreRouter.indexOf(ctx.path) > -1) {
       this.$auth = true
@@ -209,6 +212,9 @@ class BaseController {
     }
 
     body.ladp = await this.checkLDAP()
+    // 只下发开关与展示名，issuer / id / secret 一律不出服务端
+    body.oidc = oidc.isEnabled()
+    body.oidcName = oidc.getDisplayName()
     body.canRegister = await this.checkRegister()
     ctx.body = body
   }

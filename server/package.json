@@ -66,6 +66,7 @@
     "mongoose": "5.12.13",
     "node-schedule": "^2.1.0",
     "nodemailer": "6.6.1",
+    "openid-client": "^6.8.7",
     "os": "0.1.1",
     "qs": "^6.10.1",
     "request": "2.81.0",
@@ -75,8 +76,7 @@
     "tsx": "^4.22.4",
     "underscore": "1.13.1",
     "url": "0.11.0",
-    "vm2": "^3.9.3",
-    "yapi-plugin-qsso": "^1.1.0"
+    "vm2": "^3.9.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",

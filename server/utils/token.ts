@@ -47,7 +47,8 @@ const aseDecode = function (data: string, password: string) {
   return decrypted
 }
 
-const defaultSalt = 'abcde'
+// 亦被 utils/oidc.ts 用作事务 cookie 签名密钥的回退值
+export const defaultSalt = 'abcde'
 
 export function getToken(token: string, uid: string | number) {
   if (!token) {

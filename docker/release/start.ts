@@ -149,6 +149,16 @@ const configShape = {
     emailKey: String,
     usernameKey: String,
   },
+  // OIDC 登录：对应环境变量 YAPI_OIDC_ENABLE / YAPI_OIDC_ISSUER / YAPI_OIDC_ID / YAPI_OIDC_SECRET /
+  // YAPI_OIDC_REDIRECT_URI / YAPI_OIDC_NAME，见 design/oidc登录授权方式接入.md
+  oidc: {
+    enable: Boolean,
+    issuer: String,
+    id: String,
+    secret: String,
+    redirectUri: String,
+    name: String,
+  },
 } as const
 
 type IConfigShape = typeof configShape
@@ -316,7 +326,7 @@ class Main {
     this.bootstrapServer = new BootstrapServer(this.config.port!)
   }
 
-  log(message: string, sendToClient: boolean = false) {
+  log(message: string, sendToClient = false) {
     console.log(message)
     if (sendToClient) {
       this.bootstrapServer.log(message)

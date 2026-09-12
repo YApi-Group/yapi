@@ -77,6 +77,9 @@ const devConf: Configuration = {
         target: 'http://127.0.0.1:3000',
         changeOrigin: true,
         ws: true,
+        // 透传 X-Forwarded-Host / X-Forwarded-Proto：changeOrigin 会把 Host 改成 127.0.0.1:3000，
+        // 服务端（app.proxy = true）需据此推导 OIDC 回调地址为浏览器实际访问的 http://localhost:8080
+        xfwd: true,
       },
     ] as any, // 临时 debug 类型提示错误问题
   },

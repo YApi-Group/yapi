@@ -25,9 +25,12 @@ const changeHeight = {
 type PropTypes = {
   form?: any
   history?: any
+  location?: any
   loginActions?: AnyFunc
   loginLdapActions?: AnyFunc
   isLDAP?: boolean
+  isOIDC?: boolean
+  oidcName?: string
 }
 
 type StateTypes = {
@@ -62,15 +65,26 @@ class LoginForm extends Component<PropTypes, StateTypes> {
   }
 
   componentDidMount() {
-    // Qsso.attach('qsso-login','/api/user/login_by_token')
-    console.log('isLDAP', this.props.isLDAP)
+    // OIDC 登录失败时服务端会重定向到 /login?oidc_error=<文案>：提示后清掉查询串
+    const search = this.props.location ? this.props.location.search : ''
+    const oidcError = new URLSearchParams(search).get('oidc_error')
+    if (oidcError) {
+      message.error(oidcError)
+      this.props.history.replace('/login')
+    }
   }
+
   handleFormLayoutChange = (e: RadioChangeEvent) => {
     this.setState({ loginType: e.target.value })
   }
 
+  // OIDC 是整页跳转的重定向流程，不能走 axios
+  handleOidcLogin = () => {
+    window.location.assign('/api/user/login_by_oidc')
+  }
+
   render() {
-    const { isLDAP } = this.props
+    const { isLDAP, isOIDC, oidcName } = this.props
 
     const emailRule = this.state.loginType === 'ldap'
       ? {}
@@ -112,11 +126,17 @@ class LoginForm extends Component<PropTypes, StateTypes> {
           </Button>
         </FormItem>
 
-        {/* <div className="qsso-breakline">
-          <span className="qsso-breakword">或</span>
-        </div>
-        <Button style={changeHeight} id="qsso-login" type="primary" 
-        className="login-form-button" size="large" ghost>QSSO登录</Button> */}
+        {/* OIDC 登录：服务端 /api/user/status 下发 oidc 开关时才显示 */}
+        {isOIDC && (
+          <>
+            <div className="login-breakline">
+              <span className="login-breakword">或</span>
+            </div>
+            <Button style={changeHeight} className="login-oidc-button" onClick={this.handleOidcLogin}>
+              使用 {oidcName} 账号登录
+            </Button>
+          </>
+        )}
       </Form>
     )
   }
@@ -125,6 +145,8 @@ class LoginForm extends Component<PropTypes, StateTypes> {
 const states = (state:any) => ({
   loginData: state.user,
   isLDAP: state.user.isLDAP,
+  isOIDC: state.user.isOIDC,
+  oidcName: state.user.oidcName,
 })
 
 const actions = {

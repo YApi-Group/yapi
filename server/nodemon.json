@@ -1,6 +1,6 @@
 {
   "restartable": "rs",
-  "ignore": ["node_modules/"],
+  "ignore": ["node_modules/", "**/*.test.ts"],
 
   "delay": "1000",
   "watch": ["./"],

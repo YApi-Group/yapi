@@ -75,6 +75,8 @@ const routerConfig = {
     { action: 'logout', path: 'logout', method: 'get' },
     { action: 'loginByToken', path: 'login_by_token', method: 'all' },
     { action: 'getLdapAuth', path: 'login_by_ldap', method: 'all' },
+    { action: 'loginByOidc', path: 'login_by_oidc', method: 'get' },
+    { action: 'oidcCallback', path: 'login_by_oidc/callback', method: 'get' },
     { action: 'upStudy', path: 'up_study', method: 'get' },
     { action: 'changePassword', path: 'change_password', method: 'post' },
     { action: 'search', path: 'search', method: 'get' },

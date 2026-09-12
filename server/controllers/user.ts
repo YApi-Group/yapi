@@ -2,6 +2,7 @@ import path from 'path'
 
 import fs from 'fs-extra'
 import jwt from 'jsonwebtoken'
+import { Context } from 'koa'
 
 import cons from '../cons.js'
 import AvatarModel from '../models/avatar.js'
@@ -12,6 +13,7 @@ import UserModel from '../models/user.js'
 import * as commons from '../utils/commons.js'
 import * as inst from '../utils/inst.js'
 import * as ldap from '../utils/ldap.js'
+import * as oidc from '../utils/oidc.js'
 import yapi from '../yapi.js'
 
 import baseController from './base.js'
@@ -122,6 +124,66 @@ class userController extends baseController {
     } catch (e) {
       commons.log(e.message, 'error')
       ctx.redirect('/')
+    }
+  }
+
+  /**
+   * OIDC 登录：发起授权，重定向到身份服务
+   * @interface /user/login_by_oidc
+   * @method GET
+   * @category user
+   * @foldnumber 10
+   * @param {String} [back] 登录成功后回到的站内路径，缺省 /group
+   */
+  async loginByOidc(ctx: Context) {
+    if (!oidc.isEnabled()) {
+      return (ctx.body = commons.resReturn(null, 404, '未启用 OIDC 登录'))
+    }
+    // 自行 try/catch 并重定向：不能让异常冒到 createAction 的兜底（那里会把响应改写成 JSON）
+    try {
+      const { url, txn } = await oidc.createAuthorizationRequest(ctx.origin, ctx.query.back)
+      ctx.cookies.set(oidc.TXN_COOKIE, txn, {
+        httpOnly: true,
+        // 回调是从身份服务域发起的顶级 GET 导航，strict 会导致 cookie 不随回调发送
+        sameSite: 'lax',
+        maxAge: oidc.TXN_MAX_AGE,
+        path: oidc.TXN_COOKIE_PATH,
+      })
+      ctx.redirect(url.href)
+    } catch (e: any) {
+      commons.log(`oidc login: ${e.message}`, 'error')
+      ctx.redirect(oidc.loginErrorUrl('身份服务暂不可用，请稍后重试'))
+    }
+  }
+
+  /**
+   * OIDC 登录：身份服务回调
+   * @interface /user/login_by_oidc/callback
+   * @method GET
+   * @category user
+   * @foldnumber 10
+   * @param {String} code 授权码
+   * @param {String} state 与事务 cookie 中一致的随机串
+   */
+  async oidcCallback(ctx: Context) {
+    const txn = ctx.cookies.get(oidc.TXN_COOKIE)
+    // 事务 cookie 一次性：无论成败先删除
+    ctx.cookies.set(oidc.TXN_COOKIE, null, { path: oidc.TXN_COOKIE_PATH })
+    try {
+      if (!oidc.isEnabled()) {
+        throw new oidc.OidcUserError('未启用 OIDC 登录')
+      }
+      if (!txn) {
+        throw new oidc.OidcUserError('登录会话不存在或已过期，请重新登录')
+      }
+      const identity = await oidc.handleCallback(ctx.querystring, txn)
+      // 既有逻辑：按邮箱找/建用户（type third + 私有分组）并写登录 cookie
+      await this.handleThirdLogin(identity.email, identity.username)
+      commons.log(`oidc login success: ${identity.email}`, 'log')
+      ctx.redirect(identity.back)
+    } catch (e: any) {
+      commons.log(`oidc callback: ${e.message}`, 'error')
+      ctx.redirect(oidc.loginErrorUrl(oidc.publicMessage(e)))
     }
   }
 

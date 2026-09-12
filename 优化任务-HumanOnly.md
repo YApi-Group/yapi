@@ -4,7 +4,7 @@
 # Yapi 优化第0期
 ## ONGO 请求插件修改，支持 V3
 
-## 接入 OA 的 oidc
+## ONGO 接入 OA 的 oidc
 
 # Yapi 优化改进 - 一期
 ## DONE 分组要能支持右键新页面打开
